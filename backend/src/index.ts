@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import passport from './config/passport';
+import playlistRoutes from './routes/playlist';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,6 +28,8 @@ app.use(
 //Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use('/api/playlist', playlistRoutes);
 
 //Define the authentication routes
 app.get(
