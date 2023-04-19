@@ -14,6 +14,7 @@ const port = process.env.PORT || 3000;
 
 //Enable CORS
 app.use(cors({ origin: '*', credentials: true }));
+app.use(express.json());
 
 //Set up session middleware
 const secret = crypto.randomBytes(64).toString('hex');

@@ -22,6 +22,8 @@ model Track {
   spotifyId  String
   title      String
   artist     String
+  album      String
+  durationMs Int
   imageUrl   String
   votes      Vote[]
   playlist   Playlist @relation(fields: [playlistId], references: [id])
@@ -35,4 +37,6 @@ model Vote {
   playlistId Int
   track      Track    @relation(fields: [trackId], references: [id])
   trackId    Int
+
+  @@unique([trackId, user])
 }
