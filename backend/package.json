@@ -20,6 +20,7 @@
     "passport": "^0.6.0",
     "passport-spotify": "^2.0.0",
     "prisma": "^4.13.0",
+    "spotify-web-api-node": "^5.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
@@ -29,6 +30,7 @@
     "@types/express-session": "^1.17.7",
     "@types/node": "^18.15.11",
     "@types/passport": "^1.0.12",
-    "@types/passport-spotify": "^2.0.1"
+    "@types/passport-spotify": "^2.0.1",
+    "@types/spotify-web-api-node": "^5.0.7"
   }
 }
