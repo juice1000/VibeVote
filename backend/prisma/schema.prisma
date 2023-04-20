@@ -32,11 +32,13 @@ model Track {
 
 model Vote {
   id         Int      @id @default(autoincrement())
-  user       String
+  user       String?
+  guestId    String?
   playlist   Playlist @relation(fields: [playlistId], references: [id])
   playlistId Int
   track      Track    @relation(fields: [trackId], references: [id])
   trackId    Int
 
   @@unique([trackId, user])
+  @@unique([trackId, guestId])
 }
