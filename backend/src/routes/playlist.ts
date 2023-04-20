@@ -36,7 +36,18 @@ router.post('/:playlistId/add-track', async (req, res) => {
     const { playlistId } = req.params;
     const { trackId } = req.body;
     const trackDetails = await spotifyApi.getTrack(trackId);
-    console.log(trackDetails);
+
+    const existingTrackInPlaylist = await prisma.track.findFirst({
+      where: {
+        spotifyId: trackDetails.body.id,
+        playlistId: parseInt(playlistId),
+      },
+    });
+
+    if (existingTrackInPlaylist) {
+      res.status(400).json({ error: 'Track already exists in the playlist' });
+      return;
+    }
 
     const newTrack = await prisma.track.create({
       data: {
@@ -62,7 +73,64 @@ router.post('/:playlistId/add-track', async (req, res) => {
 });
 
 router.post('/:playlistId/vote', async (req, res) => {
-  // Handle voting for a track
+  try {
+    const { playlistId } = req.params;
+    const { trackId, userId, guestId, spotifyId } = req.body;
+    console.log(trackId);
+
+    const playlist = await prisma.playlist.findUnique({
+      where: {
+        id: parseInt(playlistId),
+      },
+      include: {
+        tracks: true,
+      },
+    });
+
+    if (!playlist) {
+      res.status(404).json({ error: 'Playlist not found' });
+      return;
+    }
+
+    const track = playlist.tracks.find((t) => t.spotifyId === spotifyId);
+
+    if (!track) {
+      res.status(404).json({ error: 'Track not found in playlist' });
+      return;
+    }
+
+    if ((userId && guestId) || (!userId && !guestId)) {
+      res.status(400).json({
+        error: 'Either userId or guestId must be provided, but not both.',
+      });
+      return;
+    }
+
+    const existingVote = await prisma.vote.findFirst({
+      where: {
+        trackId: parseInt(trackId),
+        OR: [{ user: userId }, { guestId: guestId }],
+      },
+    });
+
+    if (existingVote) {
+      res.status(400).json({ error: 'User has already voted for this track' });
+      return;
+    }
+
+    const newVote = await prisma.vote.create({
+      data: {
+        user: userId,
+        guestId: guestId,
+        playlistId: parseInt(playlistId),
+        trackId: parseInt(trackId),
+      },
+    });
+
+    res.status(201).json(newVote);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.delete('/:playlistId/vote', async (req, res) => {

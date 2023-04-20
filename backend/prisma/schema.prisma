@@ -39,6 +39,6 @@ model Vote {
   track      Track    @relation(fields: [trackId], references: [id])
   trackId    Int
 
-  @@unique([trackId, user])
-  @@unique([trackId, guestId])
+  @@unique([trackId, user, playlistId])
+  @@unique([trackId, guestId, playlistId])
 }
