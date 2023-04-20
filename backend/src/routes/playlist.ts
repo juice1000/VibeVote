@@ -16,7 +16,6 @@ router.use((req, res, next) => {
 // Define the API routes related to playlist management
 router.post('/create', async (req, res) => {
   try {
-    console.log(req.body);
     const { title, description } = req.body;
 
     const newPlaylist = await prisma.playlist.create({
@@ -26,6 +25,26 @@ router.post('/create', async (req, res) => {
       },
     });
     res.status(201).json(newPlaylist);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/:playlistId', async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+
+    const playlist = await prisma.playlist.findUnique({
+      where: { id: parseInt(playlistId) },
+      include: { tracks: true },
+    });
+
+    if (!playlist) {
+      res.status(404).json({ error: 'Playlist not found' });
+      return;
+    }
+
+    res.status(200).json(playlist);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
