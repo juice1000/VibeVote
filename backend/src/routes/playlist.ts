@@ -134,7 +134,60 @@ router.post('/:playlistId/vote', async (req, res) => {
 });
 
 router.delete('/:playlistId/vote', async (req, res) => {
-  // Handle removing a vote for a track
+  try {
+    const { playlistId } = req.params;
+    const { trackId, userId, guestId, spotifyId } = req.body;
+
+    const playlist = await prisma.playlist.findUnique({
+      where: {
+        id: parseInt(playlistId),
+      },
+      include: {
+        tracks: true,
+      },
+    });
+
+    if (!playlist) {
+      res.status(404).json({ error: 'Playlist not found' });
+      return;
+    }
+
+    const track = playlist.tracks.find((t) => t.spotifyId === spotifyId);
+
+    if (!track) {
+      res.status(404).json({ error: 'Track not found in playlist' });
+      return;
+    }
+
+    if ((userId && guestId) || (!userId && !guestId)) {
+      res.status(400).json({
+        error: 'Either userId or guestId must be provided, but not both.',
+      });
+      return;
+    }
+
+    const existingVote = await prisma.vote.findFirst({
+      where: {
+        trackId: parseInt(trackId),
+        OR: [{ user: userId }, { guestId: guestId }],
+      },
+    });
+
+    if (!existingVote) {
+      res.status(404).json({ error: 'Vote not found' });
+      return;
+    }
+
+    await prisma.vote.delete({
+      where: {
+        id: existingVote.id,
+      },
+    });
+
+    res.status(200).json({ message: 'Vote deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default router;
