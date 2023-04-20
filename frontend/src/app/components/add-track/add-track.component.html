@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Add Track</h1>
+<div mat-dialog-content>
+  <mat-form-field class="w-full">
+    <input
+      matInput
+      placeholder="Search track"
+      [(ngModel)]="trackName"
+      (input)="searchTracks()"
+    />
+  </mat-form-field>
+  <div *ngIf="searchResults">
+    <mat-list>
+      <mat-list-item
+        *ngFor="let track of searchResults.tracks.items"
+        (click)="selectTrack(track.uri)"
+      >
+        {{ track.name }} - {{ track.artists[0].name }}
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+</div>

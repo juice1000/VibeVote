@@ -27,6 +27,7 @@ router.post('/create', async (req, res) => {
     res.status(201).json(newPlaylist);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error creating playlist', error);
   }
 });
 
@@ -47,6 +48,7 @@ router.get('/:playlistId', async (req, res) => {
     res.status(200).json(playlist);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error getting playlist', error);
   }
 });
 
@@ -88,6 +90,7 @@ router.post('/:playlistId/add-track', async (req, res) => {
     res.status(201).json(newTrack);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error adding track', error);
   }
 });
 
@@ -148,6 +151,7 @@ router.post('/:playlistId/vote', async (req, res) => {
     res.status(201).json(newVote);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error voting', error);
   }
 });
 
@@ -205,6 +209,7 @@ router.delete('/:playlistId/vote', async (req, res) => {
     res.status(200).json({ message: 'Vote deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error removing vote', error);
   }
 });
 

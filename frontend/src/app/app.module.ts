@@ -8,9 +8,18 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { PlaylistComponent } from './components/playlist/playlist.component';
+import { AddTrackComponent } from './components/add-track/add-track.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, PlaylistComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    PlaylistComponent,
+    AddTrackComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -18,6 +27,9 @@ import { PlaylistComponent } from './components/playlist/playlist.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    MatFormFieldModule,
+    MatDialogModule,
+    MatListModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
