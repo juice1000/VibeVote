@@ -1,5 +1,5 @@
 import express from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
 
 const prisma = new PrismaClient();
@@ -16,7 +16,6 @@ router.use((req, res, next) => {
 // Define the API routes related to playlist management
 router.post('/create', async (req, res) => {
   try {
-    console.log(req.body);
     const { title, description } = req.body;
 
     const newPlaylist = await prisma.playlist.create({
@@ -28,6 +27,28 @@ router.post('/create', async (req, res) => {
     res.status(201).json(newPlaylist);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error creating playlist', error);
+  }
+});
+
+router.get('/:playlistId', async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+
+    const playlist = await prisma.playlist.findUnique({
+      where: { id: parseInt(playlistId) },
+      include: { tracks: true },
+    });
+
+    if (!playlist) {
+      res.status(404).json({ error: 'Playlist not found' });
+      return;
+    }
+
+    res.status(200).json(playlist);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.error('Server error getting playlist', error);
   }
 });
 
@@ -69,6 +90,7 @@ router.post('/:playlistId/add-track', async (req, res) => {
     res.status(201).json(newTrack);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error adding track', error);
   }
 });
 
@@ -76,7 +98,6 @@ router.post('/:playlistId/vote', async (req, res) => {
   try {
     const { playlistId } = req.params;
     const { trackId, userId, guestId, spotifyId } = req.body;
-    console.log(trackId);
 
     const playlist = await prisma.playlist.findUnique({
       where: {
@@ -130,6 +151,7 @@ router.post('/:playlistId/vote', async (req, res) => {
     res.status(201).json(newVote);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error voting', error);
   }
 });
 
@@ -187,6 +209,7 @@ router.delete('/:playlistId/vote', async (req, res) => {
     res.status(200).json({ message: 'Vote deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Server error removing vote', error);
   }
 });
 
