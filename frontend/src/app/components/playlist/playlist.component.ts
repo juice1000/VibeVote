@@ -28,9 +28,15 @@ export class PlaylistComponent implements OnInit {
     }
   }
 
-  vote(trackId: string): void {
-    console.log('Vote for track', trackId);
-    // Call the API to vote for the track
+  async vote(trackId: string, spotifyId: string): Promise<void> {
+    try {
+      console.log(spotifyId);
+      const sessionId = this.route.snapshot.paramMap.get('id');
+      await this.playlistService.voteForTrack(sessionId!, trackId, spotifyId);
+      this.fetchPlaylist(sessionId!);
+    } catch (error) {
+      console.error('Failed to vote for track', error);
+    }
   }
 
   addTrack(): void {

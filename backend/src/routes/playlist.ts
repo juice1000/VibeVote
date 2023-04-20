@@ -95,7 +95,6 @@ router.post('/:playlistId/vote', async (req, res) => {
   try {
     const { playlistId } = req.params;
     const { trackId, userId, guestId, spotifyId } = req.body;
-    console.log(trackId);
 
     const playlist = await prisma.playlist.findUnique({
       where: {

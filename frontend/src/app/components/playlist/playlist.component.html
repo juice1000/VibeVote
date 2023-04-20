@@ -22,7 +22,7 @@
           </div>
         </div>
         <button
-          (click)="vote(track.id)"
+          (click)="vote(track.id, track.spotifyId)"
           class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white"
         >
           Vote {{ track.votes }}
