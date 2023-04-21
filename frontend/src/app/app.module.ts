@@ -12,6 +12,7 @@ import { AddTrackComponent } from './components/add-track/add-track.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { MatListModule } from '@angular/material/list';
     LoginComponent,
     PlaylistComponent,
     AddTrackComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

@@ -27,6 +27,7 @@ export class PlaylistComponent implements OnInit {
   async fetchPlaylist(playlistId: string): Promise<void> {
     try {
       this.playlist = await this.playlistService.getPlaylist(playlistId);
+      console.log(this.playlist);
       this.userVotes = this.playlist.tracks.map(
         (track: any) => track.votedByUser
       );

@@ -1,13 +1,20 @@
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
   <div class="p-8 bg-white shadow-md rounded-md">
     <h1 class="text-2xl font-bold mb-4">VibeVote</h1>
-    <a
+    <!-- <a
       href="/auth/spotify"
       class="flex items-center justify-center w-full px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-md transition"
     >
       <i class="material-icons mr-2">login</i>
       Log in with Spotify
-    </a>
+    </a> -->
+    <button
+      (click)="loginWithSpotify()"
+      class="flex items-center justify-center w-full px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-md transition"
+    >
+      <i class="material-icons mr-2">login</i>
+      Login with Spotify
+    </button>
     <div class="mt-4">
       <label for="sessionId" class="block text-sm font-medium text-gray-700"
         >Session ID</label

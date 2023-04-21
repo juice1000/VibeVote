@@ -3,25 +3,24 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { getGuestId } from '../utils/guest';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 const URL = 'http://localhost:3000';
 
 const spotifyApiUrl = 'https://api.spotify.com/v1';
 
-let authToken: string;
-
 @Injectable({
   providedIn: 'root',
 })
 export class PlaylistService {
-  constructor(private http: HttpClient) {}
+  accessToken = this.authService.getAccessToken;
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  async createPlaylist(title: string, description: string): Promise<any> {
+  async createPlaylist(title: string): Promise<any> {
     try {
       return await firstValueFrom(
         this.http.post(`${URL}/api/playlist/create`, {
           title,
-          description,
         })
       );
     } catch (error) {
@@ -57,7 +56,6 @@ export class PlaylistService {
   async voteForTrack(
     playlistId: string,
     trackId: string,
-    // userId: string | null,
     spotifyId: string
   ): Promise<void> {
     try {
@@ -65,7 +63,6 @@ export class PlaylistService {
       await firstValueFrom(
         this.http.post(`${URL}/api/playlist/${playlistId}/vote`, {
           trackId,
-          // userId,
           guestId,
           spotifyId,
         })
@@ -79,8 +76,6 @@ export class PlaylistService {
   async deleteVote(
     playlistId: string,
     trackId: string,
-    // userId: string | null,
-    // guestId: string | null,
     spotifyId: string
   ): Promise<void> {
     try {
@@ -89,7 +84,6 @@ export class PlaylistService {
       await firstValueFrom(
         this.http.post(`${URL}/api/playlist/${playlistId}/vote`, {
           trackId,
-          // userId,
           guestId,
           spotifyId,
         })
@@ -103,7 +97,7 @@ export class PlaylistService {
   searchTracks(query: string): Observable<any> {
     const headers = new HttpHeaders().set(
       'Authorization',
-      `Bearer ${authToken}`
+      `Bearer ${this.accessToken}`
     );
     return this.http.get<any>(
       `${spotifyApiUrl}/search?type=track&limit=10&q=${encodeURIComponent(

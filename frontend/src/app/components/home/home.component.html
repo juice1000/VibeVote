@@ -1,0 +1,13 @@
+<div class="container">
+  <h1>Create a new playlist</h1>
+  <form (submit)="createPlaylist()">
+    <input
+      [(ngModel)]="newPlaylistName"
+      name="newPlayListName"
+      placeholder="Playlist name"
+    />
+    <button type="submit">
+      Create Playlist <a [routerLink]="['/playlist', 'playlist?.id']"> </a>
+    </button>
+  </form>
+</div>
