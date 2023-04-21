@@ -20,6 +20,6 @@ export class HomeComponent {
     const playlist = await this.playlistService.createPlaylist(
       this.newPlaylistName
     );
-    this.router.navigate(['/playlist', playlist.id]);
+    this.router.navigate(['/playlist', playlist.spotifyPlaylistId]);
   }
 }

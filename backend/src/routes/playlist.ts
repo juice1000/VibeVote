@@ -8,8 +8,10 @@ const router = express.Router();
 
 router.use((req, res, next) => {
   const accessToken = req.headers.authorization?.split(' ')[1];
+  console.log('Access token received:', accessToken);
   if (accessToken) {
     spotifyApi.setAccessToken(accessToken);
+    console.log('Access token set for spotifyApi:', accessToken);
   }
   next();
 });
@@ -17,12 +19,13 @@ router.use((req, res, next) => {
 // Define the API routes related to playlist management
 router.post('/create', async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, spotifyPlaylistId } = req.body;
 
     const newPlaylist = await prisma.playlist.create({
       data: {
         title,
         description,
+        spotifyPlaylistId,
       },
     });
     io.in(title).emit('playlist-created', newPlaylist);
@@ -33,12 +36,12 @@ router.post('/create', async (req, res) => {
   }
 });
 
-router.get('/:playlistId', async (req, res) => {
+router.get('/:spotifyPlaylistId', async (req, res) => {
   try {
-    const { playlistId } = req.params;
-
-    const playlist = await prisma.playlist.findUnique({
-      where: { id: parseInt(playlistId) },
+    const playlist = await prisma.playlist.findFirst({
+      where: {
+        spotifyPlaylistId: req.params.spotifyPlaylistId,
+      },
       include: {
         tracks: {
           include: {
@@ -47,23 +50,23 @@ router.get('/:playlistId', async (req, res) => {
         },
       },
     });
-
     if (!playlist) {
-      res.status(404).json({ error: 'Playlist not found' });
-      return;
+      return res.status(404).json({ message: 'Playlist not found' });
     }
-
     res.status(200).json(playlist);
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    console.error('Server error getting playlist', error);
+    res
+      .status(500)
+      .json({ message: 'An error occurred while retrieving the playlist' });
   }
 });
 
 router.post('/:playlistId/add-track', async (req, res) => {
   try {
     const { playlistId } = req.params;
-    const { trackId } = req.body;
+    const { trackId, accessToken } = req.body;
+    spotifyApi.setAccessToken(accessToken);
+
     const trackDetails = await spotifyApi.getTrack(trackId);
 
     const existingTrackInPlaylist = await prisma.track.findFirst({

@@ -23,19 +23,19 @@ export class AddTrackComponent {
   async searchTracks(): Promise<void> {
     if (this.trackName.length < 1) return;
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     try {
       const accessToken = this.authService.getAccessToken();
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken
       );
+      const encodedQuery = encodeURIComponent(this.trackName);
       const response = await this.http
-        .get(
-          `https://api.spotify.com/v1/search?type=track&q=${this.trackName}`,
-          {
-            headers,
-          }
-        )
+        .get(`https://api.spotify.com/v1/search?type=track&q=${encodedQuery}`, {
+          headers,
+        })
         .toPromise();
       this.searchResults = response;
     } catch (error) {

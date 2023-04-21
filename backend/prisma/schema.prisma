@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Playlist {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  tracks      Track[]
-  votes       Vote[]
+  id                Int      @id @default(autoincrement())
+  spotifyPlaylistId String
+  title             String
+  description       String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  tracks            Track[]
+  votes             Vote[]
 }
 
 model Track {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,17 +18,29 @@ export class PlaylistComponent implements OnInit {
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
     private dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    const playlistId = this.route.snapshot.paramMap.get('id');
-    this.fetchPlaylist(playlistId!);
+    const spotifyPlaylistId: any =
+      this.route.snapshot.paramMap.get('spotifyPlaylistId');
+
+    this.playlistService.getPlaylistBySpotifyId(spotifyPlaylistId).subscribe(
+      (playlist) => {
+        this.playlist = playlist;
+      },
+      (error) => {
+        console.error('Error fetching playlist:', error);
+      }
+    );
   }
 
-  async fetchPlaylist(playlistId: string): Promise<void> {
+  async fetchPlaylistBySpotifyId(spotifyPlaylistId: string): Promise<void> {
     try {
-      this.playlist = await this.playlistService.getPlaylist(playlistId);
+      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+        spotifyPlaylistId
+      );
       this.playlist.tracks.sort(
         (a: any, b: any) => b.votes.length - a.votes.length
       );
@@ -40,22 +52,42 @@ export class PlaylistComponent implements OnInit {
     }
   }
 
+  async fetchPlaylist(playlistId: string): Promise<void> {
+    try {
+      this.playlist = await this.playlistService.getPlaylist(playlistId);
+      this.playlist.tracks.sort(
+        (a: any, b: any) => b.votes.length - a.votes.length
+      );
+      this.userVotes = this.playlist.tracks.map(
+        (track: any) => track.votedByUser
+      );
+      this.router.navigate(['/playlist', this.playlist.spotifyPlaylistId]);
+    } catch (error) {
+      console.error('Failed to fetch playlist', error);
+    }
+  }
+
   async vote(trackId: string, spotifyId: string, index: number): Promise<void> {
     try {
-      const playlistId = this.route.snapshot.paramMap.get('id');
+      const spotifyPlaylistId =
+        this.route.snapshot.paramMap.get('spotifyPlaylistId');
       if (this.userVotes[index]) {
-        await this.playlistService.deleteVote(playlistId!, trackId, spotifyId);
+        await this.playlistService.deleteVote(
+          spotifyPlaylistId!,
+          trackId,
+          spotifyId
+        );
       } else {
         await this.playlistService.voteForTrack(
-          playlistId!,
+          spotifyPlaylistId!,
           trackId,
           spotifyId
         );
       }
-      await this.fetchPlaylist(playlistId!);
+      await this.fetchPlaylist(spotifyPlaylistId!);
 
       await this.playlistService.reorderSpotifyPlaylist(
-        playlistId!,
+        spotifyPlaylistId!,
         this.playlist.tracks
       );
     } catch (error) {
@@ -64,14 +96,26 @@ export class PlaylistComponent implements OnInit {
   }
 
   async addTrack(): Promise<void> {
-    const playlistId = this.route.snapshot.paramMap.get('id');
+    const spotifyPlaylistId =
+      this.route.snapshot.paramMap.get('spotifyPlaylistId');
     const dialogRef = this.dialog.open(AddTrackComponent);
+    const addTrackBtn = document.querySelector('.add-track-btn');
+    if (addTrackBtn) {
+      addTrackBtn.setAttribute('disabled', 'true');
+    }
 
     dialogRef.afterClosed().subscribe(async (result) => {
+      if (addTrackBtn) {
+        addTrackBtn.removeAttribute('disabled');
+      }
+
       if (result) {
         try {
-          await this.playlistService.addTrackToPlaylist(playlistId!, result);
-          this.fetchPlaylist(playlistId!);
+          await this.playlistService.addTrackToPlaylist(
+            spotifyPlaylistId!,
+            result
+          );
+          this.fetchPlaylist(spotifyPlaylistId!);
         } catch (error) {
           console.error('Failed to add track to playlist', error);
         }

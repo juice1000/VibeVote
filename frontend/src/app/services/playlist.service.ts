@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable, from } from 'rxjs';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 
@@ -12,17 +12,19 @@ const spotifyApiUrl = 'https://api.spotify.com/v1';
   providedIn: 'root',
 })
 export class PlaylistService {
-  accessToken = this.authService.getAccessToken;
+  accessToken = this.authService.getAccessToken();
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   async createPlaylist(title: string): Promise<any> {
     try {
       const userId = await this.getUserId();
-      const accessToken = this.authService.getAccessToken();
+      const accessToken = this.accessToken;
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken
       );
+      console.log('Access TAAAAAKEN', accessToken);
+
       const spotifyPlaylist: any = await this.http
         .post(
           `${spotifyApiUrl}/users/${userId}/playlists`,
@@ -45,7 +47,7 @@ export class PlaylistService {
 
   async getUserId(): Promise<string> {
     try {
-      const accessToken = this.authService.getAccessToken();
+      const accessToken = this.accessToken;
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken
@@ -71,11 +73,39 @@ export class PlaylistService {
     }
   }
 
+  getPlaylistBySpotifyId(playlistId: string): Observable<any> {
+    return from(
+      this.http.get<any>(`${URL}/api/playlist/${playlistId}`).toPromise()
+    );
+  }
+
   async addTrackToPlaylist(playlistId: string, trackId: any): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.post(`${URL}/api/playlist/${playlistId}/add-track`, {
+      const accessToken = this.accessToken;
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + accessToken
+      );
+      console.log('Traaaaaaaaaaaaack ID:', trackId);
+
+      console.log('Access TOOOOOOOOOOOKEN', accessToken);
+
+      const spotifyPlaylist: any = await this.getPlaylistBySpotifyId(
+        playlistId
+      ).toPromise();
+      const spotifyPlaylistId = spotifyPlaylist.spotifyPlaylistId;
+      await this.http
+        .post(
+          `${spotifyApiUrl}/playlists/${spotifyPlaylistId}/tracks`,
+          { uris: [`${trackId}`] },
+          { headers }
+        )
+        .toPromise();
+
+      await await firstValueFrom(
+        this.http.post(`${URL}/api/playlist/${spotifyPlaylistId}/add-track`, {
           trackId,
+          accessToken,
         })
       );
     } catch (error) {
@@ -129,7 +159,7 @@ export class PlaylistService {
     playlistId: string,
     orderedTracks: any[]
   ): Promise<void> {
-    const accessToken = this.authService.getAccessToken();
+    const accessToken = this.accessToken;
     if (!accessToken) {
       console.warn('No access token found. Cannot reorder Spotify playlist.');
       return;
