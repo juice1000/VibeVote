@@ -16,11 +16,7 @@ export class AddTrackComponent {
     private playlistService: PlaylistService
   ) {}
 
-  searchTracks(): void {
-    this.playlistService.searchTracks(this.trackName).subscribe((results) => {
-      this.searchResults = results;
-    });
-  }
+  searchTracks(): void {}
 
   selectTrack(uri: string): void {
     this.dialogRef.close(uri);

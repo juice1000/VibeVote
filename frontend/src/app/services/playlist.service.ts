@@ -93,19 +93,4 @@ export class PlaylistService {
       throw error;
     }
   }
-
-  searchTracks(query: string): Observable<any> {
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${this.accessToken}`
-    );
-    return this.http.get<any>(
-      `${spotifyApiUrl}/search?type=track&limit=10&q=${encodeURIComponent(
-        query
-      )}`,
-      {
-        headers: headers,
-      }
-    );
-  }
 }
