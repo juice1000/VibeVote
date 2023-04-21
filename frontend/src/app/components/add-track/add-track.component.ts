@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { PlaylistService } from 'src/app/services/playlist.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-add-track',
@@ -13,10 +15,33 @@ export class AddTrackComponent {
 
   constructor(
     public dialogRef: MatDialogRef<AddTrackComponent>,
-    private playlistService: PlaylistService
+    private playlistService: PlaylistService,
+    private authService: AuthService,
+    private http: HttpClient
   ) {}
 
-  searchTracks(): void {}
+  async searchTracks(): Promise<void> {
+    if (this.trackName.length < 1) return;
+
+    try {
+      const accessToken = this.authService.getAccessToken();
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + accessToken
+      );
+      const response = await this.http
+        .get(
+          `https://api.spotify.com/v1/search?type=track&q=${this.trackName}`,
+          {
+            headers,
+          }
+        )
+        .toPromise();
+      this.searchResults = response;
+    } catch (error) {
+      console.error('Failed to search for tracks', error);
+    }
+  }
 
   selectTrack(uri: string): void {
     this.dialogRef.close(uri);

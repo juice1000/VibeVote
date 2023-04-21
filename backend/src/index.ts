@@ -40,7 +40,12 @@ app.use('/auth', authRoutes);
 app.get(
   '/auth/spotify',
   passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private'],
+    scope: [
+      'user-read-email',
+      'user-read-private',
+      'playlist-modify-private',
+      'playlist-modify-public',
+    ],
   })
 );
 

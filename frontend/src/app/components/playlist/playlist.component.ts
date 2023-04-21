@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-playlist',
@@ -16,7 +17,8 @@ export class PlaylistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -27,7 +29,9 @@ export class PlaylistComponent implements OnInit {
   async fetchPlaylist(playlistId: string): Promise<void> {
     try {
       this.playlist = await this.playlistService.getPlaylist(playlistId);
-      console.log(this.playlist);
+      this.playlist.tracks.sort(
+        (a: any, b: any) => b.votes.length - a.votes.length
+      );
       this.userVotes = this.playlist.tracks.map(
         (track: any) => track.votedByUser
       );
@@ -48,7 +52,12 @@ export class PlaylistComponent implements OnInit {
           spotifyId
         );
       }
-      this.fetchPlaylist(playlistId!);
+      await this.fetchPlaylist(playlistId!);
+
+      await this.playlistService.reorderSpotifyPlaylist(
+        playlistId!,
+        this.playlist.tracks
+      );
     } catch (error) {
       console.error('Failed to vote for track', error);
     }

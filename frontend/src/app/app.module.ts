@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PlaylistComponent } from './components/playlist/playlist.component';
 import { AddTrackComponent } from './components/add-track/add-track.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,6 +32,7 @@ import { HomeComponent } from './components/home/home.component';
     MatFormFieldModule,
     MatDialogModule,
     MatListModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
