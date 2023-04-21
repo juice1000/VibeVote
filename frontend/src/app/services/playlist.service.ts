@@ -82,27 +82,15 @@ export class PlaylistService {
   async addTrackToPlaylist(playlistId: string, trackId: any): Promise<void> {
     try {
       const accessToken = this.accessToken;
-      const headers = new HttpHeaders().set(
-        'Authorization',
-        'Bearer ' + accessToken
-      );
       console.log('Traaaaaaaaaaaaack ID:', trackId);
-
       console.log('Access TOOOOOOOOOOOKEN', accessToken);
 
       const spotifyPlaylist: any = await this.getPlaylistBySpotifyId(
         playlistId
       ).toPromise();
       const spotifyPlaylistId = spotifyPlaylist.spotifyPlaylistId;
-      await this.http
-        .post(
-          `${spotifyApiUrl}/playlists/${spotifyPlaylistId}/tracks`,
-          { uris: [`${trackId}`] },
-          { headers }
-        )
-        .toPromise();
 
-      await await firstValueFrom(
+      await firstValueFrom(
         this.http.post(`${URL}/api/playlist/${spotifyPlaylistId}/add-track`, {
           trackId,
           accessToken,

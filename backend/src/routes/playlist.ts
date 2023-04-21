@@ -67,12 +67,27 @@ router.post('/:playlistId/add-track', async (req, res) => {
     const { trackId, accessToken } = req.body;
     spotifyApi.setAccessToken(accessToken);
 
-    const trackDetails = await spotifyApi.getTrack(trackId);
+    const playlist = await prisma.playlist.findUnique({
+      where: {
+        spotifyPlaylistId: playlistId,
+      },
+    });
+
+    if (!playlist) {
+      res.status(404).json({ error: 'Playlist not found' });
+      return;
+    }
+
+    const spotifyPlaylistId = playlist.spotifyPlaylistId;
+
+    await spotifyApi.addTracksToPlaylist(playlistId, [`${trackId}`]);
+
+    const trackDetails = await spotifyApi.getTrack(trackId.split(':').pop());
 
     const existingTrackInPlaylist = await prisma.track.findFirst({
       where: {
         spotifyId: trackDetails.body.id,
-        playlistId: parseInt(playlistId),
+        playlistId: playlist.id,
       },
     });
 
@@ -93,12 +108,12 @@ router.post('/:playlistId/add-track', async (req, res) => {
         imageUrl: trackDetails.body.album.images[0]?.url || '',
         playlist: {
           connect: {
-            id: parseInt(playlistId),
+            spotifyPlaylistId: spotifyPlaylistId,
           },
         },
       },
     });
-    io.in(playlistId).emit('track-added', newTrack);
+    io.in(spotifyPlaylistId).emit('track-added', newTrack);
     res.status(201).json(newTrack);
   } catch (error) {
     res.status(500).json({ error: error.message });
