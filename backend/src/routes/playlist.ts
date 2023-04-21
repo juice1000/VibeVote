@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
+import { io } from '../index';
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -24,6 +25,7 @@ router.post('/create', async (req, res) => {
         description,
       },
     });
+    io.in(title).emit('playlist-created', newPlaylist);
     res.status(201).json(newPlaylist);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -87,6 +89,7 @@ router.post('/:playlistId/add-track', async (req, res) => {
         },
       },
     });
+    io.in(playlistId).emit('track-added', newTrack);
     res.status(201).json(newTrack);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -140,6 +143,11 @@ router.post('/:playlistId/vote', async (req, res) => {
           id: existingVote.id,
         },
       });
+      io.in(playlistId).emit('vote-updated', {
+        trackId: parseInt(trackId),
+        userId,
+        guestId,
+      });
       res.status(200).json({ message: 'Vote deleted' });
       return;
     }
@@ -152,7 +160,11 @@ router.post('/:playlistId/vote', async (req, res) => {
         trackId: parseInt(trackId),
       },
     });
-
+    io.in(playlistId).emit('vote-updated', {
+      trackId: parseInt(trackId),
+      userId,
+      guestId,
+    });
     res.status(201).json(newVote);
   } catch (error) {
     res.status(500).json({ error: error.message });
