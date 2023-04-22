@@ -166,8 +166,12 @@ export class PlaylistService {
 
   async reorderSpotifyPlaylist(
     playlistId: string,
-    rangeStart: number,
-    insertBefore: number
+    tracks: {
+      uri: string;
+      position: number;
+      played?: boolean;
+      playing?: boolean;
+    }[]
   ): Promise<void> {
     try {
       const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
@@ -184,13 +188,59 @@ export class PlaylistService {
         'Bearer ' + accessToken
       );
 
-      await this.http
-        .put(
-          `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
-          { range_start: rangeStart, insert_before: insertBefore },
-          { headers }
-        )
-        .toPromise();
+      // Find the positions of the first track of each category
+      const firstPlayedTrackPos = tracks.findIndex((track) => track.played);
+      const firstCurrentPlayingTrackPos = tracks.findIndex(
+        (track) => track.playing
+      );
+      const firstVotingTrackPos = tracks.findIndex(
+        (track) => !track.played && !track.playing
+      );
+
+      // Reorder the played tracks
+      if (firstPlayedTrackPos !== -1) {
+        await this.http
+          .put(
+            `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
+            {
+              range_start: firstPlayedTrackPos,
+              range_length: firstCurrentPlayingTrackPos - firstPlayedTrackPos,
+              insert_before: 0,
+            },
+            { headers }
+          )
+          .toPromise();
+      }
+
+      // Reorder the current playing track
+      if (firstCurrentPlayingTrackPos !== -1) {
+        await this.http
+          .put(
+            `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
+            {
+              range_start: firstCurrentPlayingTrackPos,
+              range_length: 1,
+              insert_before: firstPlayedTrackPos,
+            },
+            { headers }
+          )
+          .toPromise();
+      }
+
+      // Reorder the voting tracks
+      if (firstVotingTrackPos !== -1) {
+        await this.http
+          .put(
+            `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
+            {
+              range_start: firstVotingTrackPos,
+              range_length: tracks.length - firstVotingTrackPos,
+              insert_before: firstCurrentPlayingTrackPos + 1,
+            },
+            { headers }
+          )
+          .toPromise();
+      }
     } catch (error) {
       console.error('Failed to reorder Spotify playlist', error);
       throw error;
@@ -201,23 +251,40 @@ export class PlaylistService {
     try {
       const playlist = await this.getPlaylist(playlistId);
 
+      // Sort tracks by the number of votes, in descending order
       const sortedTracks = [...playlist.tracks].sort(
         (a: any, b: any) => b.votes.length - a.votes.length
       );
 
-      for (let i = 0; i < playlist.tracks.length; i++) {
-        const currentPosition = playlist.tracks.findIndex(
-          (track: any) => track.trackId === sortedTracks[i].trackId
-        );
+      // Divide tracks into categories
+      const playedTracks = sortedTracks.filter((track: any) => track.played);
+      const currentPlayingTrack = sortedTracks.find(
+        (track: any) => track.playing
+      );
+      const votingTracks = sortedTracks.filter(
+        (track: any) => !track.played && !track.playing
+      );
 
-        if (i !== currentPosition) {
-          await this.reorderSpotifyPlaylist(
-            playlist.spotifyPlaylistId,
-            currentPosition,
-            i
-          );
-        }
-      }
+      // Build the reordered list of tracks, filtering out undefined elements
+      const orderedTracks = [
+        ...playedTracks,
+        ...[currentPlayingTrack].filter(Boolean),
+        ...votingTracks,
+      ];
+
+      console.log(orderedTracks);
+
+      // Calculate new positions
+      const tracksToReorder = orderedTracks.map((track, index) => ({
+        uri: track.spotifyId,
+        position: index,
+      }));
+
+      // Reorder Spotify playlist
+      await this.reorderSpotifyPlaylist(
+        playlist.spotifyPlaylistId,
+        tracksToReorder
+      );
     } catch (error) {
       console.error('Failed to reorder tracks', error);
       throw error;
@@ -257,8 +324,6 @@ export class PlaylistService {
               1000
           )
         : 0;
-      console.log('response in fetchtokens', response.spotifyTokenExpiresAt);
-      console.log('expires in fetchtokens', expiresIn);
 
       return {
         accessToken: response.spotifyAccessToken,

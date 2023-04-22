@@ -45,6 +45,7 @@ app.get(
       'user-read-private',
       'playlist-modify-private',
       'playlist-modify-public',
+      'user-read-playback-state',
     ],
   })
 );
