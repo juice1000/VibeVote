@@ -19,17 +19,32 @@ export class AuthService {
     this.route.queryParams.subscribe((params) => {
       if (params['accessToken']) {
         this.accessToken = params['accessToken'];
+        localStorage.setItem('accessToken', this.accessToken!);
         console.log(this.accessToken, 'ACCESSTOKEN ACQUIRED!!');
       }
       if (params['refreshToken']) {
         this.refreshToken = params['refreshToken'];
+        localStorage.setItem('refreshToken', this.refreshToken!);
         console.log(this.refreshToken, 'REFRESHTOKEN ACQUIRED!!');
       }
       if (params['expiresIn']) {
         const expiresIn = parseInt(params['expiresIn'], 10);
         this.expirationTime = Date.now() + expiresIn * 1000;
+        localStorage.setItem('expirationTime', this.expirationTime.toString());
       }
     });
+    if (!this.accessToken) {
+      this.accessToken = localStorage.getItem('accessToken');
+    }
+    if (!this.refreshToken) {
+      this.refreshToken = localStorage.getItem('refreshToken');
+    }
+    if (!this.expirationTime) {
+      const expirationTimeString = localStorage.getItem('expirationTime');
+      if (expirationTimeString) {
+        this.expirationTime = parseInt(expirationTimeString, 10);
+      }
+    }
   }
 
   loginWithSpotify() {
@@ -60,6 +75,8 @@ export class AuthService {
   setAccessToken(accessToken: string, expiresIn: number) {
     this.accessToken = accessToken;
     this.expirationTime = Date.now() + expiresIn * 1000;
+    localStorage.setItem('accessToken', this.accessToken);
+    localStorage.setItem('expirationTime', this.expirationTime.toString());
   }
 
   async refreshAccessToken(): Promise<void> {

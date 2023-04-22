@@ -27,7 +27,7 @@ router.post('/refresh', async (req, res) => {
     const expiresIn = data.body['expires_in'];
     const expiresAt = Date.now() + expiresIn * 1000;
 
-    res.json({ access_token: newAccessToken, expires_at: expiresAt });
+    res.json({ access_token: newAccessToken, expires_in: expiresIn });
   } catch (error) {
     console.error('Failed to refresh access token:', error);
     res.status(500).json({ error: 'Failed to refresh access token' });
