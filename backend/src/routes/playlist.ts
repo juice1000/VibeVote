@@ -109,6 +109,7 @@ router.post('/:playlistId/add-track', async (req, res) => {
         album: trackDetails.body.album.name,
         durationMs: trackDetails.body.duration_ms,
         imageUrl: trackDetails.body.album.images[0]?.url || '',
+        played: false,
         playlist: {
           connect: {
             spotifyPlaylistId: spotifyPlaylistId,
@@ -123,6 +124,41 @@ router.post('/:playlistId/add-track', async (req, res) => {
     console.error('Server error adding track', error);
   }
 });
+
+router.put(
+  '/:playlistId/update-track-played-status/:trackId',
+  async (req, res) => {
+    try {
+      const { playlistId, trackId } = req.params;
+      const { played } = req.body;
+
+      const playlist = await prisma.playlist.findUnique({
+        where: {
+          spotifyPlaylistId: playlistId,
+        },
+      });
+
+      if (!playlist) {
+        res.status(404).json({ error: 'Playlist not found' });
+        return;
+      }
+
+      const updatedTrack = await prisma.track.update({
+        where: {
+          id: parseInt(trackId),
+        },
+        data: {
+          played: played,
+        },
+      });
+
+      res.status(200).json(updatedTrack);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      console.error('Server error updating track played status', error);
+    }
+  }
+);
 
 router.post('/:playlistId/vote', async (req, res) => {
   try {
@@ -202,12 +238,6 @@ router.post('/:playlistId/vote', async (req, res) => {
 router.put('/:playlistId/tokens', async (req, res) => {
   const { playlistId } = req.params;
   const { accessToken, refreshToken, expiresIn } = req.body;
-  console.log('Received data:', {
-    playlistId,
-    accessToken,
-    refreshToken,
-    expiresIn,
-  });
 
   const expiresAt = new Date(Date.now() + expiresIn * 1000);
 

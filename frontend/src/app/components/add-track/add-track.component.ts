@@ -22,18 +22,16 @@ export class AddTrackComponent implements OnInit {
     private http: HttpClient
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const spotifyPlaylistId: any = this.data.spotifyPlaylistId;
-    console.log(spotifyPlaylistId);
 
-    this.playlistService.getPlaylistBySpotifyId(spotifyPlaylistId).subscribe(
-      (playlist) => {
-        this.playlist = playlist;
-      },
-      (error) => {
-        console.error('Error fetching playlist:', error);
-      }
-    );
+    try {
+      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+        spotifyPlaylistId
+      );
+    } catch (error) {
+      console.error('Error fetching playlist:', error);
+    }
   }
 
   async searchTracks(): Promise<void> {

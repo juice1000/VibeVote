@@ -22,18 +22,17 @@ export class PlaylistComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const spotifyPlaylistId: any =
       this.route.snapshot.paramMap.get('spotifyPlaylistId');
 
-    this.playlistService.getPlaylistBySpotifyId(spotifyPlaylistId).subscribe(
-      (playlist) => {
-        this.playlist = playlist;
-      },
-      (error) => {
-        console.error('Error fetching playlist:', error);
-      }
-    );
+    try {
+      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+        spotifyPlaylistId
+      );
+    } catch (error) {
+      console.error('Error fetching playlist:', error);
+    }
   }
 
   async fetchPlaylistBySpotifyId(spotifyPlaylistId: string): Promise<void> {
@@ -41,9 +40,18 @@ export class PlaylistComponent implements OnInit {
       this.playlist = await this.playlistService.getPlaylistBySpotifyId(
         spotifyPlaylistId
       );
-      this.playlist.tracks.sort(
-        (a: any, b: any) => b.votes.length - a.votes.length
-      );
+
+      this.playlist.tracks.sort((a: any, b: any) => {
+        if (a.played && !b.played) {
+          return -1;
+        } else if (!a.played && b.played) {
+          return 1;
+        } else if (a.played && b.played) {
+          return 0;
+        } else {
+          return b.votes.length - a.votes.length;
+        }
+      });
       this.userVotes = this.playlist.tracks.map(
         (track: any) => track.votedByUser
       );
@@ -55,9 +63,17 @@ export class PlaylistComponent implements OnInit {
   async fetchPlaylist(playlistId: string): Promise<void> {
     try {
       this.playlist = await this.playlistService.getPlaylist(playlistId);
-      this.playlist.tracks.sort(
-        (a: any, b: any) => b.votes.length - a.votes.length
-      );
+      this.playlist.tracks.sort((a: any, b: any) => {
+        if (a.played && !b.played) {
+          return -1;
+        } else if (!a.played && b.played) {
+          return 1;
+        } else if (a.played && b.played) {
+          return 0;
+        } else {
+          return b.votes.length - a.votes.length;
+        }
+      });
       this.userVotes = this.playlist.tracks.map(
         (track: any) => track.votedByUser
       );
@@ -85,10 +101,10 @@ export class PlaylistComponent implements OnInit {
         );
       }
       await this.fetchPlaylist(spotifyPlaylistId!);
-      console.log(this.playlist.tracks);
 
-      // Reorder Spotify playlist based on votes
-      await this.playlistService.reorderTracks(spotifyPlaylistId!);
+      this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+      console.log(this.playlist.tracks);
     } catch (error) {
       console.error('Failed to vote for track', error);
     }
