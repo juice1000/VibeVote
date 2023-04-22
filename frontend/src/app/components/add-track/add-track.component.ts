@@ -3,7 +3,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-track',
@@ -17,11 +16,10 @@ export class AddTrackComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AddTrackComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any, // Inject the data
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private playlistService: PlaylistService,
     private authService: AuthService,
-    private http: HttpClient,
-    private route: ActivatedRoute
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -44,16 +42,13 @@ export class AddTrackComponent implements OnInit {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     try {
-      // const accessToken = this.authService.getAccessToken();
-
       const { accessToken, refreshToken, expiresIn } =
         await this.playlistService.fetchTokens(this.playlist.spotifyPlaylistId);
 
-      if (this.authService.isTokenExpired() || !accessToken) {
-        console.log('accesstoken in searchtracks check', accessToken);
-
-        await this.authService.refreshAccessToken();
+      if (!accessToken) {
+        await this.authService.refreshAccessToken(refreshToken);
       }
+      this.authService.setAccessToken(accessToken, expiresIn);
 
       const headers = new HttpHeaders().set(
         'Authorization',

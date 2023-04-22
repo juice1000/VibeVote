@@ -17,20 +17,16 @@ export class PlaylistService {
 
   async createPlaylist(title: string): Promise<any> {
     try {
-      const accessToken = this.accessToken;
-
-      if (this.authService.isTokenExpired() || !accessToken) {
-        console.log(accessToken);
-
+      if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
+        this.accessToken = this.authService.getAccessToken();
       }
 
       const userId = await this.getUserId();
       const headers = new HttpHeaders().set(
         'Authorization',
-        'Bearer ' + accessToken
+        'Bearer ' + this.accessToken
       );
-      console.log('Access TAAAAAKEN', accessToken);
 
       const spotifyPlaylist: any = await this.http
         .post(
@@ -49,7 +45,7 @@ export class PlaylistService {
 
       await this.updateTokens(
         backendPlaylist.spotifyPlaylistId,
-        accessToken!,
+        this.accessToken!,
         this.authService.getRefreshToken()!,
         (this.authService.getExpirationTime()! - Date.now()) / 1000
       );
@@ -63,15 +59,14 @@ export class PlaylistService {
 
   async getUserId(): Promise<string> {
     try {
-      const accessToken = this.accessToken;
-
-      if (this.authService.isTokenExpired() || !accessToken) {
+      if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
+        this.accessToken = this.authService.getAccessToken();
       }
 
       const headers = new HttpHeaders().set(
         'Authorization',
-        'Bearer ' + accessToken
+        'Bearer ' + this.accessToken
       );
       const response: any = await this.http
         .get(`${spotifyApiUrl}/me`, { headers })
@@ -102,10 +97,11 @@ export class PlaylistService {
 
   async addTrackToPlaylist(playlistId: string, trackId: any): Promise<void> {
     try {
-      const accessToken = this.accessToken;
-      if (this.authService.isTokenExpired() || !accessToken) {
+      if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
+        this.accessToken = this.authService.getAccessToken();
       }
+      const accessToken = this.accessToken;
 
       const spotifyPlaylist: any = await this.getPlaylistBySpotifyId(
         playlistId
@@ -221,13 +217,14 @@ export class PlaylistService {
         .get(`${URL}/api/playlist/${playlistId}/tokens`)
         .toPromise();
 
-      const expiresIn =
-        response.spotifyTokenExpiresAt &&
-        response.spotifyTokenExpiresAt instanceof Date
-          ? Math.floor(
-              (response.spotifyTokenExpiresAt.getTime() - Date.now()) / 1000
-            )
-          : 0;
+      const expiresIn = response.spotifyTokenExpiresAt
+        ? Math.floor(
+            (new Date(response.spotifyTokenExpiresAt).getTime() - Date.now()) /
+              1000
+          )
+        : 0;
+      console.log('response in fetchtokens', response.spotifyTokenExpiresAt);
+      console.log('expires in fetchtokens', expiresIn);
 
       return {
         accessToken: response.spotifyAccessToken,

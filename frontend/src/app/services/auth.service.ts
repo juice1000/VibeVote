@@ -69,6 +69,9 @@ export class AuthService {
     }
     return Date.now() >= this.expirationTime;
   }
+  updateAccessToken() {
+    this.accessToken = localStorage.getItem('accessToken');
+  }
 
   setAccessToken(accessToken: string, expiresIn: number) {
     this.accessToken = accessToken;
@@ -77,14 +80,16 @@ export class AuthService {
     localStorage.setItem('expirationTime', this.expirationTime.toString());
   }
 
-  async refreshAccessToken(): Promise<void> {
+  async refreshAccessToken(refreshToken?: string): Promise<void> {
     try {
-      const refreshToken = this.getRefreshToken();
+      const token = refreshToken || this.getRefreshToken();
       const response: any = await this.http
-        .post(`${this.URL}/auth/refresh`, { refresh_token: refreshToken })
+        .post(`http://localhost:3000/auth/refresh`, { refreshToken: token })
         .toPromise();
+
       const newAccessToken = response['access_token'];
       const expiresIn = response['expires_in'];
+
       this.setAccessToken(newAccessToken, expiresIn);
     } catch (error) {
       console.error('Failed to refresh access token', error);

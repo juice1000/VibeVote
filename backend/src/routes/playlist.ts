@@ -206,7 +206,6 @@ router.put('/:playlistId/tokens', async (req, res) => {
 
   const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
-  console.log('Calculated expiresAt:', expiresAt);
   try {
     const playlist = await prisma.playlist.update({
       where: { spotifyPlaylistId: playlistId },
