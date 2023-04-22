@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom, map, Observable, from } from 'rxjs';
+import { firstValueFrom, Observable, from } from 'rxjs';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 
@@ -97,11 +97,14 @@ export class PlaylistService {
 
   async addTrackToPlaylist(playlistId: string, trackId: any): Promise<void> {
     try {
-      if (this.authService.isTokenExpired() || !this.accessToken) {
-        await this.authService.refreshAccessToken();
-        this.accessToken = this.authService.getAccessToken();
+      const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
+        playlistId
+      );
+
+      if (!accessToken) {
+        await this.authService.refreshAccessToken(refreshToken);
       }
-      const accessToken = this.accessToken;
+      this.authService.setAccessToken(accessToken, expiresIn);
 
       const spotifyPlaylist: any = await this.getPlaylistBySpotifyId(
         playlistId
@@ -167,10 +170,14 @@ export class PlaylistService {
     insertBefore: number
   ): Promise<void> {
     try {
-      const accessToken = this.accessToken;
-      if (this.authService.isTokenExpired() || !accessToken) {
-        await this.authService.refreshAccessToken();
+      const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
+        playlistId
+      );
+
+      if (!accessToken) {
+        await this.authService.refreshAccessToken(refreshToken);
       }
+      this.authService.setAccessToken(accessToken, expiresIn);
 
       const headers = new HttpHeaders().set(
         'Authorization',
@@ -186,6 +193,33 @@ export class PlaylistService {
         .toPromise();
     } catch (error) {
       console.error('Failed to reorder Spotify playlist', error);
+      throw error;
+    }
+  }
+
+  async reorderTracks(playlistId: string): Promise<void> {
+    try {
+      const playlist = await this.getPlaylist(playlistId);
+
+      const sortedTracks = [...playlist.tracks].sort(
+        (a: any, b: any) => b.votes.length - a.votes.length
+      );
+
+      for (let i = 0; i < playlist.tracks.length; i++) {
+        const currentPosition = playlist.tracks.findIndex(
+          (track: any) => track.trackId === sortedTracks[i].trackId
+        );
+
+        if (i !== currentPosition) {
+          await this.reorderSpotifyPlaylist(
+            playlist.spotifyPlaylistId,
+            currentPosition,
+            i
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Failed to reorder tracks', error);
       throw error;
     }
   }

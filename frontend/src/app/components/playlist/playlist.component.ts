@@ -88,19 +88,7 @@ export class PlaylistComponent implements OnInit {
       console.log(this.playlist.tracks);
 
       // Reorder Spotify playlist based on votes
-      for (let i = 0; i < this.playlist.tracks.length; i++) {
-        const track = this.playlist.tracks[i];
-        const newPosition = this.playlist.tracks.findIndex(
-          (t: any) => t.trackId === track.trackId
-        );
-        if (i !== newPosition) {
-          await this.playlistService.reorderSpotifyPlaylist(
-            spotifyPlaylistId!,
-            i,
-            newPosition
-          );
-        }
-      }
+      await this.playlistService.reorderTracks(spotifyPlaylistId!);
     } catch (error) {
       console.error('Failed to vote for track', error);
     }

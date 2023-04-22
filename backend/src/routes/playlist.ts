@@ -45,6 +45,11 @@ router.get('/:spotifyPlaylistId', async (req, res) => {
           include: {
             votes: true,
           },
+          orderBy: {
+            votes: {
+              _count: 'desc',
+            },
+          },
         },
       },
     });
