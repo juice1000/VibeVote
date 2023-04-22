@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.use((req, res, next) => {
   const accessToken = req.headers.authorization?.split(' ')[1];
-  console.log('Access token received:', accessToken);
   if (accessToken) {
     spotifyApi.setAccessToken(accessToken);
   }

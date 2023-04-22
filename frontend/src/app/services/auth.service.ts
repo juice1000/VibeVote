@@ -8,6 +8,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class AuthService {
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
+  private expirationTime: number | null = null;
   URL = 'http://localhost:3000';
 
   constructor(
@@ -23,6 +24,10 @@ export class AuthService {
       if (params['refreshToken']) {
         this.refreshToken = params['refreshToken'];
         console.log(this.refreshToken, 'REFRESHTOKEN ACQUIRED!!');
+      }
+      if (params['expiresIn']) {
+        const expiresIn = parseInt(params['expiresIn'], 10);
+        this.expirationTime = Date.now() + expiresIn * 1000;
       }
     });
   }
@@ -40,5 +45,35 @@ export class AuthService {
   }
   getRefreshToken() {
     return this.refreshToken;
+  }
+  getExpirationTime() {
+    return this.expirationTime;
+  }
+
+  isTokenExpired(): boolean {
+    if (!this.expirationTime) {
+      return true;
+    }
+    return Date.now() >= this.expirationTime;
+  }
+
+  setAccessToken(accessToken: string, expiresIn: number) {
+    this.accessToken = accessToken;
+    this.expirationTime = Date.now() + expiresIn * 1000;
+  }
+
+  async refreshAccessToken(): Promise<void> {
+    try {
+      const refreshToken = this.getRefreshToken();
+      const response: any = await this.http
+        .post(`${this.URL}/auth/refresh`, { refreshToken })
+        .toPromise();
+      const newAccessToken = response['accessToken'];
+      const expiresIn = response['expiresIn'];
+      this.setAccessToken(newAccessToken, expiresIn);
+    } catch (error) {
+      console.error('Failed to refresh access token', error);
+      throw error;
+    }
   }
 }

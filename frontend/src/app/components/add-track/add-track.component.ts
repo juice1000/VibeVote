@@ -27,6 +27,13 @@ export class AddTrackComponent {
 
     try {
       const accessToken = this.authService.getAccessToken();
+
+      if (this.authService.isTokenExpired() || !accessToken) {
+        console.log(accessToken);
+
+        await this.authService.refreshAccessToken();
+      }
+
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken

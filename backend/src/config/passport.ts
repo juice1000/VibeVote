@@ -12,7 +12,14 @@ passport.use(
       callbackURL: SPOTIFY_CALLBACK_URL as string,
     },
     (accessToken, refreshToken, expires_in, profile, done) => {
-      return done(null, { profile, accessToken, refreshToken, expires_in });
+      const expires_at = Date.now() + expires_in * 1000;
+      return done(null, {
+        profile,
+        accessToken,
+        refreshToken,
+        expires_in,
+        expires_at,
+      });
     }
   )
 );

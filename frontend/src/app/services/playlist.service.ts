@@ -17,8 +17,15 @@ export class PlaylistService {
 
   async createPlaylist(title: string): Promise<any> {
     try {
-      const userId = await this.getUserId();
       const accessToken = this.accessToken;
+
+      if (this.authService.isTokenExpired() || !accessToken) {
+        console.log(accessToken);
+
+        await this.authService.refreshAccessToken();
+      }
+
+      const userId = await this.getUserId();
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken
@@ -48,6 +55,11 @@ export class PlaylistService {
   async getUserId(): Promise<string> {
     try {
       const accessToken = this.accessToken;
+
+      if (this.authService.isTokenExpired() || !accessToken) {
+        await this.authService.refreshAccessToken();
+      }
+
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken
@@ -82,8 +94,9 @@ export class PlaylistService {
   async addTrackToPlaylist(playlistId: string, trackId: any): Promise<void> {
     try {
       const accessToken = this.accessToken;
-      console.log('Traaaaaaaaaaaaack ID:', trackId);
-      console.log('Access TOOOOOOOOOOOKEN', accessToken);
+      if (this.authService.isTokenExpired() || !accessToken) {
+        await this.authService.refreshAccessToken();
+      }
 
       const spotifyPlaylist: any = await this.getPlaylistBySpotifyId(
         playlistId
@@ -148,9 +161,8 @@ export class PlaylistService {
     orderedTracks: any[]
   ): Promise<void> {
     const accessToken = this.accessToken;
-    if (!accessToken) {
-      console.warn('No access token found. Cannot reorder Spotify playlist.');
-      return;
+    if (this.authService.isTokenExpired() || !accessToken) {
+      await this.authService.refreshAccessToken();
     }
 
     const headers = new HttpHeaders().set(
@@ -166,6 +178,7 @@ export class PlaylistService {
       );
 
       const currentTracks = await firstValueFrom(currentTracks$);
+      console.log(currentTracks);
       const currentTrackUris = currentTracks.items.map(
         (item: any) => item.track.uri
       );
