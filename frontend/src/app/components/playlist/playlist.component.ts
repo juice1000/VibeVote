@@ -85,7 +85,7 @@ export class PlaylistComponent implements OnInit {
         );
       }
       await this.fetchPlaylist(spotifyPlaylistId!);
-
+      console.log(this.playlist.tracks);
       await this.playlistService.reorderSpotifyPlaylist(
         spotifyPlaylistId!,
         this.playlist.tracks

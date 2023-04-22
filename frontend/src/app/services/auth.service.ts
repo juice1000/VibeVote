@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class AuthService {
   private accessToken: string | null = null;
+  private refreshToken: string | null = null;
   URL = 'http://localhost:3000';
 
   constructor(
@@ -18,6 +19,10 @@ export class AuthService {
       if (params['accessToken']) {
         this.accessToken = params['accessToken'];
         console.log(this.accessToken, 'ACCESSTOKEN ACQUIRED!!');
+      }
+      if (params['refreshToken']) {
+        this.refreshToken = params['refreshToken'];
+        console.log(this.refreshToken, 'REFRESHTOKEN ACQUIRED!!');
       }
     });
   }
@@ -32,5 +37,8 @@ export class AuthService {
 
   getAccessToken() {
     return this.accessToken;
+  }
+  getRefreshToken() {
+    return this.refreshToken;
   }
 }

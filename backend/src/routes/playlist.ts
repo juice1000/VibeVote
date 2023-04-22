@@ -11,7 +11,6 @@ router.use((req, res, next) => {
   console.log('Access token received:', accessToken);
   if (accessToken) {
     spotifyApi.setAccessToken(accessToken);
-    console.log('Access token set for spotifyApi:', accessToken);
   }
   next();
 });
@@ -128,7 +127,7 @@ router.post('/:playlistId/vote', async (req, res) => {
 
     const playlist = await prisma.playlist.findUnique({
       where: {
-        id: parseInt(playlistId),
+        spotifyPlaylistId: playlistId,
       },
       include: {
         tracks: true,
@@ -180,7 +179,7 @@ router.post('/:playlistId/vote', async (req, res) => {
       data: {
         user: userId,
         guestId: guestId,
-        playlistId: parseInt(playlistId),
+        playlistId: playlist.id,
         trackId: parseInt(trackId),
       },
     });
