@@ -194,4 +194,51 @@ router.post('/:playlistId/vote', async (req, res) => {
   }
 });
 
+router.put('/:playlistId/tokens', async (req, res) => {
+  const { playlistId } = req.params;
+  const { accessToken, refreshToken, expiresIn } = req.body;
+  console.log('Received data:', {
+    playlistId,
+    accessToken,
+    refreshToken,
+    expiresIn,
+  });
+
+  const expiresAt = new Date(Date.now() + expiresIn * 1000);
+
+  console.log('Calculated expiresAt:', expiresAt);
+  try {
+    const playlist = await prisma.playlist.update({
+      where: { spotifyPlaylistId: playlistId },
+      data: {
+        spotifyAccessToken: accessToken,
+        spotifyRefreshToken: refreshToken,
+        spotifyTokenExpiresAt: expiresAt,
+      },
+    });
+    res.status(200).json(playlist);
+  } catch (error) {
+    console.error('Error updating tokens:', error);
+    res.status(400).json({ message: 'Error updating tokens' });
+  }
+});
+
+router.get('/:playlistId/tokens', async (req, res) => {
+  const { playlistId } = req.params;
+  try {
+    const playlist = await prisma.playlist.findUnique({
+      where: { spotifyPlaylistId: playlistId },
+      select: {
+        spotifyAccessToken: true,
+        spotifyRefreshToken: true,
+        spotifyTokenExpiresAt: true,
+      },
+    });
+    res.status(200).json(playlist);
+  } catch (error) {
+    console.error('Error fetching tokens:', error);
+    res.status(400).json({ message: 'Error fetching tokens' });
+  }
+});
+
 export default router;

@@ -20,12 +20,10 @@ export class AuthService {
       if (params['accessToken']) {
         this.accessToken = params['accessToken'];
         localStorage.setItem('accessToken', this.accessToken!);
-        console.log(this.accessToken, 'ACCESSTOKEN ACQUIRED!!');
       }
       if (params['refreshToken']) {
         this.refreshToken = params['refreshToken'];
         localStorage.setItem('refreshToken', this.refreshToken!);
-        console.log(this.refreshToken, 'REFRESHTOKEN ACQUIRED!!');
       }
       if (params['expiresIn']) {
         const expiresIn = parseInt(params['expiresIn'], 10);

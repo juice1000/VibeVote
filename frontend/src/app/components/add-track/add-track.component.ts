@@ -1,24 +1,42 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-track',
   templateUrl: './add-track.component.html',
   styleUrls: ['./add-track.component.css'],
 })
-export class AddTrackComponent {
+export class AddTrackComponent implements OnInit {
   trackName!: string;
   searchResults: any;
+  playlist: any;
 
   constructor(
     public dialogRef: MatDialogRef<AddTrackComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any, // Inject the data
     private playlistService: PlaylistService,
     private authService: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
+    private route: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    const spotifyPlaylistId: any = this.data.spotifyPlaylistId;
+    console.log(spotifyPlaylistId);
+
+    this.playlistService.getPlaylistBySpotifyId(spotifyPlaylistId).subscribe(
+      (playlist) => {
+        this.playlist = playlist;
+      },
+      (error) => {
+        console.error('Error fetching playlist:', error);
+      }
+    );
+  }
 
   async searchTracks(): Promise<void> {
     if (this.trackName.length < 1) return;
@@ -26,10 +44,13 @@ export class AddTrackComponent {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     try {
-      const accessToken = this.authService.getAccessToken();
+      // const accessToken = this.authService.getAccessToken();
+
+      const { accessToken, refreshToken, expiresIn } =
+        await this.playlistService.fetchTokens(this.playlist.spotifyPlaylistId);
 
       if (this.authService.isTokenExpired() || !accessToken) {
-        console.log(accessToken);
+        console.log('accesstoken in searchtracks check', accessToken);
 
         await this.authService.refreshAccessToken();
       }

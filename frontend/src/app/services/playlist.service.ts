@@ -40,12 +40,21 @@ export class PlaylistService {
         )
         .toPromise();
 
-      return await firstValueFrom(
+      const backendPlaylist: any = await firstValueFrom(
         this.http.post(`${URL}/api/playlist/create`, {
           title,
           spotifyPlaylistId: spotifyPlaylist?.id,
         })
       );
+
+      await this.updateTokens(
+        backendPlaylist.spotifyPlaylistId,
+        accessToken!,
+        this.authService.getRefreshToken()!,
+        (this.authService.getExpirationTime()! - Date.now()) / 1000
+      );
+
+      return backendPlaylist;
     } catch (error) {
       console.error('Failed to create playlist', error);
       throw error;
@@ -181,6 +190,52 @@ export class PlaylistService {
         .toPromise();
     } catch (error) {
       console.error('Failed to reorder Spotify playlist', error);
+      throw error;
+    }
+  }
+
+  async updateTokens(
+    playlistId: string,
+    accessToken: string,
+    refreshToken: string,
+    expiresIn: number
+  ): Promise<void> {
+    try {
+      await this.http
+        .put(`${URL}/api/playlist/${playlistId}/tokens`, {
+          accessToken,
+          refreshToken,
+          expiresIn,
+        })
+        .toPromise();
+    } catch (error) {
+      console.error('Error updating tokens', error);
+    }
+  }
+
+  async fetchTokens(
+    playlistId: string
+  ): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
+    try {
+      const response: any = await this.http
+        .get(`${URL}/api/playlist/${playlistId}/tokens`)
+        .toPromise();
+
+      const expiresIn =
+        response.spotifyTokenExpiresAt &&
+        response.spotifyTokenExpiresAt instanceof Date
+          ? Math.floor(
+              (response.spotifyTokenExpiresAt.getTime() - Date.now()) / 1000
+            )
+          : 0;
+
+      return {
+        accessToken: response.spotifyAccessToken,
+        refreshToken: response.spotifyRefreshToken,
+        expiresIn,
+      };
+    } catch (error) {
+      console.error('Error fetching tokens', error);
       throw error;
     }
   }

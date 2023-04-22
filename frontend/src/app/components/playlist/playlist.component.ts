@@ -109,7 +109,9 @@ export class PlaylistComponent implements OnInit {
   async addTrack(): Promise<void> {
     const spotifyPlaylistId =
       this.route.snapshot.paramMap.get('spotifyPlaylistId');
-    const dialogRef = this.dialog.open(AddTrackComponent);
+    const dialogRef = this.dialog.open(AddTrackComponent, {
+      data: { spotifyPlaylistId },
+    });
     const addTrackBtn = document.querySelector('.add-track-btn');
     if (addTrackBtn) {
       addTrackBtn.setAttribute('disabled', 'true');
