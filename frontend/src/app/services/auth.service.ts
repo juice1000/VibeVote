@@ -66,10 +66,10 @@ export class AuthService {
     try {
       const refreshToken = this.getRefreshToken();
       const response: any = await this.http
-        .post(`${this.URL}/auth/refresh`, { refreshToken })
+        .post(`${this.URL}/auth/refresh`, { refresh_token: refreshToken })
         .toPromise();
-      const newAccessToken = response['accessToken'];
-      const expiresIn = response['expiresIn'];
+      const newAccessToken = response['access_token'];
+      const expiresIn = response['expires_in'];
       this.setAccessToken(newAccessToken, expiresIn);
     } catch (error) {
       console.error('Failed to refresh access token', error);

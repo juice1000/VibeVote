@@ -158,44 +158,27 @@ export class PlaylistService {
 
   async reorderSpotifyPlaylist(
     playlistId: string,
-    orderedTracks: any[]
+    rangeStart: number,
+    insertBefore: number
   ): Promise<void> {
-    const accessToken = this.accessToken;
-    if (this.authService.isTokenExpired() || !accessToken) {
-      await this.authService.refreshAccessToken();
-    }
-
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${accessToken}`
-    );
-
     try {
-      // Get the current Spotify playlist tracks
-      const currentTracks$: Observable<any> = this.http.get(
-        `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
-        { headers }
+      const accessToken = this.accessToken;
+      if (this.authService.isTokenExpired() || !accessToken) {
+        await this.authService.refreshAccessToken();
+      }
+
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + accessToken
       );
 
-      const currentTracks = await firstValueFrom(currentTracks$);
-      console.log(currentTracks);
-      const currentTrackUris = currentTracks.items.map(
-        (item: any) => item.track.uri
-      );
-
-      // Calculate the new track order
-      const newTrackOrder = orderedTracks.map((track: any) =>
-        currentTrackUris.indexOf(track.spotifyId)
-      );
-
-      // Reorder the tracks
-      await firstValueFrom(
-        this.http.put(
+      await this.http
+        .put(
           `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
-          { uris: newTrackOrder },
+          { range_start: rangeStart, insert_before: insertBefore },
           { headers }
         )
-      );
+        .toPromise();
     } catch (error) {
       console.error('Failed to reorder Spotify playlist', error);
       throw error;
