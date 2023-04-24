@@ -15,7 +15,11 @@
         class="flex items-center justify-between p-2 bg-gray-800 hover:bg-gray-700 shadow-md rounded-md transition duration-300"
       >
         <div class="flex items-center">
-          <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16" />
+          <img
+            [src]="track.imageUrl"
+            alt="Album cover"
+            class="w-16 h-16 rounded-md"
+          />
           <div class="ml-4">
             <p class="font-bold text-lg">{{ track.title }}</p>
             <p class="text-gray-400">{{ track.artist }}</p>
