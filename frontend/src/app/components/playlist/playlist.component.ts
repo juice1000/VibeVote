@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-playlist',
@@ -12,13 +11,13 @@ import { MatDialog } from '@angular/material/dialog';
 export class PlaylistComponent implements OnInit {
   playlist: any;
   userVotes: boolean[] = [];
+  addTrackVisible = false;
 
   @ViewChild(AddTrackComponent) addTrackComponent!: AddTrackComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private playlistService: PlaylistService,
-    private dialog: MatDialog
+    private playlistService: PlaylistService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -113,11 +112,11 @@ export class PlaylistComponent implements OnInit {
     //       }
     //     }
     //   });
-    this.addTrackComponent.isVisible = true;
+    this.addTrackVisible = true;
   }
 
   async onAddTrackModalClose(result: string | null): Promise<void> {
-    this.addTrackComponent.isVisible = false;
+    this.addTrackVisible = false;
 
     if (result) {
       const spotifyPlaylistId =

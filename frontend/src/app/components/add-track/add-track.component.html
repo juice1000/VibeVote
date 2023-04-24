@@ -1,12 +1,18 @@
 <ng-container *ngIf="isVisible">
   <div class="fixed inset-0 flex items-center justify-center z-50">
     <div
-      class="bg-gray-900 text-white p-4 w-11/12 md:w-2/4 lg:w-1/3 xl:w-1/4 rounded-lg shadow-lg"
+      class="bg-gray-900 text-white p-4 w-11/12 md:w-2/4 lg:w-1/3 xl:w-1/4 rounded-lg shadow-lg relative"
     >
+      <button
+        class="absolute top-0 right-0 m-2 py-1 px-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md focus:outline-none text-sm"
+        (click)="onNoClick()"
+      >
+        X
+      </button>
       <h2 class="text-xl font-bold mb-4">Add Track</h2>
       <div class="relative">
         <input
-          type="text"
+          #searchInput
           class="w-full p-2 bg-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none"
           placeholder="Search track"
           [(ngModel)]="trackName"
@@ -14,23 +20,27 @@
         />
         <div
           *ngIf="searchResults"
-          class="absolute left-0 w-full mt-2 bg-gray-800 text-white rounded-md shadow-lg"
+          class="absolute left-0 w-full mt-2 bg-gray-800 text-white rounded-md shadow-lg max-h-64 overflow-y-auto"
         >
           <div
             *ngFor="let track of searchResults.tracks.items"
-            class="p-2 hover:bg-gray-700 cursor-pointer"
+            class="flex items-center p-2 hover:bg-gray-700 cursor-pointer"
             (click)="selectTrack(track.uri)"
           >
-            {{ track.name }} - {{ track.artists[0].name }}
+            <img
+              class="w-12 h-12 mr-2 rounded-md"
+              [src]="track.album.images[0]?.url"
+              alt="{{ track.name }} album cover"
+            />
+            <div>
+              <span class="font-semibold">{{ track.name }}</span> -
+              <span class="font-medium text-gray-400">{{
+                track.artists[0].name
+              }}</span>
+            </div>
           </div>
         </div>
       </div>
-      <button
-        class="mt-4 w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none"
-        (click)="onNoClick()"
-      >
-        Cancel
-      </button>
     </div>
   </div>
 </ng-container>

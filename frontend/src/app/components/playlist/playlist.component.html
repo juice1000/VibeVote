@@ -13,6 +13,7 @@
       </button>
       <app-add-track
         [spotifyPlaylistId]="playlist.spotifyPlaylistId"
+        [isVisible]="addTrackVisible"
         (close)="onAddTrackModalClose($event)"
       ></app-add-track>
 
