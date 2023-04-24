@@ -100,10 +100,11 @@ export class PlaylistComponent implements OnInit {
           spotifyId
         );
       }
+      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+
       await this.fetchPlaylist(spotifyPlaylistId!);
 
-      this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
       console.log(this.playlist.tracks);
     } catch (error) {
       console.error('Failed to vote for track', error);
@@ -132,7 +133,9 @@ export class PlaylistComponent implements OnInit {
             spotifyPlaylistId!,
             result
           );
-          this.fetchPlaylist(spotifyPlaylistId!);
+          await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+          await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+          await this.fetchPlaylist(spotifyPlaylistId!);
         } catch (error) {
           console.error('Failed to add track to playlist', error);
         }

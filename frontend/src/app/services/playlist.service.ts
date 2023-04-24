@@ -228,22 +228,23 @@ export class PlaylistService {
       const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
       console.log('Original playlist:', playlist);
 
-      const sortedTracks = playlist.tracks.slice(1).sort((a: any, b: any) => {
-        if (a.played && !b.played) {
-          return -1;
-        } else if (!a.played && b.played) {
-          return 1;
-        } else if (a.played && b.played) {
-          return 0;
-        } else {
-          return b.votes.length - a.votes.length;
-        }
+      const playedTracks = playlist.tracks.filter((track: any) => track.played);
+      const unplayedTracks = playlist.tracks.filter(
+        (track: any) => !track.played
+      );
+
+      const sortedUnplayedTracks = unplayedTracks.sort((a: any, b: any) => {
+        return b.votes.length - a.votes.length;
       });
 
-      console.log('Sorted tracks:', sortedTracks);
+      console.log('Sorted unplayed tracks:', sortedUnplayedTracks);
+
+      // Update your web app's track list with the sortedUnplayedTracks
+
+      const sortedPlaylistTracks = [...playedTracks, ...sortedUnplayedTracks];
 
       // Create an array containing the Spotify track IDs in the new order.
-      const trackUris = sortedTracks.map(
+      const trackUris = sortedPlaylistTracks.map(
         (track: any) => `spotify:track:${track.spotifyId}`
       );
 
@@ -285,7 +286,7 @@ export class PlaylistService {
       const response: any = await this.http
         .get(`${spotifyApiUrl}/me/player/currently-playing`, { headers })
         .toPromise();
-      console.log(response);
+      console.log('currently playing response', response);
       return response.item;
     } catch (error) {
       console.error('Failed to get currently playing track', error);
@@ -303,11 +304,10 @@ export class PlaylistService {
 
       for (const track of playlist.tracks) {
         if (track.spotifyId === currentlyPlayingTrackId) {
-          break;
-        }
-        if (!track.played) {
-          track.played = true;
-          await this.updateTrackPlayedStatus(playlistId, track.id, true);
+          if (!track.played) {
+            track.played = true;
+            await this.updateTrackPlayedStatus(playlistId, track.id, true);
+          }
         }
       }
     } catch (error) {
@@ -320,9 +320,16 @@ export class PlaylistService {
     trackId: number,
     played: boolean
   ): Promise<any> {
-    return this.http.put(
-      `${URL}/playlist/${playlistId}/update-track-played-status/${trackId}`,
-      { played }
-    );
+    try {
+      return await this.http
+        .put(
+          `${URL}/api/playlist/${playlistId}/update-track-played-status/${trackId}`,
+          { played }
+        )
+        .toPromise();
+    } catch (error) {
+      console.error('Failed to updateTrackPlayedStatus', error);
+      throw error;
+    }
   }
 }
