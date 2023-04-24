@@ -1,10 +1,8 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
-import { io } from '../index';
 import controllers from '../controllers/playlist.controller';
 
-const prisma = new PrismaClient();
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -15,7 +13,6 @@ router.use((req, res, next) => {
   next();
 });
 
-// Define the API routes related to playlist management
 router.post('/create', controllers.createPlaylist);
 
 router.get('/:spotifyPlaylistId', controllers.getPlaylist);
