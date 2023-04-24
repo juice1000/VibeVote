@@ -12,6 +12,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class PlaylistComponent implements OnInit {
   playlist: any;
+  unplayedPlaylist: any;
   userVotes: boolean[] = [];
 
   constructor(
@@ -40,21 +41,6 @@ export class PlaylistComponent implements OnInit {
       this.playlist = await this.playlistService.getPlaylistBySpotifyId(
         spotifyPlaylistId
       );
-
-      this.playlist.tracks.sort((a: any, b: any) => {
-        if (a.played && !b.played) {
-          return -1;
-        } else if (!a.played && b.played) {
-          return 1;
-        } else if (a.played && b.played) {
-          return 0;
-        } else {
-          return b.votes.length - a.votes.length;
-        }
-      });
-      this.userVotes = this.playlist.tracks.map(
-        (track: any) => track.votedByUser
-      );
     } catch (error) {
       console.error('Failed to fetch playlist', error);
     }
@@ -78,7 +64,11 @@ export class PlaylistComponent implements OnInit {
         );
       }
       await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+      const unplayedPlaylist = await this.playlistService.updatePlaylistOrder(
+        spotifyPlaylistId!
+      );
+      console.log('this.playlist in vote', this.playlist);
+      console.log('unplayedPlaylist in vote', unplayedPlaylist);
 
       await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
 
@@ -114,7 +104,9 @@ export class PlaylistComponent implements OnInit {
             result
           );
           await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-          await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+          this.playlist = await this.playlistService.updatePlaylistOrder(
+            spotifyPlaylistId!
+          );
           await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
         } catch (error) {
           console.error('Failed to add track to playlist', error);

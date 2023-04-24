@@ -218,9 +218,11 @@ export class PlaylistService {
       console.log('Original playlist tracks:', playlist.tracks);
 
       const playedTracks = playlist.tracks.filter((track: any) => track.played);
+      console.log('Played tracks ', playedTracks);
       const unplayedTracks = playlist.tracks.filter(
         (track: any) => !track.played
       );
+      console.log('Unplayed tracks ', unplayedTracks);
 
       const sortedUnplayedTracks = unplayedTracks.sort((a: any, b: any) => {
         return b.votes.length - a.votes.length;
@@ -237,8 +239,6 @@ export class PlaylistService {
         (track: any) => `spotify:track:${track.spotifyId}`
       );
 
-      console.log('Track URIs:', trackUris);
-
       // Reorder the tracks in the Spotify playlist.
       const headers = new HttpHeaders().set(
         'Authorization',
@@ -252,6 +252,8 @@ export class PlaylistService {
           { headers }
         )
         .toPromise();
+
+      return sortedUnplayedTracks;
     } catch (error) {
       console.error('Failed to update playlist order', error);
     }
