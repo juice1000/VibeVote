@@ -88,6 +88,7 @@ const addTrackToPlaylist = async (req: any, res: any) => {
       where: {
         spotifyId: trackDetails.body.id,
         playlistId: playlist.id,
+        played: false,
       },
     });
 
