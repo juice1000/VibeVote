@@ -19,6 +19,7 @@ model Playlist {
   updatedAt             DateTime  @updatedAt
   tracks                Track[]
   votes                 Vote[]
+  childFriendly         Boolean   @default(false)
 }
 
 model Track {

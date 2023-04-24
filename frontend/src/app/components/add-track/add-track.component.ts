@@ -58,12 +58,29 @@ export class AddTrackComponent implements AfterViewChecked {
         'Bearer ' + accessToken
       );
       const encodedQuery = encodeURIComponent(this.trackName);
-      const response = await this.http
+      const playlist = await this.playlistService.getPlaylistBySpotifyId(
+        this.spotifyPlaylistId
+      );
+
+      const response: any = await this.http
         .get(`https://api.spotify.com/v1/search?type=track&q=${encodedQuery}`, {
           headers,
         })
         .toPromise();
-      this.searchResults = response;
+
+      if (playlist.childFriendly) {
+        this.searchResults = {
+          ...response,
+          tracks: {
+            ...response.tracks,
+            items: response.tracks.items.filter(
+              (track: any) => !track.explicit
+            ),
+          },
+        };
+      } else {
+        this.searchResults = response;
+      }
     } catch (error) {
       console.error('Failed to search for tracks', error);
     }

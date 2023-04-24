@@ -15,7 +15,7 @@ export class PlaylistService {
   accessToken = this.authService.getAccessToken();
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  async createPlaylist(title: string): Promise<any> {
+  async createPlaylist(title: string, childFriendly: boolean): Promise<any> {
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
@@ -40,6 +40,7 @@ export class PlaylistService {
         this.http.post(`${URL}/api/playlist/create`, {
           title,
           spotifyPlaylistId: spotifyPlaylist?.id,
+          childFriendly,
         })
       );
 

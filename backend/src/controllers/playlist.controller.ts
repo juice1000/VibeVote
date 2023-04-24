@@ -6,13 +6,14 @@ const prisma = new PrismaClient();
 
 export const createPlaylist = async (req: any, res: any) => {
   try {
-    const { title, description, spotifyPlaylistId } = req.body;
+    const { title, description, spotifyPlaylistId, childFriendly } = req.body;
 
     const newPlaylist = await prisma.playlist.create({
       data: {
         title,
         description,
         spotifyPlaylistId,
+        childFriendly,
       },
     });
     io.in(title).emit('playlist-created', newPlaylist);

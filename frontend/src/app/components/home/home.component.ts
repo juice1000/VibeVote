@@ -10,6 +10,7 @@ import { PlaylistService } from 'src/app/services/playlist.service';
 })
 export class HomeComponent {
   newPlaylistName = '';
+  childFriendly = false;
 
   constructor(
     private router: Router,
@@ -18,7 +19,8 @@ export class HomeComponent {
 
   async createPlaylist() {
     const playlist = await this.playlistService.createPlaylist(
-      this.newPlaylistName
+      this.newPlaylistName,
+      this.childFriendly
     );
     this.router.navigate(['/playlist', playlist.spotifyPlaylistId]);
   }
