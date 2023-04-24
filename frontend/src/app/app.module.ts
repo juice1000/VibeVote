@@ -14,6 +14,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { HomeComponent } from './components/home/home.component';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { MatInputModule } from '@angular/material/input';
     MatListModule,
     ReactiveFormsModule,
     MatInputModule,
+    MatTooltipModule,
+    MatSlideToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

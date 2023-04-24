@@ -17,14 +17,17 @@
       </button>
       <div class="mt-2">
         <label for="childFriendly" class="inline-flex items-center">
-          <input
+          <mat-slide-toggle
             [(ngModel)]="childFriendly"
             name="childFriendly"
-            type="checkbox"
-            class="form-checkbox h-4 w-4 text-green-600 transition duration-150 ease-in-out"
             id="childFriendly"
-          />
-          <span class="ml-2 text-sm text-gray-200">Child Friendly</span>
+            class="mr-2"
+          ></mat-slide-toggle>
+          <span class="mr-1 text-sm text-gray-200">Child Friendly</span>
+          <i
+            class="fas fa-info-circle text-gray-200"
+            matTooltip="Child Friendly mode filters out explicit songs"
+          ></i>
         </label>
       </div>
     </form>
