@@ -1,31 +1,28 @@
-<h1 mat-dialog-title class="text-white">Add Track</h1>
-<div mat-dialog-content class="bg-gray-900 text-white">
-  <mat-form-field class="w-full">
+<div class="bg-gray-900 text-white p-4">
+  <h2 class="text-xl font-bold mb-4">Add Track</h2>
+  <div class="relative">
     <input
-      matInput
+      class="w-full p-2 bg-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none"
       placeholder="Search track"
       [(ngModel)]="trackName"
       (input)="searchTracks()"
-      class="bg-gray-800 text-white"
     />
-  </mat-form-field>
-  <div *ngIf="searchResults">
-    <mat-list>
-      <mat-list-item
+    <div
+      *ngIf="searchResults"
+      class="absolute left-0 w-full mt-2 bg-gray-800 text-white rounded-md shadow-lg"
+    >
+      <div
         *ngFor="let track of searchResults.tracks.items"
+        class="p-2 hover:bg-gray-700 cursor-pointer"
         (click)="selectTrack(track.uri)"
-        class="hover:bg-gray-700 rounded-md p-2 transition duration-300"
       >
         {{ track.name }} - {{ track.artists[0].name }}
-      </mat-list-item>
-    </mat-list>
+      </div>
+    </div>
   </div>
-</div>
-<div mat-dialog-actions class="bg-gray-900">
   <button
-    mat-button
+    class="mt-4 w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none"
     (click)="onNoClick()"
-    class="text-white hover:text-gray-300 transition duration-300"
   >
     Cancel
   </button>

@@ -11,37 +11,3 @@ body {
   color: #333;
   background-color: #1a1a1a; /* Change the background-color to a dark color */
 }
-
-.mat-dialog-container {
-  background-color: #1a1a1a !important;
-  color: #fff;
-}
-
-.mat-dialog-title {
-  color: #fff;
-}
-
-.mat-form-field-appearance-fill .mat-form-field-flex {
-  background-color: #333;
-}
-
-.mat-form-field-appearance-fill .mat-form-field-outline {
-  color: #777;
-}
-
-.mat-form-field-appearance-fill .mat-form-field-outline-thick {
-  color: #ccc;
-}
-
-.mat-form-field-label {
-  color: #ccc;
-}
-
-.mat-list-base .mat-list-item {
-  color: #fff;
-}
-
-.mat-list-base .mat-list-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-}

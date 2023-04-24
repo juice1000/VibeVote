@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-playlist',
@@ -18,9 +17,7 @@ export class PlaylistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
-    private dialog: MatDialog,
-    private authService: AuthService,
-    private router: Router
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -32,7 +29,6 @@ export class PlaylistComponent implements OnInit {
         spotifyPlaylistId,
         false
       );
-      console.log(this.playlist);
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }
