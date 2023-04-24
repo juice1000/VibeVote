@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom, Observable, from } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 
@@ -28,13 +28,13 @@ export class PlaylistService {
         'Bearer ' + this.accessToken
       );
 
-      const spotifyPlaylist: any = await this.http
-        .post(
+      const spotifyPlaylist: any = await firstValueFrom(
+        this.http.post(
           `${spotifyApiUrl}/users/${userId}/playlists`,
           { name: title },
           { headers }
         )
-        .toPromise();
+      );
 
       const backendPlaylist: any = await firstValueFrom(
         this.http.post(`${URL}/api/playlist/create`, {
@@ -68,9 +68,9 @@ export class PlaylistService {
         'Authorization',
         'Bearer ' + this.accessToken
       );
-      const response: any = await this.http
-        .get(`${spotifyApiUrl}/me`, { headers })
-        .toPromise();
+      const response: any = await firstValueFrom(
+        this.http.get(`${spotifyApiUrl}/me`, { headers })
+      );
       return response.id;
     } catch (error) {
       console.error('Failed to get user ID', error);
@@ -88,9 +88,9 @@ export class PlaylistService {
         queryParams = `?played=${played}`;
       }
 
-      return await this.http
-        .get<any>(`${URL}/api/playlist/${playlistId}${queryParams}`)
-        .toPromise();
+      return await firstValueFrom(
+        this.http.get<any>(`${URL}/api/playlist/${playlistId}${queryParams}`)
+      );
     } catch (error) {
       console.error('Failed to get playlist by Spotify ID', error);
       throw error;
@@ -174,13 +174,13 @@ export class PlaylistService {
     expiresIn: number
   ): Promise<void> {
     try {
-      await this.http
-        .put(`${URL}/api/playlist/${playlistId}/tokens`, {
+      await firstValueFrom(
+        this.http.put(`${URL}/api/playlist/${playlistId}/tokens`, {
           accessToken,
           refreshToken,
           expiresIn,
         })
-        .toPromise();
+      );
     } catch (error) {
       console.error('Error updating tokens', error);
     }
@@ -190,9 +190,9 @@ export class PlaylistService {
     playlistId: string
   ): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
     try {
-      const response: any = await this.http
-        .get(`${URL}/api/playlist/${playlistId}/tokens`)
-        .toPromise();
+      const response: any = await firstValueFrom(
+        this.http.get(`${URL}/api/playlist/${playlistId}/tokens`)
+      );
 
       const expiresIn = response.spotifyTokenExpiresAt
         ? Math.floor(
@@ -224,43 +224,34 @@ export class PlaylistService {
       this.authService.setAccessToken(accessToken, expiresIn);
 
       const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
-      console.log('Original playlist tracks:', playlist.tracks);
 
       const playedTracks = playlist.tracks.filter((track: any) => track.played);
-      console.log('Played tracks ', playedTracks);
       const unplayedTracks = playlist.tracks.filter(
         (track: any) => !track.played
       );
-      console.log('Unplayed tracks ', unplayedTracks);
 
       const sortedUnplayedTracks = unplayedTracks.sort((a: any, b: any) => {
         return b.votes.length - a.votes.length;
       });
 
-      console.log('Sorted unplayed tracks:', sortedUnplayedTracks);
-
-      // Update your web app's track list with the sortedUnplayedTracks
-
       const sortedPlaylistTracks = [...playedTracks, ...sortedUnplayedTracks];
 
-      // Create an array containing the Spotify track IDs in the new order.
       const trackUris = sortedPlaylistTracks.map(
         (track: any) => `spotify:track:${track.spotifyId}`
       );
 
-      // Reorder the tracks in the Spotify playlist.
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + accessToken
       );
 
-      await this.http
-        .put(
+      await firstValueFrom(
+        this.http.put(
           `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
           { uris: trackUris },
           { headers }
         )
-        .toPromise();
+      );
 
       return sortedUnplayedTracks;
     } catch (error) {
@@ -283,9 +274,11 @@ export class PlaylistService {
         'Authorization',
         'Bearer ' + accessToken
       );
-      const response: any = await this.http
-        .get(`${spotifyApiUrl}/me/player/currently-playing`, { headers })
-        .toPromise();
+      const response: any = await firstValueFrom(
+        this.http.get(`${spotifyApiUrl}/me/player/currently-playing`, {
+          headers,
+        })
+      );
       return response.item;
     } catch (error) {
       console.error('Failed to get currently playing track', error);
@@ -323,12 +316,12 @@ export class PlaylistService {
     played: boolean
   ): Promise<any> {
     try {
-      return await this.http
-        .put(
+      return await firstValueFrom(
+        this.http.put(
           `${URL}/api/playlist/${playlistId}/update-track-played-status/${trackId}`,
           { played }
         )
-        .toPromise();
+      );
     } catch (error) {
       console.error('Failed to updateTrackPlayedStatus', error);
       throw error;

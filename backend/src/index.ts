@@ -69,9 +69,15 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.on('join-room', (roomId) => {
-    socket.join(roomId);
-    console.log(`User ${socket.id} joined rom ${roomId}`);
+  socket.on('voteUpdated', ({ playlistId, trackId }) => {
+    console.log(
+      `Vote count for track ${trackId} in playlist ${playlistId} was updated`
+    );
+    io.emit('voteCountUpdated', { playlistId, trackId });
+  });
+  socket.on('trackAdded', ({ playlistId, trackId }) => {
+    console.log(`Track was added and Track list was updated`);
+    io.emit('TrackListUpdated', { playlistId, trackId });
   });
 
   socket.on('disconnect', () => {

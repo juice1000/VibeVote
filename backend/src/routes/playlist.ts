@@ -1,5 +1,4 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
 import controllers from '../controllers/playlist.controller';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -11,11 +11,7 @@ export class AuthService {
   private expirationTime: number | null = null;
   URL = 'http://localhost:3000';
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
+  constructor(private http: HttpClient, private route: ActivatedRoute) {
     this.route.queryParams.subscribe((params) => {
       if (params['accessToken']) {
         this.accessToken = params['accessToken'];
