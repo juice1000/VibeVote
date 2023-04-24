@@ -78,10 +78,18 @@ export class PlaylistService {
     }
   }
 
-  async getPlaylistBySpotifyId(playlistId: string): Promise<any> {
+  async getPlaylistBySpotifyId(
+    playlistId: string,
+    played?: boolean
+  ): Promise<any> {
     try {
+      let queryParams = '';
+      if (played !== undefined) {
+        queryParams = `?played=${played}`;
+      }
+
       return await this.http
-        .get<any>(`${URL}/api/playlist/${playlistId}`)
+        .get<any>(`${URL}/api/playlist/${playlistId}${queryParams}`)
         .toPromise();
     } catch (error) {
       console.error('Failed to get playlist by Spotify ID', error);
@@ -101,7 +109,8 @@ export class PlaylistService {
       this.authService.setAccessToken(accessToken, expiresIn);
 
       const spotifyPlaylist: any = await this.getPlaylistBySpotifyId(
-        playlistId
+        playlistId,
+        false
       );
       const spotifyPlaylistId = spotifyPlaylist.spotifyPlaylistId;
 
@@ -286,7 +295,10 @@ export class PlaylistService {
 
   async markTracksAsPlayed(playlistId: string): Promise<void> {
     try {
-      const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
+      const playlist: any = await this.getPlaylistBySpotifyId(
+        playlistId,
+        false
+      );
       const currentlyPlayingTrack = await this.getCurrentlyPlayingTrack(
         playlistId
       );

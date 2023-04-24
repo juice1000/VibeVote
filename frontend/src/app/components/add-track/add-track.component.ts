@@ -27,7 +27,8 @@ export class AddTrackComponent implements OnInit {
 
     try {
       this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        spotifyPlaylistId
+        spotifyPlaylistId,
+        false
       );
     } catch (error) {
       console.error('Error fetching playlist:', error);

@@ -25,12 +25,20 @@ export const createPlaylist = async (req: any, res: any) => {
 
 const getPlaylist = async (req: any, res: any) => {
   try {
+    const playedFilter = req.query.played;
+
+    let trackWhereClause = {};
+    if (playedFilter !== undefined) {
+      trackWhereClause = { played: playedFilter === 'true' };
+    }
+
     const playlist = await prisma.playlist.findFirst({
       where: {
         spotifyPlaylistId: req.params.spotifyPlaylistId,
       },
       include: {
         tracks: {
+          where: trackWhereClause,
           include: {
             votes: true,
           },
