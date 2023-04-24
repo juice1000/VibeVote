@@ -1,24 +1,24 @@
-<div class="p-8">
-  <h1 class="text-2xl font-bold mb-4">Playlist</h1>
+<div class="p-8 bg-gray-900 text-white">
+  <h1 class="text-2xl font-bold mb-4">{{ playlist.title }}</h1>
   <div *ngIf="!playlist">
     <p>Loading...</p>
   </div>
   <div *ngIf="playlist">
     <button
       (click)="addTrack()"
-      class="add-track-btn w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
+      class="add-track-btn w-full px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white transition duration-300"
     >
       Add track
     </button>
     <div class="mb-4" *ngFor="let track of playlist.tracks; let i = index">
       <div
-        class="flex items-center justify-between p-2 bg-white shadow-md rounded-md"
+        class="flex items-center justify-between p-2 bg-gray-800 hover:bg-gray-700 shadow-md rounded-md transition duration-300"
       >
         <div class="flex items-center">
           <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16" />
           <div class="ml-4">
-            <p class="font-bold">{{ track.title }}</p>
-            <p class="text-gray-600">{{ track.artist }}</p>
+            <p class="font-bold text-lg">{{ track.title }}</p>
+            <p class="text-gray-400">{{ track.artist }}</p>
           </div>
         </div>
         <button
@@ -27,7 +27,7 @@
             'bg-green-600 hover:bg-green-700': !userVotes[i],
             'bg-red-600 hover:bg-red-700': userVotes[i]
           }"
-          class="px-4 py-2 rounded-md text-white"
+          class="px-4 py-2 rounded-md text-white transition duration-300"
         >
           {{ userVotes[i] ? "Remove Vote" : "Vote" }} ({{ track.votes.length }})
         </button>

@@ -1,3 +1,47 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #1a1a1a; /* Change the background-color to a dark color */
+}
+
+.mat-dialog-container {
+  background-color: #1a1a1a !important;
+  color: #fff;
+}
+
+.mat-dialog-title {
+  color: #fff;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #333;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-outline {
+  color: #777;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-outline-thick {
+  color: #ccc;
+}
+
+.mat-form-field-label {
+  color: #ccc;
+}
+
+.mat-list-base .mat-list-item {
+  color: #fff;
+}
+
+.mat-list-base .mat-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}

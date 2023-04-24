@@ -1,13 +1,17 @@
-<div class="container">
-  <h1>Create a new playlist</h1>
-  <form (submit)="createPlaylist()">
+<div class="container bg-gray-900 text-white p-8">
+  <h1 class="text-2xl font-bold mb-4">Create a new playlist</h1>
+  <form (submit)="createPlaylist()" class="space-y-4">
     <input
       [(ngModel)]="newPlaylistName"
       name="newPlayListName"
       placeholder="Playlist name"
+      class="bg-gray-800 text-white px-3 py-2 w-full rounded-md"
     />
-    <button type="submit">
-      Create Playlist <a [routerLink]="['/playlist', 'playlist?.id']"> </a>
+    <button
+      type="submit"
+      class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition duration-300"
+    >
+      Create Playlist
     </button>
   </form>
 </div>
