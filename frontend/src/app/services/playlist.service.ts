@@ -78,17 +78,6 @@ export class PlaylistService {
     }
   }
 
-  async getPlaylist(playlistId: string): Promise<any> {
-    try {
-      return await firstValueFrom(
-        this.http.get(`${URL}/api/playlist/${playlistId}`)
-      );
-    } catch (error) {
-      console.error('Failed to get playlist', error);
-      throw error;
-    }
-  }
-
   async getPlaylistBySpotifyId(playlistId: string): Promise<any> {
     try {
       return await this.http
@@ -226,7 +215,7 @@ export class PlaylistService {
       this.authService.setAccessToken(accessToken, expiresIn);
 
       const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
-      console.log('Original playlist:', playlist);
+      console.log('Original playlist tracks:', playlist.tracks);
 
       const playedTracks = playlist.tracks.filter((track: any) => track.played);
       const unplayedTracks = playlist.tracks.filter(
@@ -286,7 +275,6 @@ export class PlaylistService {
       const response: any = await this.http
         .get(`${spotifyApiUrl}/me/player/currently-playing`, { headers })
         .toPromise();
-      console.log('currently playing response', response);
       return response.item;
     } catch (error) {
       console.error('Failed to get currently playing track', error);

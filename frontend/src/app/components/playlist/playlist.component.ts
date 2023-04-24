@@ -60,29 +60,6 @@ export class PlaylistComponent implements OnInit {
     }
   }
 
-  async fetchPlaylist(playlistId: string): Promise<void> {
-    try {
-      this.playlist = await this.playlistService.getPlaylist(playlistId);
-      this.playlist.tracks.sort((a: any, b: any) => {
-        if (a.played && !b.played) {
-          return -1;
-        } else if (!a.played && b.played) {
-          return 1;
-        } else if (a.played && b.played) {
-          return 0;
-        } else {
-          return b.votes.length - a.votes.length;
-        }
-      });
-      this.userVotes = this.playlist.tracks.map(
-        (track: any) => track.votedByUser
-      );
-      this.router.navigate(['/playlist', this.playlist.spotifyPlaylistId]);
-    } catch (error) {
-      console.error('Failed to fetch playlist', error);
-    }
-  }
-
   async vote(trackId: string, spotifyId: string, index: number): Promise<void> {
     try {
       const spotifyPlaylistId =
@@ -103,9 +80,12 @@ export class PlaylistComponent implements OnInit {
       await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
       await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
 
-      await this.fetchPlaylist(spotifyPlaylistId!);
+      await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
 
-      console.log(this.playlist.tracks);
+      console.log(
+        'playlist.tracks inside of vote in playlist component',
+        this.playlist.tracks
+      );
     } catch (error) {
       console.error('Failed to vote for track', error);
     }
@@ -135,7 +115,7 @@ export class PlaylistComponent implements OnInit {
           );
           await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
           await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
-          await this.fetchPlaylist(spotifyPlaylistId!);
+          await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
         } catch (error) {
           console.error('Failed to add track to playlist', error);
         }
