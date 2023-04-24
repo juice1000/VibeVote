@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
@@ -11,8 +11,9 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class PlaylistComponent implements OnInit {
   playlist: any;
-  unplayedPlaylist: any;
   userVotes: boolean[] = [];
+
+  @ViewChild(AddTrackComponent) addTrackComponent!: AddTrackComponent;
 
   constructor(
     private route: ActivatedRoute,
@@ -81,36 +82,59 @@ export class PlaylistComponent implements OnInit {
   }
 
   async addTrack(): Promise<void> {
-    const spotifyPlaylistId =
-      this.route.snapshot.paramMap.get('spotifyPlaylistId');
-    const dialogRef = this.dialog.open(AddTrackComponent, {
-      data: { spotifyPlaylistId },
-    });
-    const addTrackBtn = document.querySelector('.add-track-btn');
-    if (addTrackBtn) {
-      addTrackBtn.setAttribute('disabled', 'true');
+    //   const spotifyPlaylistId =
+    //     this.route.snapshot.paramMap.get('spotifyPlaylistId');
+    //   const dialogRef = this.dialog.open(AddTrackComponent, {
+    //     data: { spotifyPlaylistId },
+    //   });
+    //   const addTrackBtn = document.querySelector('.add-track-btn');
+    //   if (addTrackBtn) {
+    //     addTrackBtn.setAttribute('disabled', 'true');
+    //   }
+
+    //   dialogRef.afterClosed().subscribe(async (result) => {
+    //     if (addTrackBtn) {
+    //       addTrackBtn.removeAttribute('disabled');
+    //     }
+
+    //     if (result) {
+    //       try {
+    //         await this.playlistService.addTrackToPlaylist(
+    //           spotifyPlaylistId!,
+    //           result
+    //         );
+    //         await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+    //         this.playlist = await this.playlistService.updatePlaylistOrder(
+    //           spotifyPlaylistId!
+    //         );
+    //         await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
+    //       } catch (error) {
+    //         console.error('Failed to add track to playlist', error);
+    //       }
+    //     }
+    //   });
+    this.addTrackComponent.isVisible = true;
+  }
+
+  async onAddTrackModalClose(result: string | null): Promise<void> {
+    this.addTrackComponent.isVisible = false;
+
+    if (result) {
+      const spotifyPlaylistId =
+        this.route.snapshot.paramMap.get('spotifyPlaylistId');
+      try {
+        await this.playlistService.addTrackToPlaylist(
+          spotifyPlaylistId!,
+          result
+        );
+        await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+        this.playlist = await this.playlistService.updatePlaylistOrder(
+          spotifyPlaylistId!
+        );
+        await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
+      } catch (error) {
+        console.error('Failed to add track to playlist', error);
+      }
     }
-
-    dialogRef.afterClosed().subscribe(async (result) => {
-      if (addTrackBtn) {
-        addTrackBtn.removeAttribute('disabled');
-      }
-
-      if (result) {
-        try {
-          await this.playlistService.addTrackToPlaylist(
-            spotifyPlaylistId!,
-            result
-          );
-          await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-          this.playlist = await this.playlistService.updatePlaylistOrder(
-            spotifyPlaylistId!
-          );
-          await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
-        } catch (error) {
-          console.error('Failed to add track to playlist', error);
-        }
-      }
-    });
   }
 }

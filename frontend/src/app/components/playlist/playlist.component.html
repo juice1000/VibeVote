@@ -11,6 +11,11 @@
       >
         Add track
       </button>
+      <app-add-track
+        [spotifyPlaylistId]="playlist.spotifyPlaylistId"
+        (close)="onAddTrackModalClose($event)"
+      ></app-add-track>
+
       <div
         class="mt-4 w-full"
         *ngFor="let track of playlist.tracks; let i = index"

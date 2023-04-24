@@ -1,5 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -13,23 +12,25 @@ export class AddTrackComponent implements OnInit {
   trackName!: string;
   searchResults: any;
   playlist: any;
+  isVisible = false;
+
+  @Output() close = new EventEmitter<string | null>();
+  @Input() spotifyPlaylistId!: string;
 
   constructor(
-    public dialogRef: MatDialogRef<AddTrackComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
     private playlistService: PlaylistService,
     private authService: AuthService,
     private http: HttpClient
   ) {}
 
   async ngOnInit(): Promise<void> {
-    const spotifyPlaylistId: any = this.data.spotifyPlaylistId;
+    // const spotifyPlaylistId: any = this.data.spotifyPlaylistId;
 
     try {
-      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        spotifyPlaylistId,
-        false
-      );
+      // this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+      //   spotifyPlaylistId,
+      //   false
+      // );
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }
@@ -42,7 +43,7 @@ export class AddTrackComponent implements OnInit {
 
     try {
       const { accessToken, refreshToken, expiresIn } =
-        await this.playlistService.fetchTokens(this.playlist.spotifyPlaylistId);
+        await this.playlistService.fetchTokens(this.spotifyPlaylistId);
 
       if (!accessToken) {
         await this.authService.refreshAccessToken(refreshToken);
@@ -66,10 +67,10 @@ export class AddTrackComponent implements OnInit {
   }
 
   selectTrack(uri: string): void {
-    this.dialogRef.close(uri);
+    this.close.emit(uri);
   }
 
   onNoClick(): void {
-    this.dialogRef.close();
+    this.close.emit(null);
   }
 }
