@@ -80,6 +80,10 @@ io.on('connection', (socket) => {
     console.log(`Track was added and Track list was updated`);
     io.emit('TrackListUpdated', { playlistId, trackId });
   });
+  socket.on('stateChange', ({ playlistId }) => {
+    console.log('state change emitted');
+    io.emit('stateChanges', { playlistId });
+  });
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);

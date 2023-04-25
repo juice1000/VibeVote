@@ -103,12 +103,7 @@ export class PlayerService {
   ): Promise<void> {
     try {
       const accessToken = await this.authService.getAccessToken();
-      console.log('this.player in playPlaylist', this.player);
-      console.log('deviceId in playPlaylist', deviceId);
       if (deviceId && this.player) {
-        console.log('Device ID:', deviceId);
-        console.log('Playlist ID:', spotifyPlaylistId);
-
         fetch(
           `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
           {
@@ -122,7 +117,6 @@ export class PlayerService {
             },
           }
         ).then((response) => {
-          console.log('Play playlist response:', response);
           if (!response.ok) {
             response.json().then((data) => console.error(data));
           }

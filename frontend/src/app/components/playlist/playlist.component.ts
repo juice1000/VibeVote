@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
 import io from 'socket.io-client';
+import { PlayerService } from 'src/app/services/player.service';
 const socket = io('http://localhost:3000');
 
 @Component({
@@ -20,7 +21,8 @@ export class PlaylistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private playerService: PlayerService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -48,6 +50,16 @@ export class PlaylistComponent implements OnInit {
         playlistId,
         false
       );
+      this.changeDetector.detectChanges();
+    });
+    socket.on('stateChanges', async ({ playlistId }) => {
+      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+        playlistId,
+        false
+      );
+      console.log(this.playlist);
       this.changeDetector.detectChanges();
     });
   }
@@ -113,8 +125,7 @@ export class PlaylistComponent implements OnInit {
         this.playlist = await this.playlistService.updatePlaylistOrder(
           spotifyPlaylistId!
         );
-        await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-        await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+
         await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
       } catch (error) {
         console.error('Failed to add track to playlist', error);

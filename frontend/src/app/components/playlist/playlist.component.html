@@ -1,5 +1,8 @@
 <div class="flex flex-col items-center pt-8 bg-gray-850 text-white">
   <div class="max-w-lg w-full px-8">
+    <app-spotify-player
+      [spotifyPlaylistId]="playlist.spotifyPlaylistId"
+    ></app-spotify-player>
     <h1 class="text-2xl font-bold mb-4">{{ playlist.title }}</h1>
     <div *ngIf="!playlist">
       <p>Loading...</p>
@@ -51,7 +54,4 @@
       </div>
     </div>
   </div>
-  <app-spotify-player
-    [spotifyPlaylistId]="playlist.spotifyPlaylistId"
-  ></app-spotify-player>
 </div>

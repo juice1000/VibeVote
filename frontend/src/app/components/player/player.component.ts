@@ -1,5 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PlayerService } from 'src/app/services/player.service';
+import { PlaylistComponent } from '../playlist/playlist.component';
+import { PlaylistService } from 'src/app/services/playlist.service';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
 
 @Component({
   selector: 'app-spotify-player',
@@ -27,17 +32,23 @@ export class PlayerComponent implements OnInit {
 
     this.playerService.player.addListener(
       'player_state_changed',
-      (state: any) => {
+      async (state: any) => {
         try {
-          console.log('Player state changed', state);
+          console.log('player state changed', state);
           this.currentTrack = state.track_window.current_track;
           this.progress = state.position;
-          console.log('Updated current track', this.currentTrack);
+
+          socket.emit('stateChange', { playlistId: this.spotifyPlaylistId });
         } catch (error) {
           console.error('Error updating current track', error);
         }
       }
     );
+    const playerState = await this.playerService.player.getCurrentState();
+    if (playerState && playerState.track_window) {
+      this.currentTrack = playerState.track_window.current_track;
+      this.progress = playerState.position;
+    }
   }
 
   private loadSpotifyPlayerScript(): void {
@@ -50,12 +61,8 @@ export class PlayerComponent implements OnInit {
   }
 
   async play(): Promise<void> {
-    console.log('currenttrack in play', this.currentTrack);
-
     if (!this.currentTrack) {
       if (this.spotifyPlaylistId) {
-        console.log('deviceid in play in component', this.deviceId);
-        console.log('Playing playlist', this.spotifyPlaylistId);
         await this.playerService.playPlaylist(
           this.spotifyPlaylistId,
           this.deviceId
@@ -64,7 +71,6 @@ export class PlayerComponent implements OnInit {
         console.error('No track or playlist to play');
       }
     } else {
-      console.log('Playing track', this.currentTrack);
       await this.playerService.play(`spotify:track:${this.currentTrack.id}`);
     }
   }
