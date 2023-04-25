@@ -14,6 +14,7 @@ export class PlayerComponent implements OnInit {
   currentTrack: any;
   progress: number = 0;
   deviceId: string | null = null;
+  isPlaying = false;
 
   constructor(private playerService: PlayerService) {}
 
@@ -37,6 +38,7 @@ export class PlayerComponent implements OnInit {
         try {
           this.currentTrack = state.track_window.current_track;
           this.progress = state.position;
+          this.isPlaying = !state.paused;
 
           socket.emit('clientStateChange', {
             playlistId: this.spotifyPlaylistId,
@@ -90,6 +92,13 @@ export class PlayerComponent implements OnInit {
     document.head.appendChild(script);
   }
 
+  // async play(): Promise<void> {
+  //   if (this.playerService.player) {
+  //     await this.playerService.player.resume();
+  //     this.isPlaying = true;
+  //   }
+  // }
+
   async play(): Promise<void> {
     if (!this.currentTrack) {
       if (this.spotifyPlaylistId) {
@@ -101,16 +110,17 @@ export class PlayerComponent implements OnInit {
         console.error('No track or playlist to play');
       }
     } else {
-      await this.playerService.play(
-        `spotify:track:${this.currentTrack.id}`,
-        this.spotifyPlaylistId!
-      );
+      if (this.playerService.player) {
+        await this.playerService.player.resume();
+        this.isPlaying = true;
+      }
     }
   }
 
   async pause(): Promise<void> {
     if (this.playerService.player) {
-      this.playerService.player.pause();
+      await this.playerService.player.pause();
+      this.isPlaying = false;
     }
   }
 

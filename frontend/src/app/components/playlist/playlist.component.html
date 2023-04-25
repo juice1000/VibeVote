@@ -3,7 +3,8 @@
     <app-spotify-player
       [spotifyPlaylistId]="playlist.spotifyPlaylistId"
     ></app-spotify-player>
-    <h1 class="text-2xl font-bold mb-4">{{ playlist.title }}</h1>
+
+    <!-- <h1 class="text-2xl font-bold mb-4">{{ playlist.title }}</h1> -->
     <div *ngIf="!playlist">
       <p>Loading...</p>
     </div>
@@ -19,7 +20,9 @@
         [isVisible]="addTrackVisible"
         (close)="onAddTrackModalClose($event)"
       ></app-add-track>
-
+      <h1 class="text-2xl font-bold mb-4 p-5">
+        Vote on the next <span class="text-green-500">Vibe!</span>
+      </h1>
       <div
         class="mt-4 w-full"
         *ngFor="let track of playlist.tracks; let i = index"
