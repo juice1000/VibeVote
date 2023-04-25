@@ -1,6 +1,6 @@
-<div class="flex flex-col items-center pt-8 bg-gray-850 text-white">
+<div class="flex flex-col items-center bg-gray-850 text-white">
   <div class="max-w-lg w-full px-8">
-    <h1 *ngIf="currentTrack" class="text-2xl font-bold mb-2 p-2">
+    <h1 *ngIf="currentTrack" class="text-2xl font-bold mb-2 pl-2">
       Currently <span class="text-green-500">vibin'</span> to
     </h1>
     <div
@@ -21,20 +21,18 @@
     <div class="flex justify-center space-x-2">
       <button
         (click)="isPlaying ? pause() : play()"
-        class="player-btn px-4 py-2 rounded-md text-white transition duration-300 mb-6"
-        [ngClass]="{
-          'bg-green-600 hover:bg-green-700': !isPlaying,
-          'bg-red-600 hover:bg-red-700': isPlaying
-        }"
+        class="player-btn px-4 py-2 rounded-md text-white transition duration-300 mb-6 hover:bg-gray-800"
       >
-        {{ isPlaying ? "Pause" : "Play" }}
+        <span class="material-icons">
+          {{ isPlaying ? "pause" : "play_arrow" }}
+        </span>
       </button>
       <button
         (click)="next()"
-        [disabled]="!currentTrack"
-        class="mb-6 player-btn px-4 py-2 rounded-md text-white transition duration-300 bg-blue-600 hover:bg-blue-700"
+        [hidden]="!currentTrack"
+        class="mb-6 player-btn px-4 py-2 rounded-md text-white transition duration-300 hover:bg-gray-800"
       >
-        Next
+        <span class="material-icons"> skip_next </span>
       </button>
     </div>
   </div>
