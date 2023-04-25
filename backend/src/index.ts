@@ -67,6 +67,13 @@ const io = new Server(server, {
   },
 });
 
+let currentState = {
+  playlistId: '',
+  currentTrack: '',
+  progress: 0,
+  isPlaying: false,
+};
+
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
@@ -80,9 +87,18 @@ io.on('connection', (socket) => {
     console.log(`Track was added and Track list was updated`);
     io.emit('TrackListUpdated', { playlistId, trackId });
   });
-  socket.on('stateChange', ({ playlistId }) => {
-    console.log('state change emitted');
-    io.emit('stateChanges', { playlistId });
+  socket.on('clientStateChange', (data) => {
+    currentState = data;
+    socket.broadcast.emit('stateChange', data);
+  });
+
+  socket.on('updateState', ({ state }) => {
+    console.log('updateState received:', state);
+    socket.broadcast.emit('syncState', state);
+  });
+
+  socket.on('requestInitialState', () => {
+    socket.emit('initialState', currentState);
   });
 
   socket.on('disconnect', () => {

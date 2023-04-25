@@ -28,22 +28,57 @@ export class PlayerComponent implements OnInit {
       return;
     }
 
-    this.deviceId = await this.playerService.initializePlayer();
+    this.deviceId = await this.playerService.initializePlayer(
+      this.spotifyPlaylistId
+    );
+    socket.emit('requestInitialState');
 
     this.playerService.player.addListener(
       'player_state_changed',
       async (state: any) => {
         try {
-          console.log('player state changed', state);
           this.currentTrack = state.track_window.current_track;
           this.progress = state.position;
 
-          socket.emit('stateChange', { playlistId: this.spotifyPlaylistId });
+          socket.emit('clientStateChange', {
+            playlistId: this.spotifyPlaylistId,
+            currentTrack: this.currentTrack,
+            progress: this.progress,
+            isPlaying: !state.paused,
+          });
+          socket.emit('updateState', { state });
         } catch (error) {
           console.error('Error updating current track', error);
         }
       }
     );
+
+    socket.on('syncState', async (state) => {
+      console.log('socket on syncstate state:', state);
+
+      await this.updatePlayerState(state);
+    });
+    socket.on('initialState', async (state: any) => {
+      try {
+        if (this.spotifyPlaylistId === state.playlistId) {
+          console.log('Initial player state received', state);
+          this.currentTrack = state.currentTrack;
+          this.progress = state.progress;
+
+          if (state.isPlaying) {
+            await this.playerService.play(
+              `spotify:track:${this.currentTrack.id}`,
+              this.spotifyPlaylistId!
+            );
+          }
+          // else {
+          //   await this.playerService.pause();
+          // }
+        }
+      } catch (error) {
+        console.error('Error setting initial player state', error);
+      }
+    });
     const playerState = await this.playerService.player.getCurrentState();
     if (playerState && playerState.track_window) {
       this.currentTrack = playerState.track_window.current_track;
@@ -71,7 +106,10 @@ export class PlayerComponent implements OnInit {
         console.error('No track or playlist to play');
       }
     } else {
-      await this.playerService.play(`spotify:track:${this.currentTrack.id}`);
+      await this.playerService.play(
+        `spotify:track:${this.currentTrack.id}`,
+        this.spotifyPlaylistId!
+      );
     }
   }
 
@@ -84,6 +122,16 @@ export class PlayerComponent implements OnInit {
   async next(): Promise<void> {
     if (this.playerService.player) {
       this.playerService.player.nextTrack();
+    }
+  }
+
+  private async updatePlayerState(state: any): Promise<void> {
+    try {
+      console.log('sync state received', state);
+      this.currentTrack = state.track_window.current_track;
+      this.progress = state.position;
+    } catch (error) {
+      console.error('Error updating player state', error);
     }
   }
 }
