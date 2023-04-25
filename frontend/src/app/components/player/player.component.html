@@ -10,9 +10,7 @@
       <p class="track-artist">{{ currentTrack.artists[0].name }}</p>
     </div>
   </div>
-  <div class="progress" *ngIf="currentTrack">
-    <progress [value]="progress" [max]="currentTrack.duration_ms"></progress>
-  </div>
+  <div class="progress" *ngIf="currentTrack"></div>
   <div class="controls">
     <button (click)="play()">Play</button>
     <button (click)="pause()" [disabled]="!currentTrack">Pause</button>

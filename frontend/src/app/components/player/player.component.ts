@@ -1,7 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PlayerService } from 'src/app/services/player.service';
-import { PlaylistComponent } from '../playlist/playlist.component';
-import { PlaylistService } from 'src/app/services/playlist.service';
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:3000');
@@ -71,9 +69,6 @@ export class PlayerComponent implements OnInit {
               this.spotifyPlaylistId!
             );
           }
-          // else {
-          //   await this.playerService.pause();
-          // }
         }
       } catch (error) {
         console.error('Error setting initial player state', error);
