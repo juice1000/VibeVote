@@ -57,13 +57,16 @@ export class PlayerComponent implements OnInit {
       console.log('socket on syncstate state:', state);
 
       await this.updatePlayerState(state);
+      this.isPlaying = state.isPlaying;
     });
+
     socket.on('initialState', async (state: any) => {
       try {
         if (this.spotifyPlaylistId === state.playlistId) {
           console.log('Initial player state received', state);
           this.currentTrack = state.currentTrack;
           this.progress = state.progress;
+          this.isPlaying = state.isPlaying;
 
           if (state.isPlaying) {
             await this.playerService.play(
