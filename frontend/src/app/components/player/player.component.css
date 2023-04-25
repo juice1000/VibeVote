@@ -1,0 +1,27 @@
+.spotify-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+}
+
+.track-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.album-cover {
+  width: 64px;
+  height: 64px;
+  margin-right: 16px;
+}
+
+.track-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.controls button {
+  margin-right: 8px;
+}

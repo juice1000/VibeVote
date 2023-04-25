@@ -1,0 +1,21 @@
+<div class="spotify-player">
+  <div *ngIf="currentTrack" class="track-info">
+    <img
+      [src]="currentTrack.album.images[0].url"
+      alt="Album cover"
+      class="album-cover"
+    />
+    <div class="track-details">
+      <p class="track-title">{{ currentTrack.name }}</p>
+      <p class="track-artist">{{ currentTrack.artists[0].name }}</p>
+    </div>
+  </div>
+  <div class="progress" *ngIf="currentTrack">
+    <progress [value]="progress" [max]="currentTrack.duration_ms"></progress>
+  </div>
+  <div class="controls">
+    <button (click)="play()">Play</button>
+    <button (click)="pause()" [disabled]="!currentTrack">Pause</button>
+    <button (click)="next()" [disabled]="!currentTrack">Next</button>
+  </div>
+</div>

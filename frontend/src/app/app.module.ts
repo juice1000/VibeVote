@@ -16,6 +16,7 @@ import { HomeComponent } from './components/home/home.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { PlayerComponent } from './components/player/player.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     PlaylistComponent,
     AddTrackComponent,
     HomeComponent,
+    PlayerComponent,
   ],
   imports: [
     BrowserModule,

@@ -43,7 +43,7 @@ export class AuthService {
 
   loginWithSpotify() {
     const scope =
-      'user-read-email user-read-private playlist-modify-private playlist-modify-public user-read-playback-state';
+      'user-read-email user-read-private playlist-modify-private playlist-modify-public user-read-playback-state streaming';
     const responseType = 'code';
     const authUrl = `http://localhost:3000/auth/spotify?scope=${scope}&response_type=${responseType}`;
     window.location.href = authUrl;
