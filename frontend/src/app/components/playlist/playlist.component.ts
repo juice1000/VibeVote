@@ -40,7 +40,8 @@ export class PlaylistComponent implements OnInit {
         playlistId,
         false
       );
-
+      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
       this.changeDetector.detectChanges();
     });
     socket.on('TrackListUpdated', async ({ playlistId }) => {
@@ -48,6 +49,8 @@ export class PlaylistComponent implements OnInit {
         playlistId,
         false
       );
+      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
       this.changeDetector.detectChanges();
     });
     socket.on('stateChange', async ({ playlistId }) => {
@@ -92,8 +95,8 @@ export class PlaylistComponent implements OnInit {
       }
       socket.emit('voteUpdated', { playlistId: spotifyPlaylistId, trackId });
 
-      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+      // await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
+      // await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
       await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
     } catch (error) {
       console.error('Failed to vote for track', error);
