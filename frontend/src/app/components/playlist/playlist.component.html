@@ -1,4 +1,6 @@
-<div class="flex flex-col items-center pt-2 bg-gray-850 text-white">
+<div
+  class="flex flex-col items-center pt-2 bg-gray-850 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen"
+>
   <div class="max-w-lg w-full px-8">
     <app-spotify-player
       [spotifyPlaylistId]="playlist.spotifyPlaylistId"
@@ -20,10 +22,14 @@
         [isVisible]="addTrackVisible"
         (close)="onAddTrackModalClose($event)"
       ></app-add-track>
-      <h1 class="text-2xl font-bold mb-4 p-5">
-        <span class="text-green-500">Vote</span> on the next
-        <span class="text-green-500">Vibe</span>
-      </h1>
+    </div>
+  </div>
+  <div class="max-w-lg w-full px-8">
+    <h1 class="text-2xl font-bold mb-4 p-5">
+      <span class="text-green-500">Vote</span> on the next
+      <span class="text-green-500">Vibe</span>
+    </h1>
+    <div class="lg:h-[calc(100vh-8rem)] lg:overflow-y-auto custom-scrollbar">
       <div
         class="mt-4 w-full"
         *ngFor="let track of playlist.tracks; let i = index"

@@ -1,11 +1,11 @@
-<div class="flex flex-col items-center bg-gray-850 text-white">
+<div class="flex flex-col items-center bg-gray-850 text-white pt-10">
   <div class="max-w-lg w-full px-8">
-    <h1 *ngIf="currentTrack" class="text-2xl font-bold mb-2 pl-2">
+    <h1 *ngIf="currentTrack" class="text-2xl font-bold mb-2 pl-2 pb-5">
       Currently <span class="text-green-500">vibin'</span> to
     </h1>
     <div
       *ngIf="currentTrack"
-      class="track-info flex items-center p-2 bg-gray-800 shadow-md rounded-md"
+      class="track-info flex items-center p-2 shadow-md rounded-md"
     >
       <img
         [src]="currentTrack.album.images[0].url"
