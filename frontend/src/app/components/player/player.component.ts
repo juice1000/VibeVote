@@ -100,33 +100,45 @@ export class PlayerComponent implements OnInit {
   // }
 
   async play(): Promise<void> {
-    if (!this.currentTrack) {
-      if (this.spotifyPlaylistId) {
-        await this.playerService.playPlaylist(
-          this.spotifyPlaylistId,
-          this.deviceId
-        );
+    try {
+      if (!this.currentTrack) {
+        if (this.spotifyPlaylistId) {
+          await this.playerService.playPlaylist(
+            this.spotifyPlaylistId,
+            this.deviceId
+          );
+        } else {
+          console.error('No track or playlist to play');
+        }
       } else {
-        console.error('No track or playlist to play');
+        if (this.playerService.player) {
+          await this.playerService.player.resume();
+          this.isPlaying = true;
+        }
       }
-    } else {
-      if (this.playerService.player) {
-        await this.playerService.player.resume();
-        this.isPlaying = true;
-      }
+    } catch (error) {
+      console.error('Failed to play track/playlist', error);
     }
   }
 
   async pause(): Promise<void> {
-    if (this.playerService.player) {
-      await this.playerService.player.pause();
-      this.isPlaying = false;
+    try {
+      if (this.playerService.player) {
+        await this.playerService.player.pause();
+        this.isPlaying = false;
+      }
+    } catch (error) {
+      console.error('Failed to pause track', error);
     }
   }
 
   async next(): Promise<void> {
-    if (this.playerService.player) {
-      this.playerService.player.nextTrack();
+    try {
+      if (this.playerService.player) {
+        await this.playerService.player.nextTrack();
+      }
+    } catch (error) {
+      console.error('failed to play next track', error);
     }
   }
 
