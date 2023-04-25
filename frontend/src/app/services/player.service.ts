@@ -16,18 +16,19 @@ export class PlayerService {
 
   constructor(private authService: AuthService) {}
 
-  async initializePlayer(): Promise<void> {
+  async initializePlayer(): Promise<any> {
     return new Promise(async (resolve, reject) => {
       if (this.player) {
-        return resolve();
+        resolve(this.player);
+        return;
       }
 
       const token = await this.authService.getAccessToken();
 
       if (!window.Spotify) {
         setTimeout(async () => {
-          await this.initializePlayer();
-          resolve();
+          const player = await this.initializePlayer();
+          resolve(player);
         }, 1000);
         return;
       }
@@ -41,7 +42,7 @@ export class PlayerService {
 
       this.player.addListener('ready', ({ device_id }: any) => {
         console.log('Ready with Device ID', device_id);
-        resolve();
+        resolve(device_id);
       });
 
       this.player.addListener('not_ready', ({ device_id }: any) => {
@@ -96,24 +97,41 @@ export class PlayerService {
       console.error('Player not initialized');
     }
   }
-  async playPlaylist(spotifyPlaylistId: string): Promise<void> {
-    const accessToken = await this.authService.getAccessToken();
+  async playPlaylist(
+    spotifyPlaylistId: string,
+    deviceId: string | null
+  ): Promise<void> {
+    try {
+      const accessToken = await this.authService.getAccessToken();
+      console.log('this.player in playPlaylist', this.player);
+      console.log('deviceId in playPlaylist', deviceId);
+      if (deviceId && this.player) {
+        console.log('Device ID:', deviceId);
+        console.log('Playlist ID:', spotifyPlaylistId);
 
-    if (this.player) {
-      const deviceId = this.player._options.id;
-
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          context_uri: `spotify:playlist:${spotifyPlaylistId}`,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-    } else {
-      console.error('Player not initialized');
+        fetch(
+          `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+          {
+            method: 'PUT',
+            body: JSON.stringify({
+              context_uri: `spotify:playlist:${spotifyPlaylistId}`,
+            }),
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        ).then((response) => {
+          console.log('Play playlist response:', response);
+          if (!response.ok) {
+            response.json().then((data) => console.error(data));
+          }
+        });
+      } else {
+        console.error('Player not initialized or deviceId is null');
+      }
+    } catch (error) {
+      console.error('Error in playPlaylist:', error);
     }
   }
 }

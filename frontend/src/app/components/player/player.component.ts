@@ -10,6 +10,7 @@ export class PlayerComponent implements OnInit {
   @Input() spotifyPlaylistId: string | null = null;
   currentTrack: any;
   progress: number = 0;
+  deviceId: string | null = null;
 
   constructor(private playerService: PlayerService) {}
 
@@ -22,14 +23,19 @@ export class PlayerComponent implements OnInit {
       return;
     }
 
-    await this.playerService.initializePlayer();
+    this.deviceId = await this.playerService.initializePlayer();
 
     this.playerService.player.addListener(
       'player_state_changed',
       (state: any) => {
-        console.log('Player state changed', state);
-        this.currentTrack = state.track_window.current_track;
-        this.progress = state.position;
+        try {
+          console.log('Player state changed', state);
+          this.currentTrack = state.track_window.current_track;
+          this.progress = state.position;
+          console.log('Updated current track', this.currentTrack);
+        } catch (error) {
+          console.error('Error updating current track', error);
+        }
       }
     );
   }
@@ -48,8 +54,12 @@ export class PlayerComponent implements OnInit {
 
     if (!this.currentTrack) {
       if (this.spotifyPlaylistId) {
-        console.log('Playing playlist');
-        await this.playerService.playPlaylist(this.spotifyPlaylistId);
+        console.log('deviceid in play in component', this.deviceId);
+        console.log('Playing playlist', this.spotifyPlaylistId);
+        await this.playerService.playPlaylist(
+          this.spotifyPlaylistId,
+          this.deviceId
+        );
       } else {
         console.error('No track or playlist to play');
       }
@@ -57,8 +67,6 @@ export class PlayerComponent implements OnInit {
       console.log('Playing track', this.currentTrack);
       await this.playerService.play(`spotify:track:${this.currentTrack.id}`);
     }
-
-    await this.playerService.play(`spotify:track:${this.currentTrack.id}`);
   }
 
   async pause(): Promise<void> {
