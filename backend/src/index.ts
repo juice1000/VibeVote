@@ -92,9 +92,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('stateChange', data);
   });
 
-  socket.on('updateState', ({ state }) => {
+  socket.on('updateState', ({ state, isPlaying }) => {
     console.log('updateState received:', state);
-    socket.broadcast.emit('syncState', state);
+    socket.broadcast.emit('syncState', state, isPlaying);
   });
 
   socket.on('requestInitialState', () => {

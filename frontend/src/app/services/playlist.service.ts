@@ -213,61 +213,6 @@ export class PlaylistService {
     }
   }
 
-  // async updatePlaylistOrder(playlistId: string): Promise<void> {
-  //   try {
-  //     const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
-  //       playlistId
-  //     );
-
-  //     if (!accessToken) {
-  //       await this.authService.refreshAccessToken(refreshToken);
-  //     }
-  //     this.authService.setAccessToken(accessToken, expiresIn);
-
-  //     const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
-
-  //     console.log('playlist.tracks', playlist.tracks);
-
-  //     const playedTracks = playlist.tracks.filter((track: any) => track.played);
-  //     const unplayedTracks = playlist.tracks.filter(
-  //       (track: any) => !track.played
-  //     );
-  //     console.log('playedTracks', playedTracks);
-  //     console.log('unplayedTracks', unplayedTracks);
-
-  //     const sortedUnplayedTracks = unplayedTracks.sort((a: any, b: any) => {
-  //       return b.votes.length - a.votes.length;
-  //     });
-
-  //     console.log('sortedUnplayedTracks', sortedUnplayedTracks);
-
-  //     const sortedPlaylistTracks = [...playedTracks, ...sortedUnplayedTracks];
-
-  //     console.log('sortedPlaylistTracks', sortedPlaylistTracks);
-
-  //     const trackUris = sortedPlaylistTracks.map(
-  //       (track: any) => `spotify:track:${track.spotifyId}`
-  //     );
-
-  //     const headers = new HttpHeaders().set(
-  //       'Authorization',
-  //       'Bearer ' + accessToken
-  //     );
-
-  //     await firstValueFrom(
-  //       this.http.put(
-  //         `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
-  //         { uris: trackUris },
-  //         { headers }
-  //       )
-  //     );
-
-  //     return sortedUnplayedTracks;
-  //   } catch (error) {
-  //     console.error('Failed to update playlist order', error);
-  //   }
-  // }
-
   async updatePlaylistOrder(playlistId: string): Promise<void> {
     try {
       const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
@@ -281,21 +226,14 @@ export class PlaylistService {
 
       const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
 
-      console.log('playlist.tracks', playlist.tracks);
-
       const playedTracks = playlist.tracks.filter((track: any) => track.played);
       const unplayedTracks = playlist.tracks.filter(
         (track: any) => !track.played
       );
 
-      console.log('playedTracks', playedTracks);
-      console.log('unplayedTracks', unplayedTracks);
-
       const sortedUnplayedTracks = unplayedTracks.sort((a: any, b: any) => {
         return b.votes.length - a.votes.length;
       });
-
-      console.log('sortedUnplayedTracks', sortedUnplayedTracks);
 
       let currentlyPlayingTrack = null;
       try {
@@ -305,10 +243,7 @@ export class PlaylistService {
       }
 
       if (currentlyPlayingTrack) {
-        console.log('currentlyPlayingTrack', currentlyPlayingTrack);
-
         const currentlyPlayingTrackId = currentlyPlayingTrack?.id;
-        console.log('currentlyPlayingTrackId', currentlyPlayingTrackId);
 
         const playingTrackIndex = playedTracks.findIndex(
           (track: any) => track.spotifyId === currentlyPlayingTrackId
@@ -320,8 +255,6 @@ export class PlaylistService {
         }
       }
       const sortedPlaylistTracks = [...playedTracks, ...sortedUnplayedTracks];
-
-      console.log('sortedPlaylistTracks', sortedPlaylistTracks);
 
       const trackUris = sortedPlaylistTracks.map(
         (track: any) => `spotify:track:${track.spotifyId}`
@@ -382,7 +315,6 @@ export class PlaylistService {
       const currentlyPlayingTrack = await this.getCurrentlyPlayingTrack(
         playlistId
       );
-      console.log('currently playing track', currentlyPlayingTrack);
       const currentlyPlayingTrackId = currentlyPlayingTrack?.id;
 
       for (const track of playlist.tracks) {

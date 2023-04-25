@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { PlayerService } from 'src/app/services/player.service';
 import { io } from 'socket.io-client';
 
@@ -16,11 +16,13 @@ export class PlayerComponent implements OnInit {
   deviceId: string | null = null;
   isPlaying = false;
 
-  constructor(private playerService: PlayerService) {}
+  constructor(
+    private playerService: PlayerService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    (window as any).onSpotifyWebPlaybackSDKReady = () => {};
-    this.loadSpotifyPlayerScript();
+    await this.loadSpotifyPlayerScript();
 
     if (!this.spotifyPlaylistId) {
       console.error('No Spotify playlist ID provided');
@@ -39,31 +41,32 @@ export class PlayerComponent implements OnInit {
           this.currentTrack = state.track_window.current_track;
           this.progress = state.position;
           this.isPlaying = !state.paused;
+          const isPlaying = this.isPlaying;
 
           socket.emit('clientStateChange', {
             playlistId: this.spotifyPlaylistId,
             currentTrack: this.currentTrack,
             progress: this.progress,
-            isPlaying: !state.paused,
+            isPlaying: this.isPlaying,
           });
-          socket.emit('updateState', { state });
+          socket.emit('updateState', { state, isPlaying });
+
+          this.cdr.detectChanges();
         } catch (error) {
           console.error('Error updating current track', error);
         }
       }
     );
 
-    socket.on('syncState', async (state) => {
-      console.log('socket on syncstate state:', state);
-
+    socket.on('syncState', async (state, isPlaying) => {
       await this.updatePlayerState(state);
-      this.isPlaying = state.isPlaying;
+      this.isPlaying = isPlaying;
+      console.log(this.isPlaying);
     });
 
     socket.on('initialState', async (state: any) => {
       try {
         if (this.spotifyPlaylistId === state.playlistId) {
-          console.log('Initial player state received', state);
           this.currentTrack = state.currentTrack;
           this.progress = state.progress;
           this.isPlaying = state.isPlaying;
@@ -86,21 +89,24 @@ export class PlayerComponent implements OnInit {
     }
   }
 
-  private loadSpotifyPlayerScript(): void {
-    const script = document.createElement('script');
-    script.src = 'https://sdk.scdn.co/spotify-player.js';
-    script.type = 'text/javascript';
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }
+  private loadSpotifyPlayerScript(): Promise<void> {
+    return new Promise((resolve) => {
+      if ((window as any).Spotify) {
+        resolve();
+        return;
+      }
 
-  // async play(): Promise<void> {
-  //   if (this.playerService.player) {
-  //     await this.playerService.player.resume();
-  //     this.isPlaying = true;
-  //   }
-  // }
+      const script = document.createElement('script');
+      script.src = 'https://sdk.scdn.co/spotify-player.js';
+      script.type = 'text/javascript';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        resolve();
+      };
+      document.head.appendChild(script);
+    });
+  }
 
   async play(): Promise<void> {
     try {
@@ -147,7 +153,6 @@ export class PlayerComponent implements OnInit {
 
   private async updatePlayerState(state: any): Promise<void> {
     try {
-      console.log('sync state received', state);
       this.currentTrack = state.track_window.current_track;
       this.progress = state.position;
     } catch (error) {

@@ -54,7 +54,6 @@ export class PlaylistComponent implements OnInit {
       this.changeDetector.detectChanges();
     });
     socket.on('stateChange', async ({ playlistId }) => {
-      console.log('playlist state change');
       await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
       await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
       this.playlist = await this.playlistService.getPlaylistBySpotifyId(
