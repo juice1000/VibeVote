@@ -132,4 +132,14 @@ export class PlaylistComponent implements OnInit {
       }
     }
   }
+
+  async copyUrlToClipboard(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('URL copied to clipboard');
+    } catch (error) {
+      console.error('Failed to copy URL', error);
+      alert('Failed to copy URL');
+    }
+  }
 }

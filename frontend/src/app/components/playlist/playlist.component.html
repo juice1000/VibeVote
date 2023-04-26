@@ -17,6 +17,7 @@
       >
         Add track
       </button>
+
       <app-add-track
         [spotifyPlaylistId]="playlist.spotifyPlaylistId"
         [isVisible]="addTrackVisible"
@@ -56,9 +57,7 @@
             }"
             class="px-4 py-2 rounded-md text-white transition duration-300"
           >
-            {{ userVotes[i] ? "Remove Vote" : "Vote" }} ({{
-              track.votes.length
-            }})
+            Vote ({{ track.votes.length }})
           </button>
         </div>
       </div>
