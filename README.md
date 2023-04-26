@@ -19,3 +19,5 @@ The host requires a Spotify Premium account. Guests can join without logging in!
 - Angular for the frontend
 - For styling I used Tailwind, Angular Materials and PostCSS with autoprefixer
 - Socket.io for real-time communication
+- Spotify Web API to edit playlist in realtime
+- Spotify Web Playback SDK for playback
