@@ -93,10 +93,6 @@ export class PlaylistComponent implements OnInit {
         );
       }
       socket.emit('voteUpdated', { playlistId: spotifyPlaylistId, trackId });
-
-      // await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-      // await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
-      // await this.fetchPlaylistBySpotifyId(spotifyPlaylistId!);
     } catch (error) {
       console.error('Failed to vote for track', error);
     }
@@ -121,7 +117,6 @@ export class PlaylistComponent implements OnInit {
           playlistId: spotifyPlaylistId,
           searchResult,
         });
-        // await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
         this.playlist = await this.playlistService.updatePlaylistOrder(
           spotifyPlaylistId!
         );

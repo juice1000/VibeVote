@@ -1,4 +1,3 @@
-import express from 'express';
 import '../config/passport';
 import spotifyApi from '../config/spotify';
 

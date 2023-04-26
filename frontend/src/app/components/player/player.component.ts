@@ -61,7 +61,6 @@ export class PlayerComponent implements OnInit {
     socket.on('syncState', async (state, isPlaying) => {
       await this.updatePlayerState(state);
       this.isPlaying = isPlaying;
-      console.log(this.isPlaying);
     });
 
     socket.on('initialState', async (state: any) => {

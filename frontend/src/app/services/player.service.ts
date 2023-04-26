@@ -30,8 +30,9 @@ export class PlayerService {
       let accessToken: any;
       accessToken = await this.authService.getAccessToken();
       if (!accessToken) {
-        const { accessToken, refreshToken, expiresIn } =
-          await this.playlistService.fetchTokens(playlistId);
+        const { accessToken } = await this.playlistService.fetchTokens(
+          playlistId
+        );
       }
 
       if (!window.Spotify) {
@@ -50,7 +51,6 @@ export class PlayerService {
       });
 
       this.player.addListener('ready', ({ device_id }: any) => {
-        console.log('Ready with Device ID', device_id);
         resolve(device_id);
       });
 
@@ -119,8 +119,9 @@ export class PlayerService {
       let accessToken;
       accessToken = await this.authService.getAccessToken();
       if (!accessToken) {
-        const { accessToken, refreshToken, expiresIn } =
-          await this.playlistService.fetchTokens(spotifyPlaylistId);
+        const { accessToken } = await this.playlistService.fetchTokens(
+          spotifyPlaylistId
+        );
       }
       if (deviceId && this.player) {
         fetch(
