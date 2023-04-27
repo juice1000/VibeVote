@@ -3,7 +3,7 @@ import { Strategy as SpotifyStrategy } from 'passport-spotify';
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_CALLBACK_URL } =
   process.env;
-
+console.log('SPOTIFY_CLIENT_ID', SPOTIFY_CLIENT_ID);
 passport.use(
   new SpotifyStrategy(
     {

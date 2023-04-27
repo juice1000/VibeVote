@@ -1,12 +1,12 @@
+import dotenv from 'dotenv';
+dotenv.config();
+// console.log(process.env);
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import crypto from 'crypto';
 import http from 'http';
 import { Server } from 'socket.io';
-
-import dotenv from 'dotenv';
-dotenv.config();
 
 import passport from './config/passport';
 import playlistRoutes from './routes/playlist';
@@ -74,7 +74,7 @@ let currentState = {
   isPlaying: false,
 };
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   console.log('User connected:', socket.id);
 
   socket.on('voteUpdated', ({ playlistId, trackId }) => {
@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
     console.log(`Track was added and Track list was updated`);
     io.emit('TrackListUpdated', { playlistId, trackId });
   });
-  socket.on('clientStateChange', (data) => {
+  socket.on('clientStateChange', data => {
     currentState = data;
     socket.broadcast.emit('stateChange', data);
   });
