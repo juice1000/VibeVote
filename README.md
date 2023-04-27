@@ -21,3 +21,4 @@ The host requires a Spotify Premium account. Guests can join without logging in!
 - Socket.io for real-time communication
 - Spotify Web API to edit playlist in realtime
 - Spotify Web Playback SDK for playback
+-testing
