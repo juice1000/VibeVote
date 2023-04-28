@@ -9,9 +9,11 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      // "*": ["node_modules/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@config/*": ["src/config/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests"],
   "files": ["node_modules/jest-extended/types/index.d.ts"]
 }

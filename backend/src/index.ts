@@ -40,24 +40,13 @@ app.use('/auth', authRoutes);
 app.get(
   '/auth/spotify',
   passport.authenticate('spotify', {
-    scope: [
-      'user-read-email',
-      'user-read-private',
-      'playlist-modify-private',
-      'playlist-modify-public',
-      'user-read-playback-state',
-      'streaming',
-    ],
+    scope: ['user-read-email', 'user-read-private', 'playlist-modify-private', 'playlist-modify-public', 'user-read-playback-state', 'streaming'],
   })
 );
 
-app.get(
-  '/auth/spotify/callback',
-  passport.authenticate('spotify', { failureRedirect: '/auth/spotify' }),
-  (req, res) => {
-    res.redirect(`http://localhost:4200/home?code=${req.query.code}`);
-  }
-);
+app.get('/auth/spotify/callback', passport.authenticate('spotify', { failureRedirect: '/auth/spotify' }), (req, res) => {
+  res.redirect(`http://localhost:4200/home?code=${req.query.code}`);
+});
 
 const server = http.createServer(app);
 
@@ -74,20 +63,18 @@ let currentState = {
   isPlaying: false,
 };
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   socket.on('voteUpdated', ({ playlistId, trackId }) => {
-    console.log(
-      `Vote count for track ${trackId} in playlist ${playlistId} was updated`
-    );
+    console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
     io.emit('voteCountUpdated', { playlistId, trackId });
   });
   socket.on('trackAdded', ({ playlistId, trackId }) => {
     console.log(`Track was added and Track list was updated`);
     io.emit('TrackListUpdated', { playlistId, trackId });
   });
-  socket.on('clientStateChange', data => {
+  socket.on('clientStateChange', (data) => {
     currentState = data;
     socket.broadcast.emit('stateChange', data);
   });

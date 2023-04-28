@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-
+import controller from '@controllers/playlist.controller';
+import spotifyApi from '@config/spotify';
+import SpotifyWebApi from 'spotify-web-api-node';
+//import controller from '../src/controllers/controller_test';
 const prisma = new PrismaClient();
 
 // for mock data: https://www.prisma.io/docs/guides/testing/unit-testing
@@ -7,6 +10,19 @@ const prisma = new PrismaClient();
 describe('Test DB Functionality', () => {
   const playlistId = '6aYjT8tbbEKRiXQlqXGJSB';
   const trackId = '4es7tZLsvmqc8kpyHOtHDI';
+
+  // type mockPlaylist = {
+  //   id: Number;
+  //   spotifyPlaylistId: String;
+  //   spotifyAccessToken: String;
+  //   spotifyRefreshToken: String;
+  //   spotifyTokenExpiresAt: Date;
+  //   title: String;
+  //   description: String | null;
+  //   createdAt: Date;
+  //   updatedAt: Date;
+  //   childFriendly: Boolean;
+  // };
 
   const jestPlaylist = {
     id: expect.any(Number),
@@ -33,6 +49,29 @@ describe('Test DB Functionality', () => {
     played: expect.any(Boolean),
   };
 
+  const jestResult = {
+    statusCode: expect.any(Number),
+    body: expect.any(jestPlaylist),
+  };
+
+  const req: any = {
+    params: { spotifyPlaylistId: playlistId },
+    //played: { played: false }
+  };
+  const res: any = {
+    //status: jest.fn((x) => (res.statusCode = x)),
+    status: function (x: Number) {
+      this.statusCode = x;
+      return this;
+    },
+    json: function (x: any) {
+      this.body = x;
+      JSON.stringify(this);
+    },
+    statusCode: null,
+    body: null,
+  };
+
   test('findUniquePlaylist', async () => {
     const playlist = await prisma.playlist.findUnique({
       where: {
@@ -49,5 +88,17 @@ describe('Test DB Functionality', () => {
       },
     });
     expect(track).toEqual(jestTrack);
+  });
+
+  // test.only('getPlaylist', async () => {
+  //   console.log(controllers.getPlaylist(req, {}));
+  // });
+
+  test.only('getPlaylist', async () => {
+    const result = await controller.getPlaylist(req, res);
+    console.log(result);
+
+    expect(JSON.parse(result)).toEqual(jestResult);
+    // console.log(controller.getPlaylist(req, {}));
   });
 });
