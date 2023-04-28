@@ -5,6 +5,7 @@ import { io } from '../index';
 const prisma = new PrismaClient();
 
 export const createPlaylist = async (req: any, res: any) => {
+  console.log('createPlaylist req body', req.body);
   try {
     const { title, description, spotifyPlaylistId, childFriendly } = req.body;
 
@@ -18,6 +19,8 @@ export const createPlaylist = async (req: any, res: any) => {
     });
     io.in(title).emit('playlist-created', newPlaylist);
     res.status(201).json(newPlaylist);
+    console.log('createPlaylist res status', res.status(201));
+    console.log('createPlaylist res json', res);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.error('Server error creating playlist', error);
@@ -66,6 +69,7 @@ const addTrackToPlaylist = async (req: any, res: any) => {
   try {
     const { playlistId } = req.params;
     const { trackId, accessToken } = req.body;
+    console.log('token', accessToken);
     spotifyApi.setAccessToken(accessToken);
 
     const playlist = await prisma.playlist.findUnique({
@@ -175,7 +179,7 @@ const vote = async (req: any, res: any) => {
       return;
     }
 
-    const track = playlist.tracks.find((t) => t.spotifyId === spotifyId);
+    const track = playlist.tracks.find(t => t.spotifyId === spotifyId);
 
     if (!track) {
       res.status(404).json({ error: 'Track not found in playlist' });
