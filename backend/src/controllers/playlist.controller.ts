@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
-import { io } from '../index';
+import { io } from '../io-service';
 
 const prisma = new PrismaClient();
 
@@ -56,9 +56,7 @@ const getPlaylist = async (req: any, res: any) => {
     }
     res.status(200).json(playlist);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'An error occurred while retrieving the playlist' });
+    res.status(500).json({ message: 'An error occurred while retrieving the playlist' });
   }
 };
 
@@ -102,9 +100,7 @@ const addTrackToPlaylist = async (req: any, res: any) => {
       data: {
         spotifyId: trackDetails.body.id,
         title: trackDetails.body.name,
-        artist: trackDetails.body.artists
-          .map((artist: any) => artist.name)
-          .join(', '),
+        artist: trackDetails.body.artists.map((artist: any) => artist.name).join(', '),
         album: trackDetails.body.album.name,
         durationMs: trackDetails.body.duration_ms,
         imageUrl: trackDetails.body.album.images[0]?.url || '',
