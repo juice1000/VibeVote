@@ -37,6 +37,12 @@ app.use(passport.session());
 app.use('/api/playlist', playlistRoutes);
 app.use('/auth', authRoutes);
 
+// for initial debugging
+app.get('/', (req, res) => {
+  res.status(200);
+  res.send('Welcome to da Server!');
+});
+
 //Define the authentication routes
 app.get(
   '/auth/spotify',
@@ -61,4 +67,4 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-export { io };
+export { app, server, io };
