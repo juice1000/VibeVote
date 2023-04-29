@@ -45,20 +45,19 @@ const getPlaylist = async (req: any, res: any) => {
       where: {
         spotifyPlaylistId: req.params.spotifyPlaylistId,
       },
-      // },
-      // include: {
-      //   tracks: {
-      //     where: trackWhereClause,
-      //     include: {
-      //       votes: true,
-      //     },
-      //     orderBy: {
-      //       votes: {
-      //         _count: 'desc',
-      //       },
-      //     },
-      //   },
-      // },
+      include: {
+        tracks: {
+          where: trackWhereClause,
+          include: {
+            votes: true,
+          },
+          orderBy: {
+            votes: {
+              _count: 'desc',
+            },
+          },
+        },
+      },
     });
     if (!playlist) {
       return res.status(404).json({ message: 'Playlist not found' });
