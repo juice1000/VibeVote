@@ -43,18 +43,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to da Server!');
 });
 
-//Define the authentication routes
-app.get(
-  '/auth/spotify',
-  passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private', 'playlist-modify-private', 'playlist-modify-public', 'user-read-playback-state', 'streaming'],
-  })
-);
-
-app.get('/auth/spotify/callback', passport.authenticate('spotify', { failureRedirect: '/auth/spotify' }), (req, res) => {
-  res.redirect(`http://localhost:4200/home?code=${req.query.code}`);
-});
-
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
