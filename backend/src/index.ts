@@ -6,6 +6,8 @@ import session from 'express-session';
 import cors from 'cors';
 import crypto from 'crypto';
 import http from 'http';
+import { Server } from 'socket.io';
+import { checkConnection } from './io-service';
 
 import passport from './config/passport';
 import playlistRoutes from './routes/playlist';
@@ -48,9 +50,15 @@ app.get('/auth/spotify/callback', passport.authenticate('spotify', { failureRedi
 });
 
 const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:4200',
+  },
+});
+checkConnection(io);
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-export { server };
+export { io };

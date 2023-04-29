@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
-import { io } from '../io-service';
+import { socketHandler } from '../io-service';
 
 const prisma = new PrismaClient();
 
@@ -16,8 +16,16 @@ export const createPlaylist = async (req: any, res: any) => {
         childFriendly,
       },
     });
-    io.in(title).emit('playlist-created', newPlaylist);
+
+    const socketData = {
+      command: 'playlist-created',
+      title: title,
+      playList: newPlaylist,
+    };
+    socketHandler(socketData);
+
     res.status(201).json(newPlaylist);
+    return newPlaylist;
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.error('Server error creating playlist', error);
@@ -54,6 +62,7 @@ const getPlaylist = async (req: any, res: any) => {
     if (!playlist) {
       return res.status(404).json({ message: 'Playlist not found' });
     }
+
     res.status(200).json(playlist);
   } catch (error) {
     res.status(500).json({ message: 'An error occurred while retrieving the playlist' });
@@ -112,7 +121,14 @@ const addTrackToPlaylist = async (req: any, res: any) => {
         },
       },
     });
-    io.in(spotifyPlaylistId).emit('track-added', newTrack);
+
+    const socketData = {
+      command: 'track-added',
+      name: spotifyPlaylistId,
+      obj: newTrack,
+    };
+    socketHandler(socketData);
+
     res.status(201).json(newTrack);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -191,18 +207,24 @@ const vote = async (req: any, res: any) => {
         OR: [{ user: userId }, { guestId: guestId }],
       },
     });
-
     if (existingVote) {
       await prisma.vote.delete({
         where: {
           id: existingVote.id,
         },
       });
-      io.in(playlistId).emit('vote-updated', {
-        trackId: parseInt(trackId),
-        userId,
-        guestId,
-      });
+
+      const socketData = {
+        command: 'vote-updated',
+        name: playlistId,
+        obj: {
+          trackId: parseInt(trackId),
+          userId,
+          guestId,
+        },
+      };
+      socketHandler(socketData);
+
       res.status(200).json({ message: 'Vote deleted' });
       return;
     }
@@ -215,11 +237,18 @@ const vote = async (req: any, res: any) => {
         trackId: parseInt(trackId),
       },
     });
-    io.in(playlistId).emit('vote-updated', {
-      trackId: parseInt(trackId),
-      userId,
-      guestId,
-    });
+
+    const socketData = {
+      command: 'vote-updated',
+      name: playlistId,
+      obj: {
+        trackId: parseInt(trackId),
+        userId,
+        guestId,
+      },
+    };
+    socketHandler(socketData);
+
     res.status(201).json(newVote);
   } catch (error) {
     res.status(500).json({ error: error.message });
