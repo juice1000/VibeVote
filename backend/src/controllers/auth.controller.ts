@@ -8,10 +8,11 @@ const getAuthTokens = (req: any, res: any) => {
 };
 
 const refreshAuthTokens = async (req: any, res: any) => {
-  const refreshToken = req.body.refresh_token;
-
   try {
-    console.log(refreshToken);
+    const refreshToken = req.body.refresh_token;
+    if (!refreshToken) {
+      throw { statusCode: 400 };
+    }
 
     spotifyApi.setRefreshToken(refreshToken);
     const data = await spotifyApi.refreshAccessToken();
@@ -19,7 +20,7 @@ const refreshAuthTokens = async (req: any, res: any) => {
     const expiresIn = data.body['expires_in'];
     const expiresAt = Date.now() + expiresIn * 1000;
 
-    res.json({ access_token: newAccessToken, expires_in: expiresIn });
+    res.json({ access_token: newAccessToken, expires_in: expiresAt });
   } catch (error) {
     console.error('Failed to refresh access token:', error);
     res.status(error.statusCode).json({ error: 'Failed to refresh access token' });

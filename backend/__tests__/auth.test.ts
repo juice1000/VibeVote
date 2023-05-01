@@ -27,6 +27,7 @@ describe('App GET /auth/spotify', () => {
     done();
   });
   it('returns status code 302 when server redirect successfully', async () => {
+    // let's do an unsuccessful redirect as well!!
     const res = await request(app).get('/auth/spotify');
     expect(res.statusCode).toEqual(302); // 302 = successfully redirected
 
@@ -35,69 +36,22 @@ describe('App GET /auth/spotify', () => {
   });
 });
 
-// describe('App POST /auth/refresh', () => {
-//   const refreshAuthTokens = async (req: any, res: any) => {
-//     console.log('lol');
+describe('App POST /auth/refresh', () => {
+  beforeAll((done) => {
+    done();
+  });
+  afterAll((done) => {
+    server.close();
+    done();
+  });
+  it('returns status code 302 when server redirect successfully', async () => {
+    (spotifyApi.setRefreshToken as jest.Mock).mockResolvedValue({});
+    (spotifyApi.refreshAccessToken as jest.Mock).mockResolvedValue({ body: { access_token: 'test' } });
 
-//     const refreshToken = req.body.refresh_token;
+    const resSuccessfulRequest = await request(app).post('/auth/refresh').send({ refresh_token: 'test' });
+    expect(resSuccessfulRequest.statusCode).toEqual(200);
 
-//     try {
-//       console.log(req);
-//       console.log(refreshToken);
-
-//       spotifyApi.setRefreshToken.mockResolvedValue(refreshToken);
-//       await spotifyApi.refreshAccessToken.mockResolvedValue();
-//       //const newAccessToken = data.body['access_token'];
-//       //const expiresIn = data.body['expires_in'];
-//       //const expiresAt = Date.now() + expiresIn * 1000;
-
-//       res.json({ access_token: 'newAccessToken', expires_in: 'expiresIn' });
-//     } catch (error) {
-//       console.error('Failed to refresh access token:', error);
-//       res.status(error.statusCode).json({ error: 'Failed to refresh access token' });
-//     }
-//   };
-
-//   beforeAll((done) => {
-//     done();
-//   });
-//   afterAll((done) => {
-//     server.close();
-//     done();
-//   });
-//   it('returns status code 302 when server redirect successfully', async () => {
-//     // const mockCallback = jest.fn((token) => {
-//     //   if (token) {
-//     //     const obj = { access_token: 'newAccessToken', expires_in: 'expiresIn' };
-//     //     return new Promise((resolve, reject) => resolve(obj));
-//     //   }
-//     //   return new Promise((resolve, reject) => resolve(null));
-//     // });
-
-//     (spotifyApi.setRefreshToken as jest.Mock).mockResolvedValue({ refresh_token: 'hi' });
-//     (spotifyApi.refreshAccessToken as jest.Mock).mockResolvedValue({});
-//     //await spotifyApi.refreshAccessToken.mockResolvedValue({ refresh_token: 'hi' });
-//     const resBadRequest = await request(app).post('/auth/refresh').send({ refresh_token: 'hi' });
-//     expect(resBadRequest.statusCode).toEqual(400);
-
-//     spotifyApi.setRefreshToken.mockResolvedValue();
-//     await spotifyApi.refreshAccessToken.mockResolvedValue();
-//     const resEmptyRequest = await request(app).post('/auth/refresh').send();
-//     expect(resEmptyRequest.statusCode).toEqual(400); // no parameter sent
-
-//     // const resSuccess = await request(app)
-//     //   .post('/', refreshAuthTokens)
-//     //   .send({
-//     //     refresh_token: {
-//     //       access_token: '$ACCESS_TOKEN',
-//     //       token_type: 'Bearer',
-//     //       expires_in: 3600,
-//     //       refresh_token: '$REFRESH_TOKEN',
-//     //       scope: 'playlist-modify-private',
-//     //     },
-//     //   });
-//     // console.log(resSuccess);
-
-//     //expect(resNoSuccess.statusCode).toEqual(404); // no parameter sent
-//   });
-// });
+    const resBadRequest = await request(app).post('/auth/refresh').send({});
+    expect(resBadRequest.statusCode).toEqual(400);
+  });
+});
