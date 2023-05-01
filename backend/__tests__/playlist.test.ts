@@ -1,21 +1,13 @@
-import { app, server } from '@root';
-import request from 'supertest';
-// import controller from '@controllers/playlist.controller';
-import { prismaMock } from './singleton';
+import { socketHandler, checkConnection } from '../src/io-service';
+jest.mock('../src/io-service'); // that one imports index.ts and seems to reinitialize app which we don't want
+(checkConnection as jest.Mock).mockResolvedValue({});
+(socketHandler as jest.Mock).mockResolvedValue({});
 
-// describe('App GET /', () => {
-//   beforeAll((done) => {
-//     done();
-//   });
-//   afterAll((done) => {
-//     server.close();
-//     done();
-//   });
-//   it('returns status code 200 when server available', async () => {
-//     const res = await request(app).get('/');
-//     expect(res.statusCode).toEqual(200);
-//   });
-// });
+import request from 'supertest';
+import { app, server } from '@root'; // server already used by other test files
+
+import { prismaMock } from './singleton';
+import * as mocks from './__mocks__/playlist-data';
 
 // describe('App GET /api/playlist/:spotifyPlaylistId', () => {
 //   const mockPlaylist = {
@@ -41,36 +33,41 @@ import { prismaMock } from './singleton';
 //   });
 // });
 
-describe('App GET /api/playlist/:spotifyPlaylistId', () => {
-  test.only('should create new playlist ', async () => {
-    const data: any = {
-      title: 'title',
-      description: 'description',
-      spotifyPlaylistId: 'spotifyPlaylistId',
-      childFriendly: true,
-    };
+describe('App POST /api/playlist/:spotifyPlaylistId', () => {
+  beforeAll((done) => {
+    done();
+  });
+  afterAll((done) => {
+    server.close();
+    done();
+  });
 
-    const playList: any = {
-      id: 0,
-      spotifyPlaylistId: '',
-      spotifyAccessToken: '',
-      spotifyRefreshToken: '',
-      spotifyTokenExpiresAt: new Date('2000-01-01 00:00:00.000'),
-      title: '',
-      description: '',
-      createdAt: new Date('2000-01-01 00:00:00.000'),
-      updatedAt: new Date('2000-01-01 00:00:00.000'),
-      //tracks   :     [{}],
-      //votes          : [],
-      childFriendly: false,
-    };
+  // we should mock each szenario where failures could happen
+  const data: any = {
+    title: 'title',
+    description: 'description',
+    spotifyPlaylistId: 'spotifyPlaylistId3', // it's unique so we have to create a new one if we don't mock the function it
+    childFriendly: true,
+  };
+  prismaMock.playlist.create.mockResolvedValue(mocks.playList);
 
-    prismaMock.playlist.create.mockResolvedValue(playList);
-
+  it('should create new playlist ', async () => {
     expect(
       prismaMock.playlist.create({
         data: data,
       })
-    ).resolves.toEqual(playList);
+    ).resolves.toEqual(mocks.playList);
+  });
+
+  it.only('should create new playlist on endpoint /create', async () => {
+    // we should mock each szenario where failures could happen
+    //(socketHandler as jest.Mock).mockResolvedValue({});
+    // (checkConnection as jest.Mock).mockResolvedValue({});
+
+    const resSuccessfulRequest = await request(app).post('/api/playlist/create').send(data);
+    expect(resSuccessfulRequest.statusCode).toEqual(201);
+
+    //const resBadRequest = await request(app).post('/auth/refresh').send({});
+    //expect(resBadRequest.statusCode).toEqual(400);
   });
 });
