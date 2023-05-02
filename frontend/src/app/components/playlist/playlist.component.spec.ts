@@ -4,9 +4,14 @@ import { PlaylistComponent } from './playlist.component';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectorRef,
+  NO_ERRORS_SCHEMA,
+} from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 class MockPlayListService extends PlaylistService {
   createPlayList() {
@@ -34,7 +39,12 @@ describe('PlaylistComponent', () => {
       declarations: [PlaylistComponent],
       imports: [RouterTestingModule, HttpClientModule, DebugElement],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
-      providers: [MockPlayListService],
+      providers: [
+        MockPlayListService,
+        ActivatedRoute,
+        PlaylistService,
+        ChangeDetectorRef,
+      ],
     }).compileComponents();
 
     TestBed.overrideComponent(PlaylistComponent, {
