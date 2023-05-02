@@ -1,12 +1,9 @@
-// import { socketHandler, checkConnection } from '../src/io-service';
-// jest.mock('../src/io-service'); // that one imports index.ts and seems to reinitialize app which we don't want
-// (checkConnection as jest.Mock).mockResolvedValue({});
-// (socketHandler as jest.Mock).mockResolvedValue({}); // we want to mock socket function too, although opinions about that seem to be divided
-
 import request from 'supertest';
 import { app, server, io } from '@root'; // server already used by other test files and sometimes not properly closing, need to investigate on that
 
-import { prismaMock } from './singleton';
+// overrides the development database url
+process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+
 import * as mocks from './__mocks__/playlist-data';
 
 describe('App POST /api/playlist/:spotifyPlaylistId', () => {
@@ -20,27 +17,29 @@ describe('App POST /api/playlist/:spotifyPlaylistId', () => {
     done();
   });
 
-  // we should also mock szenarios where failures could happen
   const data: any = {
     title: 'title',
     description: 'description',
-    spotifyPlaylistId: 'spotifyPlaylistId14', // it's unique so we have to create a new one if we don't mock the function it
+    spotifyPlaylistId: 'spotifyPlaylistId',
     childFriendly: true,
   };
-  prismaMock.playlist.create.mockResolvedValue(mocks.playList);
+
   //prismaMock.playlist.delete.mockResolvedValue(mocks.playList);
 
-  // testing on database only first, then with server
-  it('should create new playlist ', async () => {
-    expect(
-      prismaMock.playlist.create({
-        data: data,
-      })
-    ).resolves.toEqual(mocks.playList);
-  });
-
   it.only('should create new playlist on endpoint /create', async () => {
-    const resSuccessfulRequest = await request(app).post('/api/playlist/create').send(data);
-    expect(resSuccessfulRequest.statusCode).toEqual(201);
+    //prismaMock.playlist.create.mockResolvedValue(mocks.playList);
+    const resSuccessfulCreate = await request(app).post('/api/playlist/create').send(data);
+    expect(resSuccessfulCreate.statusCode).toEqual(201);
+
+    const resSuccessfulDelete = await request(app).delete(`/api/playlist/${data.spotifyPlaylistId}/delete`);
+    expect(resSuccessfulDelete.statusCode).toEqual(201);
+
+    data.spotifyPlaylistId = null;
+    const resNoCreateFromNull = await request(app).post('/api/playlist/create').send(data);
+    expect(resNoCreateFromNull.statusCode).toEqual(500);
+
+    data.spotifyPlaylistId = '';
+    const resNoCreateFromEmpty = await request(app).post('/api/playlist/create').send(data);
+    expect(resNoCreateFromEmpty.statusCode).toEqual(500);
   });
 });

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ override: true });
 // console.log(process.env);
 import express from 'express';
 import session from 'express-session';
