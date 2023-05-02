@@ -1,20 +1,32 @@
-import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HomeComponent } from './home.component';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
 
 class MockPlayListService extends PlaylistService {
   createPlayList() {
-    return { spotifyPlayListId: '1234' };
+    return {
+      childFriendly: true,
+      createdAt: '2023-05-01T14:02:15.255Z',
+      description: null,
+      id: 11,
+      spotifyAccessToken: null,
+      spotifyPlaylistId: '6fhNCRL0G73vnEJ88GET81',
+      spotifyRefreshToken: null,
+      spotifyTokenExpiresAt: null,
+      title: 'test',
+      updatedAt: '2023-05-01T14:02:15.255Z',
+    };
   }
 }
-fdescribe('HomeComponent', () => {
+describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let testBedService: PlaylistService;
-  // let componentService: PlaylistService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -30,23 +42,17 @@ fdescribe('HomeComponent', () => {
         ],
       },
     });
-    // AuthService provided to the TestBed
-    testBedService = TestBed.get(PlaylistService);
-
-    // AuthService provided by Component, (should return MockAuthService)
-    // componentService = fixture.debugElement.injector.get(PlaylistService);
-
-    fixture = TestBed.createComponent(HomeComponent);
+    // PlaylistService provided to the TestBed
+    fixture = await TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
 
-  it('Service injected via inject(...) and TestBed.get(...) should be the same instance', inject(
-    [PlaylistService],
-    (injectService: PlaylistService) => {
-      expect(injectService).toBe(testBedService);
-    }
-  ));
+    testBedService = TestBed.get(PlaylistService);
+    let form = fixture.debugElement.query(By.css('form'));
+    let btn = fixture.debugElement.query(By.css('button'));
+
+    component = fixture.componentInstance;
+    // );
+  });
 
   it('Component should be created', () => {
     expect(component).toBeTruthy();
@@ -63,14 +69,4 @@ fdescribe('HomeComponent', () => {
   it('should create', () => {
     expect(component.createPlaylist).toBeTruthy();
   });
-  // it('should create playlist', (done) => {
-  //   let object = { spotifyPlayListId: '1234' };
-  //   spyOn(component, 'createPlaylist');
-  //   expect(component.createPlaylist).toHaveBeenCalledWith();
-
-  //   // component.createPlaylist();
-  //   // let result = await testBedService.createPlaylist('name', false);
-  //   // expect(result.toEqual({ spotifyPlayListId: '1234' }));
-  //   // expect
-  // });
 });
