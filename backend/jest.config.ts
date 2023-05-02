@@ -14,6 +14,7 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.ts?$': 'ts-jest',
   },
+  // setupFiles: ['./.env'], // maybe necessary to mock environment variables
   setupFilesAfterEnv: ['jest-extended/all'],
   moduleNameMapper: hq.get('jest'),
 };

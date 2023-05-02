@@ -1,9 +1,9 @@
 import '../config/passport';
 import spotifyApi from '../config/spotify';
 
-const getAuthTokens = (req: any, res: any) => {
+const getAuthTokens = async (req: any, res: any) => {
+  // we will have to test if the function gets called or not
   const { accessToken, refreshToken, expires_in }: any = req.user;
-
   res.redirect(`http://localhost:4200/home?accessToken=${accessToken}&refreshToken=${refreshToken}&expiresIn=${expires_in}`);
 };
 

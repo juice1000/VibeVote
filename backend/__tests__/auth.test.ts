@@ -1,4 +1,4 @@
-import { app, server } from '@root';
+import { app, server, io } from '@root';
 import request from 'supertest';
 
 import spotifyApi from '@config/spotify';
@@ -9,6 +9,7 @@ describe('App GET /', () => {
     done();
   });
   afterAll((done) => {
+    io.close();
     server.close();
     done();
   });
@@ -23,6 +24,7 @@ describe('App GET /auth/spotify', () => {
     done();
   });
   afterAll((done) => {
+    io.close();
     server.close();
     done();
   });
@@ -41,6 +43,7 @@ describe('App POST /auth/refresh', () => {
     done();
   });
   afterAll((done) => {
+    io.close();
     server.close();
     done();
   });
