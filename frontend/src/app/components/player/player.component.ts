@@ -89,7 +89,7 @@ export class PlayerComponent implements OnInit {
   }
 
   private loadSpotifyPlayerScript(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if ((window as any).Spotify) {
         resolve();
         return;

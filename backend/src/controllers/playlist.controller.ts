@@ -73,6 +73,7 @@ const addTrackToPlaylist = async (req: any, res: any) => {
   try {
     const { playlistId } = req.params;
     const { trackId, accessToken } = req.body;
+    console.log('token', accessToken);
     spotifyApi.setAccessToken(accessToken);
 
     const playlist = await prisma.playlist.findUnique({
@@ -187,7 +188,7 @@ const vote = async (req: any, res: any) => {
       return;
     }
 
-    const track = playlist.tracks.find((t) => t.spotifyId === spotifyId);
+    const track = playlist.tracks.find(t => t.spotifyId === spotifyId);
 
     if (!track) {
       res.status(404).json({ error: 'Track not found in playlist' });
