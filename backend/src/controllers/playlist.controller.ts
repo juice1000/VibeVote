@@ -7,11 +7,8 @@ const createPlaylist = async (req: any, res: any) => {
     const { title, description, spotifyPlaylistId, childFriendly } = req.body;
 
     if (spotifyPlaylistId.length === 0) {
-      const err = {
-        message: 'empty playlist name',
-        status: 400,
-      };
-      throw err;
+      res.status(400).json({ error: 'no playlist name provided' });
+      return;
     }
 
     const newPlaylist = await prisma.playlist.create({
@@ -33,7 +30,7 @@ const createPlaylist = async (req: any, res: any) => {
     res.status(201).json(newPlaylist);
     return newPlaylist;
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
     console.error('Server error creating playlist', error);
   }
 };
@@ -323,6 +320,28 @@ const deletePlaylist = async (req: any, res: any) => {
   }
 };
 
+const deleteTracks = async (req: any, res: any) => {
+  try {
+    const deletedtracks = await prisma.track.deleteMany({
+      where: {
+        spotifyId: req.params.trackId,
+        playlistId: Number(req.params.playlistId),
+        played: false,
+      },
+    });
+    const socketData = {
+      command: 'track-deleted',
+      obj: deletedtracks,
+    };
+    socketHandler(socketData);
+
+    res.status(201).json(deletedtracks);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: 'Error deleting track' });
+  }
+};
+
 export default {
   createPlaylist,
   getPlaylist,
@@ -332,4 +351,5 @@ export default {
   getTokens,
   updateTokens,
   deletePlaylist,
+  deleteTracks,
 };
