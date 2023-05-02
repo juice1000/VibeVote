@@ -37,16 +37,10 @@ app.use(passport.session());
 app.use('/api/playlist', playlistRoutes);
 app.use('/auth', authRoutes);
 
-//Define the authentication routes
-app.get(
-  '/auth/spotify',
-  passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private', 'playlist-modify-private', 'playlist-modify-public', 'user-read-playback-state', 'streaming'],
-  })
-);
-
-app.get('/auth/spotify/callback', passport.authenticate('spotify', { failureRedirect: '/auth/spotify' }), (req, res) => {
-  res.redirect(`http://localhost:4200/home?code=${req.query.code}`);
+// for initial debugging
+app.get('/', (req, res) => {
+  res.status(200);
+  res.send('Welcome to da Server!');
 });
 
 const server = http.createServer(app);
@@ -61,4 +55,4 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-export { io };
+export { app, server, io };

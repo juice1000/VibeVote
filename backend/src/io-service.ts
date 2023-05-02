@@ -19,6 +19,7 @@ export const checkConnection = function (io: any) {
   io.on('connection', (socket: any) => {
     console.log('User connected:', socket.id);
     connection = true;
+
     socket.on('voteUpdated', ({ playlistId, trackId }: { playlistId: String; trackId: String }) => {
       console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
       io.emit('voteCountUpdated', { playlistId, trackId });

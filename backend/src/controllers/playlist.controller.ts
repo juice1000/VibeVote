@@ -4,7 +4,7 @@ import { socketHandler } from '../io-service';
 
 const prisma = new PrismaClient();
 
-export const createPlaylist = async (req: any, res: any) => {
+const createPlaylist = async (req: any, res: any) => {
   try {
     const { title, description, spotifyPlaylistId, childFriendly } = req.body;
 
