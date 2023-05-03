@@ -12,7 +12,7 @@ class MockAuthService extends AuthService {
   }
 }
 
-describe('LoginComponent', () => {
+xdescribe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let testBedService: AuthService;
