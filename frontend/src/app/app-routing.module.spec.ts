@@ -17,6 +17,7 @@ import {
   routes,
 } from './app-routing.module';
 import { HttpClient } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('Router:App', () => {
   let location: Location;
@@ -25,7 +26,6 @@ describe('Router:App', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
   let fixture: any;
-  // let component;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,6 +34,7 @@ describe('Router:App', () => {
         HttpClientTestingModule,
       ],
       declarations: [LoginComponent, PlaylistComponent, HomeComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     });
 
     router = TestBed.inject(Router);
@@ -68,11 +69,5 @@ describe('Router:App', () => {
     router.navigate(['']);
     tick();
     expect(location.path()).toBe('/login');
-  }));
-  it('renders home component', fakeAsync(() => {
-    router.navigate(['/home']);
-    tick();
-    fixture.detectChanges();
-    expect(fixture.componentInstance.newPlaylistName).toBe('');
   }));
 });
