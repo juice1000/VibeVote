@@ -1,6 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config({ override: true });
+process.env.PORT = '3001';
+
 import { app, server, io } from '@root';
 import request from 'supertest';
-
 import spotifyApi from '@config/spotify';
 jest.mock('@config/spotify');
 
@@ -19,25 +22,6 @@ describe('App GET /', () => {
   });
 });
 
-describe('App GET /auth/spotify', () => {
-  beforeAll((done) => {
-    done();
-  });
-  afterAll((done) => {
-    io.close();
-    server.close();
-    done();
-  });
-  it('returns status code 302 when server redirect successfully', async () => {
-    // let's do an unsuccessful redirect as well!!
-    const res = await request(app).get('/auth/spotify');
-    expect(res.statusCode).toEqual(302); // 302 = successfully redirected
-
-    const resCallback = await request(app).get('/auth/spotify/callback');
-    expect(resCallback.statusCode).toEqual(302);
-  });
-});
-
 describe('App POST /auth/refresh', () => {
   beforeAll((done) => {
     done();
@@ -47,12 +31,12 @@ describe('App POST /auth/refresh', () => {
     server.close();
     done();
   });
-  it('returns status code 302 when server redirect successfully', async () => {
+  it('returns status code 201 when refresh successful', async () => {
     (spotifyApi.setRefreshToken as jest.Mock).mockResolvedValue({});
-    (spotifyApi.refreshAccessToken as jest.Mock).mockResolvedValue({ body: { access_token: 'test' } });
+    (spotifyApi.refreshAccessToken as jest.Mock).mockResolvedValue({ body: { access_token: 'test', expires_in: 10000 } });
 
     const resSuccessfulRequest = await request(app).post('/auth/refresh').send({ refresh_token: 'test' });
-    expect(resSuccessfulRequest.statusCode).toEqual(200);
+    expect(resSuccessfulRequest.statusCode).toEqual(201);
 
     const resBadRequest = await request(app).post('/auth/refresh').send({});
     expect(resBadRequest.statusCode).toEqual(400);

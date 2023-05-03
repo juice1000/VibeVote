@@ -1,12 +1,15 @@
-import { PrismaClient } from '@prisma/client';
 import spotifyApi from '../config/spotify';
 import { socketHandler } from '../io-service';
-
-const prisma = new PrismaClient();
+import prisma from './prismaClient';
 
 const createPlaylist = async (req: any, res: any) => {
   try {
     const { title, description, spotifyPlaylistId, childFriendly } = req.body;
+
+    if (spotifyPlaylistId.length === 0) {
+      res.status(400).json({ error: 'no playlist name provided' });
+      return;
+    }
 
     const newPlaylist = await prisma.playlist.create({
       data: {
@@ -297,6 +300,49 @@ const updateTokens = async (req: any, res: any) => {
   }
 };
 
+const deletePlaylist = async (req: any, res: any) => {
+  try {
+    const deletedPlaylist = await prisma.playlist.delete({
+      where: {
+        spotifyPlaylistId: req.params.spotifyPlaylistId,
+      },
+    });
+    const socketData = {
+      command: 'playlist-deleted',
+      name: deletedPlaylist.title,
+      obj: deletedPlaylist,
+    };
+    socketHandler(socketData);
+
+    res.status(201).json(deletedPlaylist.id);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: 'Error deleting playlists' });
+  }
+};
+
+const deleteTracks = async (req: any, res: any) => {
+  try {
+    const deletedtracks = await prisma.track.deleteMany({
+      where: {
+        spotifyId: req.params.trackId,
+        playlistId: Number(req.params.playlistId),
+        played: false,
+      },
+    });
+    const socketData = {
+      command: 'track-deleted',
+      obj: deletedtracks,
+    };
+    socketHandler(socketData);
+
+    res.status(201).json(deletedtracks);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: 'Error deleting track' });
+  }
+};
+
 export default {
   createPlaylist,
   getPlaylist,
@@ -305,4 +351,6 @@ export default {
   vote,
   getTokens,
   updateTokens,
+  deletePlaylist,
+  deleteTracks,
 };
