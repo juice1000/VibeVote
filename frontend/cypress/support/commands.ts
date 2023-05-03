@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 // ***********************************************
 // This example namespace declaration will help
 // with Intellisense and code completion in your
@@ -5,7 +7,7 @@
 // ***********************************************
 // declare namespace Cypress {
 //   interface Chainable<Subject = any> {
-//     customCommand(param: any): typeof customCommand;
+//     login(param: any): typeof login;
 //   }
 // }
 //
@@ -41,3 +43,34 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+// declare global {
+//   namespace Cypress {
+//     interface Chainable<Subject = any> {
+//       login: typeof login;
+//     }
+//   }
+// }
+
+// function login(overrides = {}) {
+//   Cypress.log({
+//     name: 'loginViaAuth0',
+//   });
+
+//   const options = {
+//     method: 'POST',
+//     url: Cypress.env('authUrl'),
+//     body: {
+//       grant_type: 'password',
+//       username: Cypress.env('username'),
+//       password: Cypress.env('password'),
+//       //   audience: Cypress.env('auth_audience'),
+//       //   scope: 'openid profile email',
+//       //   client_id: Cypress.env('auth_client_id'),
+//       //   client_secret: Cypress.env('auth_client_secret'),
+//     },
+//   };
+//   cy.request(options);
+// }
+
+// Cypress.Commands.add('login', login);
