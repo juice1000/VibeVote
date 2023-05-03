@@ -1,11 +1,15 @@
+import dotenv from 'dotenv';
+dotenv.config({ override: true });
+
+// overrides the development database url & port
+process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+process.env.PORT = '3002';
+
 import request from 'supertest';
 import { app, server, io } from '@root'; // server already used by other test files and sometimes not properly closing, need to investigate on that
 
 import spotifyApi from '@config/spotify';
 jest.mock('@config/spotify');
-
-// overrides the development database url
-process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
 
 import * as mocks from './__mocks__/playlist-data';
 

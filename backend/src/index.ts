@@ -1,6 +1,8 @@
+// port needs to be set before we call dotenv, because we override the property in the test files
+const port = Number(process.env.PORT) || 3000;
 import dotenv from 'dotenv';
-dotenv.config({ override: true });
-// console.log(process.env);
+dotenv.config();
+
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
@@ -14,8 +16,6 @@ import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
 
 const app = express();
-const port = process.env.PORT || 3000;
-
 //Enable CORS
 app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
 app.use(express.json());
