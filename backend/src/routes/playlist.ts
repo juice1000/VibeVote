@@ -18,15 +18,15 @@ router.get('/:spotifyPlaylistId', controllers.getPlaylist);
 
 router.post('/:playlistId/add-track', controllers.addTrackToPlaylist);
 
-router.put(
-  '/:playlistId/update-track-played-status/:trackId',
-  controllers.updateTrackPlayedStatus
-);
+router.put('/:playlistId/update-track-played-status/:trackId', controllers.updateTrackPlayedStatus);
 
 router.post('/:playlistId/vote', controllers.vote);
 
 router.get('/:playlistId/tokens', controllers.getTokens);
 
 router.put('/:playlistId/tokens', controllers.updateTokens);
+
+router.delete('/:spotifyPlaylistId/delete-playlist', controllers.deletePlaylist);
+router.delete('/:playlistId/delete-tracks/:trackId', controllers.deleteTracks);
 
 export default router;
