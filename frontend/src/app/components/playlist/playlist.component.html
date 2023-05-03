@@ -37,15 +37,19 @@
         <div
           class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300"
         >
-          <div class="flex items-center w-3/4">
+          <div class="flex items-center w-3/4" data-cy="card">
             <img
               [src]="track.imageUrl"
               alt="Album cover"
               class="w-16 h-16 rounded-md"
             />
             <div class="ml-4">
-              <p class="font-bold text-lg">{{ track.title }}</p>
-              <p class="text-gray-400">{{ track.artist }}</p>
+              <p class="font-bold text-lg" data-cy="trackTitle">
+                {{ track.title }}
+              </p>
+              <p class="text-gray-400" data-cy="trackTitle">
+                {{ track.artist }}
+              </p>
             </div>
           </div>
           <button
