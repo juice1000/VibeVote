@@ -20,14 +20,18 @@
     <div *ngIf="currentTrack" class="mt-4"></div>
     <div class="flex justify-center space-x-2">
       <button
+        id="play-button"
+        type="button"
         (click)="isPlaying ? pause() : play()"
         class="player-btn px-4 py-2 rounded-md text-white transition duration-300 mb-6 hover:bg-gray-800"
       >
         <span class="material-icons">
-          {{ isPlaying ? "pause" : "play_arrow" }}
+          {{ isPlaying ? 'pause' : 'play_arrow' }}
         </span>
       </button>
       <button
+        id="skip-button"
+        type="button"
         (click)="next()"
         [hidden]="!currentTrack"
         class="mb-6 player-btn px-4 py-2 rounded-md text-white transition duration-300 hover:bg-gray-800"

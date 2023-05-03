@@ -18,6 +18,7 @@ export class HomeComponent {
   ) {}
 
   async createPlaylist() {
+    console.log('create method called ');
     const playlist = await this.playlistService.createPlaylist(
       this.newPlaylistName,
       this.childFriendly

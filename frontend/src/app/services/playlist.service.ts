@@ -13,6 +13,7 @@ const spotifyApiUrl = 'https://api.spotify.com/v1';
 })
 export class PlaylistService {
   accessToken = this.authService.getAccessToken();
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   async createPlaylist(title: string, childFriendly: boolean): Promise<any> {
@@ -50,6 +51,7 @@ export class PlaylistService {
         this.authService.getRefreshToken()!,
         (this.authService.getExpirationTime()! - Date.now()) / 1000
       );
+      console.log('backendPlaylist', backendPlaylist);
 
       return backendPlaylist;
     } catch (error) {
@@ -62,7 +64,7 @@ export class PlaylistService {
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
-        this.accessToken = this.authService.getAccessToken();
+        // this.accessToken = this.authService.getAccessToken();
       }
 
       const headers = new HttpHeaders().set(

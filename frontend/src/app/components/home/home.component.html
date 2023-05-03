@@ -2,7 +2,11 @@
   <div class="p-8 bg-gray-800 text-white text-center">
     <h1 class="text-2xl font-bold mb-4">Create a new party</h1>
 
-    <form (submit)="createPlaylist()" class="space-y-4">
+    <form
+      (submit)="createPlaylist()"
+      class="space-y-4"
+      data-testid="submit-form-btn"
+    >
       <input
         [(ngModel)]="newPlaylistName"
         name="newPlayListName"
