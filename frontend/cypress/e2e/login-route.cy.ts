@@ -21,9 +21,10 @@ describe('Cypress login route', () => {
 
     cy.wait(500);
     cy.addTrack();
-    //cy.wait(500);
-    //cy.play();
+
     cy.wait(500);
     cy.vote();
+    cy.wait(500);
+    cy.play();
   });
 });
