@@ -44,33 +44,33 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-// declare global {
-//   namespace Cypress {
-//     interface Chainable<Subject = any> {
-//       login: typeof login;
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable<Subject = any> {
+      login(): void;
+    }
+  }
+}
 
-// function login(overrides = {}) {
-//   Cypress.log({
-//     name: 'loginViaAuth0',
-//   });
+// const options = {
+//   method: "POST",
+//   url: Cypress.env("authUrl"),
+//   body: {
+//     grant_type: "password",
+//     username: Cypress.env("username"),
+//     password: Cypress.env("password"),
+//     //   audience: Cypress.env('auth_audience'),
+//     //   scope: 'openid profile email',
+//     //   client_id: Cypress.env('auth_client_id'),
+//     //   client_secret: Cypress.env('auth_client_secret'),
+//   },
+// };
+// cy.request(options);
 
-//   const options = {
-//     method: 'POST',
-//     url: Cypress.env('authUrl'),
-//     body: {
-//       grant_type: 'password',
-//       username: Cypress.env('username'),
-//       password: Cypress.env('password'),
-//       //   audience: Cypress.env('auth_audience'),
-//       //   scope: 'openid profile email',
-//       //   client_id: Cypress.env('auth_client_id'),
-//       //   client_secret: Cypress.env('auth_client_secret'),
-//     },
-//   };
-//   cy.request(options);
-// }
+Cypress.Commands.add('login', () => {
+  Cypress.log({
+    name: 'loginViaAuth0',
+  });
+});
 
-// Cypress.Commands.add('login', login);
+export {};
