@@ -25,15 +25,17 @@ Cypress.Commands.add('vote', () => {
   let currentVote: number;
   cy.get(
     'body > app-root > app-playlist > div > div:nth-child(2) > div > div > div > button'
-  )
-    .then(function ($elem) {
-      // expect($elem.text()).to.equal(' Vote (0) ');
-      const match = $elem.text().match(/\d/);
-      if (match) {
-        currentVote = parseInt(match[0]);
-      }
-    })
-    .click();
+  ).then(function ($elem) {
+    // expect($elem.text()).to.equal(' Vote (0) ');
+    const match = $elem.text().match(/\d/);
+    if (match) {
+      currentVote = parseInt(match[0]);
+    }
+  });
+
+  cy.get(
+    'body > app-root > app-playlist > div > div:nth-child(2) > div > div > div > button'
+  ).click();
 
   cy.wait(500);
   cy.get(
