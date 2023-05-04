@@ -7,6 +7,8 @@
       "jasmine"
     ]
   },
+//   "exclude": ["cypress.config.ts"],
+// "files": ["cypress.config.ts"],
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"

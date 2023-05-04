@@ -1,3 +1,4 @@
+import { tick } from '@angular/core/testing';
 Cypress.on('uncaught:exception', (err, runnable) => {
   // returning false here prevents Cypress from
   // failing the test
@@ -39,25 +40,33 @@ describe('VibeVote', () => {
     cy.get('[data-cy="partyInput"]').type('2rsqrLzUVHWx1Z2JmrZEMv');
     cy.wait(1000);
     cy.get('.mt-2').click();
-    let count = 0;
-    let voteCount = cy
+    cy.wait(1000);
+    let oldCount = cy
       .get(':nth-child(1) > .justify-between')
       .find('[data-cy="voteNum"]')
       .invoke('text')
       .then(text => {
-        console.log(text.match(/\d+/));
-        count += text.match(/\d+/);
-      });
+        // console.log('text ', text);
+        console.log('count ', text.match(/\d+/));
+        let count = text.match(/\d+/);
+        expect(count).not.to.be.null;
+        return text.match(/\d+/)[0];
+      })
+      .as('oldCount');
+    cy.wait(1000);
+    console.log('vote count!!!! ', oldCount);
     cy.get(':nth-child(1) > .justify-between > .px-4').click();
+    cy.wait(1000);
+
     let newCount = cy
       .get(':nth-child(1) > .justify-between')
       .find('[data-cy="voteNum"]')
       .invoke('text')
 
-      .then(text => {
-        let count = text.match(/\d+/);
-        return count;
+      .then(function (text) {
+        console.log('OLD COUNT !!!', this['oldCount']);
+        const newCount = text.replace(/[^0-9]/g, '');
+        expect(newCount).to.equal(Number(this['oldCount']) + 1);
       });
-    expect(newCount).to.equal(count + 1);
   });
 });

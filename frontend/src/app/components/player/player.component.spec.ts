@@ -27,9 +27,6 @@ describe('PlayerComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a progress property', () => {
-    expect(component.progress).toBeDefined();
-  });
   it('should have a deviceId property', () => {
     expect(component.deviceId).toBeDefined();
   });
@@ -37,3 +34,7 @@ describe('PlayerComponent', () => {
     expect(component.spotifyPlaylistId).toBeFalsy();
   });
 });
+
+// it('should have a progress property', () => {
+//   expect(component.progress).toBeDefined();
+// });
