@@ -12,7 +12,7 @@ export class AuthService {
   URL = 'http://localhost:3000';
 
   constructor(private http: HttpClient, private route: ActivatedRoute) {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.subscribe(params => {
       if (params['accessToken']) {
         this.accessToken = params['accessToken'];
         localStorage.setItem('accessToken', this.accessToken!);
