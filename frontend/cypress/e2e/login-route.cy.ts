@@ -6,7 +6,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   return false;
 });
 describe('Cypress login route', () => {
-  it('logs in with spotify and creates a new playlist', () => {
+  it('logs in with spotify through regular login, creates a new playlist, adds a song and votes it up', () => {
     cy.visit('http://localhost:4200');
     cy.get('[data-cy="loginWithSpotify"]').click();
     cy.wait(300);
@@ -19,32 +19,12 @@ describe('Cypress login route', () => {
     cy.get('[data-cy="playListInput"]').click().type('habibi');
     cy.get('[data-cy="playListSubmit"]').click();
 
-    // cy.addSong();
+    cy.wait(500);
+    cy.addTrack();
+
+    cy.wait(500);
+    cy.vote();
+    cy.wait(500);
+    cy.play();
   });
-
-  // it('should be able to add a song', () => {
-  //   cy.get('[data-cy="partyInput"]').type('6oZDCanh1AozI2LdFG0Cbj');
-  //   cy.get('.mt-2').click();
-
-  //   cy.get('.add-track-btn').click();
-  //   cy.get('.relative > .w-full').type('Tool The Pot{enter}');
-  //   cy.wait(500);
-  //   cy.get('.absolute > :nth-child(1)').click();
-  //   cy.get('[data-cy="card"]')
-  //     .find('[data-cy="trackTitle"]')
-  //     .then((items) => {
-  //       const list = Array.from(items, (item) => item.innerText.toLowerCase());
-  //       console.log(list);
-  //       expect(list).to.include('tool');
-  //       expect(list).to.include('the pot');
-  //     });
-  // });
-  // it('user should be able to vote', () => {
-  //   cy.get('[data-cy="partyInput"]').type('6oZDCanh1AozI2LdFG0Cbj');
-  //   cy.get('.mt-2').click();
-  //   let voteCount = cy.get('.pt-2 > :nth-child(2)').find('button');
-  //   console.log('voteCount' + voteCount);
-  //   cy.get('.pt-2 > :nth-child(2)').find('button').click();
-  //   cy.get('.justify-between > .px-4').click();
-  // });
 });
