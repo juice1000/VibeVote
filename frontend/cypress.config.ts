@@ -6,8 +6,8 @@ export default defineConfig({
   },
 
   env: {
-    username: 'julienlook@gmx.de',
-    password: 'Akai.smkf5',
+    username: 'username',
+    password: 'password',
     authUrl: 'https://accounts.spotify.com/en/login',
   },
   component: {
