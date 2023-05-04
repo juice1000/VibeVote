@@ -37,7 +37,7 @@ Cypress.Commands.add('vote', () => {
     'body > app-root > app-playlist > div > div:nth-child(2) > div > div > div > button'
   ).click();
 
-  cy.wait(500);
+  cy.wait(2000);
   cy.get(
     'body > app-root > app-playlist > div > div:nth-child(2) > div > div > div > button'
   ).then(function ($elem) {
