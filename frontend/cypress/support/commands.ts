@@ -5,6 +5,7 @@ declare global {
       addTrack(): void;
       vote(): void;
       play(): void;
+      checkTrack(): void;
     }
   }
 }
@@ -17,8 +18,19 @@ Cypress.Commands.add('login', () => {
 
 Cypress.Commands.add('addTrack', () => {
   cy.get('.add-track-btn').click();
-  cy.get('.relative > .w-full').type('Tool The Pot{enter}');
+  cy.get('.relative > .w-full').type('Shakira{enter}');
   cy.get('.absolute > :nth-child(1)').click();
+});
+
+Cypress.Commands.add('checkTrack', () => {
+  cy.get('[data-cy="card"]')
+    .find('[data-cy="trackTitle"]')
+    .then((items) => {
+      const list = Array.from(items, (item) => item.innerText.toLowerCase());
+      console.log(list);
+      expect(list).to.include('tool');
+      expect(list).to.include('the pot');
+    });
 });
 
 Cypress.Commands.add('vote', () => {

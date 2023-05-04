@@ -13,30 +13,29 @@ describe('Cypress no-login route', () => {
 
     cy.wait(500);
 
-    // only works if track is not there yet
-    const currentTracks: string[] = [];
-    cy.get('[data-cy="card"]')
-      .find('[data-cy="trackTitle"]')
-      .then((items) => {
-        Array.from(items, (item) =>
-          currentTracks.push(item.innerText.toLowerCase())
-        );
-        if (!currentTracks.includes('the pot')) {
-          cy.log('ADDING TRACK');
-          cy.addTrack();
-          cy.wait(500);
-          cy.get('[data-cy="card"]')
-            .find('[data-cy="trackTitle"]')
-            .then((items) => {
-              const list = Array.from(items, (item) =>
-                item.innerText.toLowerCase()
-              );
-              console.log(list);
-              expect(list).to.include('tool');
-              expect(list).to.include('the pot');
-            });
-        }
-      });
+    try {
+      // only works if track is not there yet
+      const currentTracks: string[] = [];
+      cy.get('[data-cy="card"]')
+        .find('[data-cy="trackTitle"]')
+        .then((items) => {
+          Array.from(items, (item) =>
+            currentTracks.push(item.innerText.toLowerCase())
+          );
+          if (!currentTracks.includes('the pot')) {
+            cy.log('ADDING TRACK');
+            cy.addTrack();
+            cy.wait(500);
+            cy.checkTrack();
+          }
+        });
+    } catch {
+      cy.log('ADDING TRACK');
+      cy.addTrack();
+      cy.wait(500);
+      cy.checkTrack();
+    }
+
     cy.wait(500);
     cy.vote();
     cy.wait(500);

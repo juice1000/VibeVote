@@ -20,6 +20,8 @@ describe('Cypress login route', () => {
     cy.get('[data-cy="playListSubmit"]').click();
 
     cy.wait(500);
+
+    // disable in the second run to not have multiple elements in list
     cy.addTrack();
 
     cy.wait(500);
