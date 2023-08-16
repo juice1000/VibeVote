@@ -102,6 +102,12 @@ export class PlaylistComponent implements OnInit {
     this.addTrackVisible = true;
   }
 
+  async removePlaylist(playlistId: string): Promise<void> {
+    console.log('called removePlaylist');
+    const response = this.playlistService.removePlaylist(playlistId);
+    console.log(response);
+  }
+
   async onAddTrackModalClose(searchResult: string | null): Promise<void> {
     this.addTrackVisible = false;
 

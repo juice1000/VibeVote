@@ -60,6 +60,30 @@ export class PlaylistService {
     }
   }
 
+  async removePlaylist(playlistId: string): Promise<any> {
+    try {
+      if (this.authService.isTokenExpired() || !this.accessToken) {
+        await this.authService.refreshAccessToken();
+        this.accessToken = this.authService.getAccessToken();
+      }
+
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + this.accessToken
+      );
+
+      const deletedResponse: any = await firstValueFrom(
+        this.http.delete(`${spotifyApiUrl}/playlists/${playlistId}/followers`, {
+          headers,
+        })
+      );
+
+      return deletedResponse;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async getUserId(): Promise<string> {
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {
