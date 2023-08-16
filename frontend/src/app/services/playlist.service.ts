@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 
 const URL = 'http://localhost:3000';
-
 const spotifyApiUrl = 'https://api.spotify.com/v1';
 
 @Injectable({
@@ -72,13 +71,17 @@ export class PlaylistService {
         'Bearer ' + this.accessToken
       );
 
-      const deletedResponse: any = await firstValueFrom(
+      const deletedResponseSpotify: any = await firstValueFrom(
         this.http.delete(`${spotifyApiUrl}/playlists/${playlistId}/followers`, {
           headers,
         })
       );
 
-      return deletedResponse;
+      return await firstValueFrom(
+        this.http.delete(`${URL}/api/playlist/${playlistId}/delete-playlist`, {
+          observe: 'response',
+        })
+      );
     } catch (err) {
       console.error(err);
     }

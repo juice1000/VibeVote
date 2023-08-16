@@ -14,7 +14,7 @@
 
       <button
         class="add-track-btn w-full mt-4 px-4 py-2 hover:bg-neutral-700 rounded-md text-white border border-neutral-700 transition duration-300"
-        (click)="removePlaylist(playlist.spotifyPlaylistId)">Remove Playlist</button>
+        (click)="removePlaylist(playlist.spotifyPlaylistId)">Delete Playlist</button>
       <app-add-track [spotifyPlaylistId]="playlist.spotifyPlaylistId" [isVisible]="addTrackVisible"
         (close)="onAddTrackModalClose($event)"></app-add-track>
     </div>

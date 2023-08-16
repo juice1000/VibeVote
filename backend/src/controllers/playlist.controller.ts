@@ -191,7 +191,7 @@ const vote = async (req: any, res: any) => {
       return;
     }
 
-    const track = playlist.tracks.find(t => t.spotifyId === spotifyId);
+    const track = playlist.tracks.find((t) => t.spotifyId === spotifyId);
 
     if (!track) {
       res.status(404).json({ error: 'Track not found in playlist' });
@@ -314,7 +314,9 @@ const deletePlaylist = async (req: any, res: any) => {
     };
     socketHandler(socketData);
 
-    res.status(201).json(deletedPlaylist.id);
+    // will redirect back to login after job is finished
+    res.status(201).send();
+    return;
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: 'Error deleting playlists' });
