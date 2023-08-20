@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
+import { Socket } from 'ngx-socket-io';
 
 const URL = 'http://localhost:3000';
 const spotifyApiUrl = 'https://api.spotify.com/v1';
@@ -13,7 +14,11 @@ const spotifyApiUrl = 'https://api.spotify.com/v1';
 export class PlaylistService {
   accessToken = this.authService.getAccessToken();
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private socket: Socket
+  ) {}
 
   async createPlaylist(title: string, childFriendly: boolean): Promise<any> {
     try {
@@ -51,7 +56,7 @@ export class PlaylistService {
         (this.authService.getExpirationTime()! - Date.now()) / 1000
       );
       console.log('backendPlaylist', backendPlaylist);
-
+      this.socket.emit('createdPlaylist');
       return backendPlaylist;
     } catch (error) {
       console.error('Failed to create playlist', error);

@@ -1,12 +1,11 @@
 <div
   class="flex flex-col items-center pt-2 bg-gray-850 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen">
   <div class="max-w-lg w-full px-8">
-    <app-spotify-player [spotifyPlaylistId]="playlist.spotifyPlaylistId"></app-spotify-player>
-
     <div *ngIf="!playlist">
       <p>Loading...</p>
     </div>
     <div *ngIf="playlist">
+      <app-spotify-player [spotifyPlaylistId]="playlist.spotifyPlaylistId"></app-spotify-player>
       <button (click)="addTrack()"
         class="add-track-btn w-full px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white transition duration-300">
         Add track
@@ -25,26 +24,28 @@
       <span class="text-green-500">Vibe</span>
     </h1>
     <div class="lg:h-[calc(100vh-8rem)] lg:overflow-y-auto custom-scrollbar">
-      <div class="mt-4 w-full" *ngFor="let track of playlist.tracks; let i = index">
-        <div
-          class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300">
-          <div class="flex items-center w-3/4" data-cy="card">
-            <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16 rounded-md" />
-            <div class="ml-4">
-              <p class="font-bold text-lg" data-cy="trackTitle">
-                {{ track.title }}
-              </p>
-              <p class="text-gray-400" data-cy="trackTitle">
-                {{ track.artist }}
-              </p>
+      <div *ngIf="playlist">
+        <div class="mt-4 w-full" *ngFor="let track of playlist.tracks; let i = index">
+          <div
+            class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300">
+            <div class="flex items-center w-3/4" data-cy="card">
+              <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16 rounded-md" />
+              <div class="ml-4">
+                <p class="font-bold text-lg" data-cy="trackTitle">
+                  {{ track.title }}
+                </p>
+                <p class="text-gray-400" data-cy="trackTitle">
+                  {{ track.artist }}
+                </p>
+              </div>
             </div>
-          </div>
-          <button (click)="vote(track.id, track.spotifyId, i)" [ngClass]="{
+            <button (click)="vote(track.id, track.spotifyId, i)" [ngClass]="{
               'bg-green-600 hover:bg-green-700': !userVotes[i],
               'bg-red-600 hover:bg-red-700': userVotes[i]
             }" class="px-4 py-2 rounded-md text-white transition duration-300">
-            Vote ({{ track.votes.length }})
-          </button>
+              Vote ({{ track.votes.length }})
+            </button>
+          </div>
         </div>
       </div>
     </div>

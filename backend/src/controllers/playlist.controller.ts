@@ -76,7 +76,7 @@ const addTrackToPlaylist = async (req: any, res: any) => {
   try {
     const { playlistId } = req.params;
     const { trackId, accessToken } = req.body;
-    console.log('token', accessToken);
+    // console.log('token', accessToken);
     spotifyApi.setAccessToken(accessToken);
 
     const playlist = await prisma.playlist.findUnique({

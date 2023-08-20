@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { PlaylistService } from 'src/app/services/playlist.service';
 
 @Component({
@@ -23,6 +22,13 @@ export class HomeComponent {
       this.newPlaylistName,
       this.childFriendly
     );
+    // socket.emit('clientStateChange', {
+    //   playlistId: playlist.spotifyPlaylistId,
+    //   currentTrack: '',
+    //   progress: '',
+    //   isPlaying: '',
+    // });
+
     this.router.navigate(['/playlist', playlist.spotifyPlaylistId]);
   }
 }
