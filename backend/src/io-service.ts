@@ -17,11 +17,11 @@ export const checkConnection = function (io: any) {
     isPlaying: false,
   };
   io.on('connection', (socket: any) => {
-    console.log('User connected:', socket.id);
+    console.log('User connected with socketId:', socket.id);
     connection = true;
 
     const timeout = setTimeout(() => {
-      // console.log('still in', currentState.playlistId);
+      console.log('still in', currentState.playlistId, connection);
       if (connection === true && currentState.playlistId !== '') {
         console.log('times up buddy', socket.id);
         // here we terminate the session and delete the playlist after some inactivity
@@ -33,9 +33,9 @@ export const checkConnection = function (io: any) {
       }
     }, 5000);
 
-    socket.on('createdPlaylist', () => {
-      // TODO: update state object
-      console.log('event received');
+    socket.on('createdPlaylist', (playlistId: string) => {
+      console.log('playlist created', playlistId);
+      currentState.playlistId = playlistId;
     });
     socket.on('voteUpdated', ({ playlistId, trackId }: { playlistId: String; trackId: String }) => {
       console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);

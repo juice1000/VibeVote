@@ -56,7 +56,7 @@ export class PlaylistService {
         (this.authService.getExpirationTime()! - Date.now()) / 1000
       );
       console.log('backendPlaylist', backendPlaylist);
-      this.socket.emit('createdPlaylist');
+      this.socket.emit('createdPlaylist', backendPlaylist.spotifyPlaylistId);
       return backendPlaylist;
     } catch (error) {
       console.error('Failed to create playlist', error);
