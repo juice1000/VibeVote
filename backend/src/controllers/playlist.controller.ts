@@ -1,4 +1,4 @@
-import spotifyApi from '../config/spotify';
+import spotifyApi from '@config/spotify';
 import { socketHandler } from '../io-service';
 import prisma from './prismaClient';
 

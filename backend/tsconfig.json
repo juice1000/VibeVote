@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
@@ -9,9 +12,8 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      // "*": ["node_modules/*"],
-      "@controllers/*": ["src/controllers/*"],
       "@config/*": ["src/config/*"],
+      "@controllers/*": ["src/controllers/*"],
       "@root": ["src"]
     },
     "strictNullChecks": true

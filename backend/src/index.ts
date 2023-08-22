@@ -11,9 +11,10 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { checkConnection } from './io-service';
 
-import passport from './config/passport';
+import passport from '@config/passport';
 import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
+// import { updateSessions } from '@controllers/session.controller';
 
 const app = express();
 //Enable CORS

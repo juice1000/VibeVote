@@ -1,5 +1,5 @@
-import '../config/passport';
-import spotifyApi from '../config/spotify';
+import '@config/passport';
+import spotifyApi from '@config/spotify';
 
 const getAuthTokens = async (req: any, res: any) => {
   // we will have to test if the function gets called or not
