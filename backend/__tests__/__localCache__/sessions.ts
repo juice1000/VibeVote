@@ -1,4 +1,4 @@
-import { Session } from 'interfaces/session';
+import { Session } from '@interfaces/session';
 
 const sessionsObjects: Session[] = [];
 
