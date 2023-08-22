@@ -15,7 +15,6 @@ export function deleteSessions() {
     if (indexFirstInactiveSession !== -1) {
       const deletedSessions = sessionsObjects.splice(indexFirstInactiveSession, sessionsObjects.length);
       if (deletedSessions.length > 0) {
-        console.log(currentDateTime);
         console.log('deleted sessions: ', deletedSessions);
       }
     }

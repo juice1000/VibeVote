@@ -25,8 +25,6 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
         console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
         io.emit('voteCountUpdated', { playlistId, trackId });
       } else {
-        console.log('expired');
-
         io.emit('sessionExpired', { playlistId });
       }
     });
@@ -35,7 +33,6 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
         console.log(`Track was added and Track list was updated`);
         io.emit('TrackListUpdated', { playlistId, trackId });
       } else {
-        console.log('expired');
         io.emit('sessionExpired', { playlistId });
       }
     });
@@ -45,7 +42,6 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
         currentState = state;
         socket.broadcast.emit('stateChange', state);
       } else {
-        console.log('expired');
         io.emit('sessionExpired', { playlistId });
       }
     });
@@ -58,7 +54,6 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       if (playlistId === '' || isActiveSession(playlistId)) {
         socket.emit('initialState', currentState);
       } else {
-        console.log('expired');
         socket.emit('sessionExpired', { playlistId });
       }
     });

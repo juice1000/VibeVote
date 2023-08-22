@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 import { Socket } from 'ngx-socket-io';
@@ -18,7 +19,15 @@ export class PlaylistService {
     private http: HttpClient,
     private authService: AuthService,
     private socket: Socket
-  ) {}
+  ) {
+    this.socket.on(
+      'sessionExpired',
+      ({ playlistId }: { playlistId: string }) => {
+        // TODO: create a UI card that blocks interactions without redirect
+        this.removePlaylist(playlistId);
+      }
+    );
+  }
 
   async createPlaylist(title: string, childFriendly: boolean): Promise<any> {
     try {
@@ -81,6 +90,7 @@ export class PlaylistService {
           headers,
         })
       );
+      console.log('deletedResponseSpotify: ', deletedResponseSpotify);
 
       return await firstValueFrom(
         this.http.delete(`${URL}/api/playlist/${playlistId}/delete-playlist`, {
