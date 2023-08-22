@@ -12,12 +12,13 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
+      "@root": ["src"],
+      "@interfaces/*": ["interfaces/*"],
       "@config/*": ["src/config/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@root": ["src"]
+      "@controllers/*": ["src/controllers/*"]
     },
     "strictNullChecks": true
   },
-  "include": ["src/**/*", "__tests__/*"],
+  "include": ["src/**/*", "__tests__/**/*"],
   "files": ["node_modules/jest-extended/types/index.d.ts"]
 }
