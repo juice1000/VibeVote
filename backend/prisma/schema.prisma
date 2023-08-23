@@ -32,7 +32,7 @@ model Track {
   imageUrl   String
   played     Boolean  @default(false)
   votes      Vote[]
-  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
   playlistId Int
 }
 
@@ -40,9 +40,9 @@ model Vote {
   id         Int      @id @default(autoincrement())
   user       String?
   guestId    String?
-  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
   playlistId Int
-  track      Track    @relation(fields: [trackId], references: [id])
+  track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
   trackId    Int
 
   @@unique([trackId, user, playlistId])
