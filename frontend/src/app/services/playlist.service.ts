@@ -97,19 +97,22 @@ export class PlaylistService {
           observe: 'response',
         })
       );
-      console.log(response);
 
       if (response.status === 201) {
         // redirect to login page
         console.log('successfully deleted the playlist');
         this.router.navigate(['/login']);
-      } else {
-        throw new Error(
-          'could not delete the playlist, error status code: ' + response.status
-        );
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      if (
+        err.status === 404 &&
+        err.error.message === 'Playlist already deleted'
+      ) {
+        // redirect to login page
+        this.router.navigate(['/login']);
+      } else {
+        console.error('Error deleting the playlist: ', err);
+      }
     }
   }
 
