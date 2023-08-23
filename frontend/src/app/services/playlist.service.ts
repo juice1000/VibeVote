@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 import { Socket } from 'ngx-socket-io';
@@ -18,7 +18,8 @@ export class PlaylistService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private socket: Socket
+    private socket: Socket,
+    private router: Router
   ) {
     this.socket.on(
       'sessionExpired',
@@ -85,18 +86,28 @@ export class PlaylistService {
         'Bearer ' + this.accessToken
       );
 
-      const deletedResponseSpotify: any = await firstValueFrom(
+      await firstValueFrom(
         this.http.delete(`${spotifyApiUrl}/playlists/${playlistId}/followers`, {
           headers,
         })
       );
-      console.log('deletedResponseSpotify: ', deletedResponseSpotify);
 
-      return await firstValueFrom(
+      const response = await firstValueFrom(
         this.http.delete(`${URL}/api/playlist/${playlistId}/delete-playlist`, {
           observe: 'response',
         })
       );
+      console.log(response);
+
+      if (response.status === 201) {
+        // redirect to login page
+        console.log('successfully deleted the playlist');
+        this.router.navigate(['/login']);
+      } else {
+        throw new Error(
+          'could not delete the playlist, error status code: ' + response.status
+        );
+      }
     } catch (err) {
       console.error(err);
     }

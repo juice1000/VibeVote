@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
-import { Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
 
 @Component({
@@ -18,7 +17,6 @@ export class PlaylistComponent implements OnInit {
   @ViewChild(AddTrackComponent) addTrackComponent!: AddTrackComponent;
 
   constructor(
-    private router: Router,
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
     private changeDetector: ChangeDetectorRef,
@@ -115,16 +113,7 @@ export class PlaylistComponent implements OnInit {
 
   async removePlaylist(playlistId: string): Promise<void> {
     console.log('called removePlaylist');
-    const response = await this.playlistService.removePlaylist(playlistId);
-    console.log(response);
-
-    if (response.status === 201) {
-      // redirect to login page
-      console.log('successfully deleted the playlist');
-      this.router.navigate(['/login']);
-    } else {
-      console.error('could not delete the playlist', response.status);
-    }
+    this.playlistService.removePlaylist(playlistId);
   }
 
   async onAddTrackModalClose(searchResult: string | null): Promise<void> {

@@ -18,7 +18,7 @@ export function deleteSessions() {
         console.log('deleted sessions: ', deletedSessions);
       }
     }
-  }, 20000); // TODO: give this a proper number
+  }, 5000); // TODO: give this a proper number
 }
 
 export function addNewSession(playlistId: string, activeUsers: string[]) {
