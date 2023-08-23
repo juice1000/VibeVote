@@ -17,6 +17,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PlayerComponent } from './components/player/player.component';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 @NgModule({
   declarations: [
@@ -41,6 +44,7 @@ import { PlayerComponent } from './components/player/player.component';
     MatInputModule,
     MatTooltipModule,
     MatSlideToggleModule,
+    SocketIoModule.forRoot(config),
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent],

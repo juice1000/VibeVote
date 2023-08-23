@@ -11,9 +11,11 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { checkConnection } from './io-service';
 
-import passport from './config/passport';
+import passport from '@config/passport';
 import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
+import sessionsObjects from '@local-cache/sessions';
+import { deleteSessions } from '@controllers/session.controller';
 
 const app = express();
 //Enable CORS
@@ -49,7 +51,9 @@ const io = new Server(server, {
     origin: 'http://localhost:4200',
   },
 });
-checkConnection(io);
+checkConnection(io, sessionsObjects);
+
+deleteSessions();
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);

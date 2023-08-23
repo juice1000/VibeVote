@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
+import { Socket } from 'ngx-socket-io';
 
 const URL = 'http://localhost:3000';
-
 const spotifyApiUrl = 'https://api.spotify.com/v1';
 
 @Injectable({
@@ -14,7 +15,20 @@ const spotifyApiUrl = 'https://api.spotify.com/v1';
 export class PlaylistService {
   accessToken = this.authService.getAccessToken();
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private socket: Socket,
+    private router: Router
+  ) {
+    this.socket.on(
+      'sessionExpired',
+      ({ playlistId }: { playlistId: string }) => {
+        // TODO: create a UI card that blocks interactions without redirect
+        this.removePlaylist(playlistId);
+      }
+    );
+  }
 
   async createPlaylist(title: string, childFriendly: boolean): Promise<any> {
     try {
@@ -52,11 +66,50 @@ export class PlaylistService {
         (this.authService.getExpirationTime()! - Date.now()) / 1000
       );
       console.log('backendPlaylist', backendPlaylist);
-
+      this.socket.emit('createdPlaylist', backendPlaylist.spotifyPlaylistId);
       return backendPlaylist;
     } catch (error) {
       console.error('Failed to create playlist', error);
       throw error;
+    }
+  }
+
+  async removePlaylist(playlistId: string): Promise<any> {
+    try {
+      if (this.authService.isTokenExpired() || !this.accessToken) {
+        await this.authService.refreshAccessToken();
+        this.accessToken = this.authService.getAccessToken();
+      }
+
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + this.accessToken
+      );
+
+      await firstValueFrom(
+        this.http.delete(`${spotifyApiUrl}/playlists/${playlistId}/followers`, {
+          headers,
+        })
+      );
+
+      const response = await firstValueFrom(
+        this.http.delete(`${URL}/api/playlist/${playlistId}/delete-playlist`, {
+          observe: 'response',
+        })
+      );
+      console.log(response);
+
+      if (response.status === 201) {
+        // redirect to login page
+        console.log('successfully deleted the playlist');
+        this.router.navigate(['/login']);
+      } else {
+        throw new Error(
+          'could not delete the playlist, error status code: ' + response.status
+        );
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 

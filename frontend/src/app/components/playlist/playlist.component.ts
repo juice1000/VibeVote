@@ -2,8 +2,7 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
-import io from 'socket.io-client';
-const socket = io('http://localhost:3000');
+import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-playlist',
@@ -20,7 +19,8 @@ export class PlaylistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private socket: Socket
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -35,33 +35,42 @@ export class PlaylistComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }
-    socket.on('voteCountUpdated', async ({ playlistId }) => {
-      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
-      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
+    this.socket.on(
+      'voteCountUpdated',
+      async ({ playlistId }: { playlistId: string }) => {
+        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+          playlistId,
+          false
+        );
+        await this.playlistService.markTracksAsPlayed(playlistId);
+        await this.playlistService.updatePlaylistOrder(playlistId);
 
-      this.changeDetector.detectChanges();
-    });
-    socket.on('TrackListUpdated', async ({ playlistId }) => {
-      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
+        this.changeDetector.detectChanges();
+      }
+    );
+    this.socket.on(
+      'TrackListUpdated',
+      async ({ playlistId }: { playlistId: string }) => {
+        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+          playlistId,
+          false
+        );
 
-      this.changeDetector.detectChanges();
-    });
-    socket.on('stateChange', async ({ playlistId }) => {
-      await this.playlistService.markTracksAsPlayed(spotifyPlaylistId!);
-      await this.playlistService.updatePlaylistOrder(spotifyPlaylistId!);
-      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
-      this.changeDetector.detectChanges();
-    });
+        this.changeDetector.detectChanges();
+      }
+    );
+    this.socket.on(
+      'stateChange',
+      async ({ playlistId }: { playlistId: string }) => {
+        await this.playlistService.markTracksAsPlayed(playlistId);
+        await this.playlistService.updatePlaylistOrder(playlistId);
+        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+          playlistId,
+          false
+        );
+        this.changeDetector.detectChanges();
+      }
+    );
   }
 
   async fetchPlaylistBySpotifyId(spotifyPlaylistId: string): Promise<void> {
@@ -92,7 +101,7 @@ export class PlaylistComponent implements OnInit {
           spotifyId
         );
       }
-      socket.emit('voteUpdated', { playlistId: spotifyPlaylistId, trackId });
+      // socket.emit('voteUpdated', { playlistId: spotifyPlaylistId, trackId });
     } catch (error) {
       console.error('Failed to vote for track', error);
     }
@@ -100,6 +109,11 @@ export class PlaylistComponent implements OnInit {
 
   async addTrack(): Promise<void> {
     this.addTrackVisible = true;
+  }
+
+  async removePlaylist(playlistId: string): Promise<void> {
+    console.log('called removePlaylist');
+    this.playlistService.removePlaylist(playlistId);
   }
 
   async onAddTrackModalClose(searchResult: string | null): Promise<void> {
@@ -113,10 +127,10 @@ export class PlaylistComponent implements OnInit {
           spotifyPlaylistId!,
           searchResult
         );
-        socket.emit('trackAdded', {
-          playlistId: spotifyPlaylistId,
-          searchResult,
-        });
+        // socket.emit('trackAdded', {
+        //   playlistId: spotifyPlaylistId,
+        //   searchResult,
+        // });
         this.playlist = await this.playlistService.updatePlaylistOrder(
           spotifyPlaylistId!
         );

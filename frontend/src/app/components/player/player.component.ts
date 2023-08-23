@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { PlayerService } from 'src/app/services/player.service';
-import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:3000');
+import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-spotify-player',
@@ -18,7 +16,8 @@ export class PlayerComponent implements OnInit {
 
   constructor(
     private playerService: PlayerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private socket: Socket
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -32,7 +31,8 @@ export class PlayerComponent implements OnInit {
     this.deviceId = await this.playerService.initializePlayer(
       this.spotifyPlaylistId
     );
-    socket.emit('requestInitialState');
+
+    this.socket.emit('requestInitialState');
 
     this.playerService.player.addListener(
       'player_state_changed',
@@ -43,13 +43,13 @@ export class PlayerComponent implements OnInit {
           this.isPlaying = !state.paused;
           const isPlaying = this.isPlaying;
 
-          socket.emit('clientStateChange', {
+          this.socket.emit('clientStateChange', {
             playlistId: this.spotifyPlaylistId,
             currentTrack: this.currentTrack,
             progress: this.progress,
             isPlaying: this.isPlaying,
           });
-          socket.emit('updateState', { state, isPlaying });
+          this.socket.emit('updateState', { state, isPlaying });
 
           this.cdr.detectChanges();
         } catch (error) {
@@ -58,12 +58,15 @@ export class PlayerComponent implements OnInit {
       }
     );
 
-    socket.on('syncState', async (state, isPlaying) => {
-      await this.updatePlayerState(state);
-      this.isPlaying = isPlaying;
-    });
+    this.socket.on(
+      'syncState',
+      async ({ state, isPlaying }: { state: any; isPlaying: boolean }) => {
+        await this.updatePlayerState(state);
+        this.isPlaying = isPlaying;
+      }
+    );
 
-    socket.on('initialState', async (state: any) => {
+    this.socket.on('initialState', async (state: any) => {
       try {
         if (this.spotifyPlaylistId === state.playlistId) {
           this.currentTrack = state.currentTrack;
@@ -89,7 +92,7 @@ export class PlayerComponent implements OnInit {
   }
 
   private loadSpotifyPlayerScript(): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if ((window as any).Spotify) {
         resolve();
         return;

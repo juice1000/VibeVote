@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
@@ -9,13 +12,14 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      // "*": ["node_modules/*"],
-      "@controllers/*": ["src/controllers/*"],
+      "@root": ["src"],
+      "@interfaces/*": ["interfaces/*"],
       "@config/*": ["src/config/*"],
-      "@root": ["src"]
+      "@controllers/*": ["src/controllers/*"],
+      "@local-cache/*": ["__tests__/__localCache__/*"]
     },
     "strictNullChecks": true
   },
-  "include": ["src/**/*", "__tests__/*"],
+  "include": ["src/**/*", "__tests__/**/*"],
   "files": ["node_modules/jest-extended/types/index.d.ts"]
 }
