@@ -2,7 +2,19 @@ import { Session } from '@interfaces/session';
 import sessionsObjects from '@local-cache/sessions';
 // import moment from 'moment';
 
-export function deleteSessions() {
+export function addNewSession(playlistId: string, userId: string) {
+  const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
+
+  const newSession: Session = {
+    playlistId: playlistId,
+    activeUsers: [userId],
+    timeout: timeout,
+  };
+  sessionsObjects.push(newSession);
+  console.log('added new session: ', sessionsObjects);
+}
+
+export function cleanupSessions() {
   setInterval(() => {
     // fetch the cache object and delete entries whose timelimit is in the past
     const currentDateTime = new Date();
@@ -21,27 +33,29 @@ export function deleteSessions() {
   }, 5000); // TODO: give this a proper number
 }
 
-export function addNewSession(playlistId: string, activeUsers: string[]) {
-  const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
-
-  const newSession: Session = {
-    playlistId: playlistId,
-    activeUsers: activeUsers,
-    timeout: timeout,
-  };
-  sessionsObjects.push(newSession);
-  console.log('added new session: ', sessionsObjects);
+export function deleteSession(playlistId: string) {
+  const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
+  const deletedSession = sessionsObjects.splice(objIndex, 1);
+  console.log('deleted sessions: ', deletedSession);
 }
 
-export function updateSession(playlistId: string, activeUsers: string[]) {
+export function updateSession(playlistId: string, userId: string, isLeaving: boolean) {
   //Find index of session object by playlistId
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
 
   // Update specified session object
   const newTimeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
-  console.log(newTimeout, new Date());
+  const activeUsers = sessionsObjects[objIndex].activeUsers;
 
-  sessionsObjects[objIndex].activeUsers = activeUsers;
+  // update active users
+  if (!activeUsers.includes(userId)) {
+    activeUsers.push(userId);
+  } else if (activeUsers.includes(userId) && isLeaving) {
+    const arrayIndex = activeUsers.findIndex((user) => user === userId);
+    activeUsers.splice(arrayIndex, 1);
+  }
+  console.log('new timeout', newTimeout);
+
   sessionsObjects[objIndex].timeout = newTimeout;
 }
 

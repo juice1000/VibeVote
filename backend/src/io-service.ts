@@ -1,6 +1,6 @@
 import { io } from './index';
 import { Session, SessionState } from '@interfaces/session';
-import { addNewSession, updateSession, isActiveSession } from '@controllers/session.controller';
+import { addNewSession, updateSession, isActiveSession, deleteSession } from '@controllers/session.controller';
 
 let connection = false;
 
@@ -23,6 +23,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
     socket.on('voteUpdated', ({ playlistId, trackId }: { playlistId: string; trackId: string }) => {
       if (isActiveSession(playlistId)) {
         console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
+        updateSession(playlistId, socket.id, false);
         io.emit('voteCountUpdated', { playlistId, trackId });
       } else {
         io.emit('sessionExpired', { playlistId });
@@ -31,6 +32,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
     socket.on('trackAdded', ({ playlistId, trackId }: { playlistId: string; trackId: string }) => {
       if (isActiveSession(playlistId)) {
         console.log(`Track was added and Track list was updated`);
+        updateSession(playlistId, socket.id, false);
         io.emit('TrackListUpdated', { playlistId, trackId });
       } else {
         io.emit('sessionExpired', { playlistId });
@@ -40,6 +42,9 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       const playlistId = state.playlistId;
       if (isActiveSession(playlistId)) {
         currentState = state;
+        console.log('clientStateChange: ', socket.id);
+
+        updateSession(playlistId, socket.id, false);
         socket.broadcast.emit('stateChange', state);
       } else {
         io.emit('sessionExpired', { playlistId });
@@ -66,6 +71,10 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
 export const socketHandler = (socketData?: any) => {
   if (connection) {
     if (socketData) {
+      // check if delete operation and update sessionsObject
+      if (socketData.command === 'playlist-deleted') {
+        deleteSession(socketData.obj.spotifyPlaylistId);
+      }
       io.in(socketData.name).emit(socketData.title, socketData.obj);
     }
   }
