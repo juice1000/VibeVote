@@ -1,6 +1,5 @@
 import { Session } from '@interfaces/session';
 import sessionsObjects from '@local-cache/sessions';
-// import moment from 'moment';
 
 export function addNewSession(playlistId: string, userId: string) {
   const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
