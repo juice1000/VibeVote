@@ -316,11 +316,16 @@ const deletePlaylist = async (req: any, res: any) => {
 
     // will redirect back to login after job is finished
     res.status(201).send();
-    return;
   } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: 'Error deleting playlists' });
+    if (err.code === 'P2025') {
+      // Record to delete does not exist
+      res.status(404).json({ message: 'Playlist already deleted' });
+    } else {
+      console.error(err);
+      res.status(400).json({ message: 'Error deleting playlist' });
+    }
   }
+  return;
 };
 
 const deleteTracks = async (req: any, res: any) => {

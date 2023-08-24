@@ -13,6 +13,7 @@ export class PlayerComponent implements OnInit {
   progress: number = 0;
   deviceId: string | null = null;
   isPlaying = false;
+  isPaused: boolean | null = null;
 
   constructor(
     private playerService: PlayerService,
@@ -38,20 +39,22 @@ export class PlayerComponent implements OnInit {
       'player_state_changed',
       async (state: any) => {
         try {
-          this.currentTrack = state.track_window.current_track;
-          this.progress = state.position;
-          this.isPlaying = !state.paused;
-          const isPlaying = this.isPlaying;
+          if (state.paused !== this.isPaused || this.isPaused === null) {
+            this.currentTrack = state.track_window.current_track;
+            this.progress = state.position;
+            this.isPlaying = !state.paused;
+            this.isPaused = state.paused;
+            const isPlaying = this.isPlaying;
 
-          this.socket.emit('clientStateChange', {
-            playlistId: this.spotifyPlaylistId,
-            currentTrack: this.currentTrack,
-            progress: this.progress,
-            isPlaying: this.isPlaying,
-          });
-          this.socket.emit('updateState', { state, isPlaying });
-
-          this.cdr.detectChanges();
+            this.socket.emit('clientStateChange', {
+              playlistId: this.spotifyPlaylistId,
+              currentTrack: this.currentTrack,
+              progress: this.progress,
+              isPlaying: this.isPlaying,
+            });
+            this.socket.emit('updateState', { state, isPlaying });
+            this.cdr.detectChanges();
+          }
         } catch (error) {
           console.error('Error updating current track', error);
         }
@@ -71,6 +74,7 @@ export class PlayerComponent implements OnInit {
         if (this.spotifyPlaylistId === state.playlistId) {
           this.currentTrack = state.currentTrack;
           this.progress = state.progress;
+          console.log('initial state', state.isPlaying);
           this.isPlaying = state.isPlaying;
 
           if (state.isPlaying) {

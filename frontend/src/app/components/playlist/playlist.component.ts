@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+  Output,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
@@ -15,7 +21,7 @@ export class PlaylistComponent implements OnInit {
   addTrackVisible = false;
 
   @ViewChild(AddTrackComponent) addTrackComponent!: AddTrackComponent;
-
+  @Output() sessionExpired = false;
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
@@ -35,6 +41,14 @@ export class PlaylistComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }
+    this.socket.on(
+      'sessionExpired',
+      ({ playlistId }: { playlistId: string }) => {
+        if (spotifyPlaylistId === playlistId) {
+          this.sessionExpired = true;
+        }
+      }
+    );
     this.socket.on(
       'voteCountUpdated',
       async ({ playlistId }: { playlistId: string }) => {
