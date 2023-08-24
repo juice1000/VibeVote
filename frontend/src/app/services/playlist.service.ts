@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
@@ -20,15 +20,7 @@ export class PlaylistService {
     private authService: AuthService,
     private socket: Socket,
     private router: Router
-  ) {
-    this.socket.on(
-      'sessionExpired',
-      ({ playlistId }: { playlistId: string }) => {
-        // TODO: create a UI card that blocks interactions without redirect
-        this.removePlaylist(playlistId);
-      }
-    );
-  }
+  ) {}
 
   async createPlaylist(title: string, childFriendly: boolean): Promise<any> {
     try {
@@ -74,7 +66,11 @@ export class PlaylistService {
     }
   }
 
-  async removePlaylist(playlistId: string): Promise<any> {
+  async removePlaylist(playlistId: string | null): Promise<any> {
+    if (!playlistId) {
+      console.error('no playlist id provided, redirecting to login');
+      this.router.navigate(['/login']);
+    }
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();

@@ -1,16 +1,17 @@
 <div class="flex items-center justify-center min-h-screen bg-gray-900">
   <div class="p-8 bg-gray-800 text-white text-center">
     <h1 class="text-2xl font-bold mb-4">Create a new party</h1>
-
     <form (submit)="createPlaylist()" class="space-y-4" data-testid="submit-form-btn">
       <input data-cy="playListInput" [(ngModel)]="newPlaylistName" name="newPlayListName" placeholder="Party name"
         class="text-center mt-1 block w-full rounded-md bg-gray-700 text-white border-transparent focus:border-green-600 focus:bg-gray-600 focus:ring-0 px-3 py-2" />
-      <button data-cy="playListSubmit" type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition duration-300">
+      <button data-cy="playListSubmit" type="submit"
+        class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition duration-300">
         Create Party
       </button>
       <div class="mt-2">
         <label for="childFriendly" class="inline-flex items-center">
-          <mat-slide-toggle [(ngModel)]="childFriendly" name="childFriendly" id="childFriendly" class="mr-2"></mat-slide-toggle>
+          <mat-slide-toggle [(ngModel)]="childFriendly" name="childFriendly" id="childFriendly"
+            class="mr-2"></mat-slide-toggle>
           <span class="mr-1 text-sm text-gray-200">Child Friendly</span>
           <i class="fas fa-info-circle text-gray-200" matTooltip="Child Friendly mode filters out explicit songs"></i>
         </label>

@@ -22,7 +22,7 @@ export function deleteSessions() {
 }
 
 export function addNewSession(playlistId: string, activeUsers: string[]) {
-  const timeout = new Date(new Date().getTime() + 60000);
+  const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
 
   const newSession: Session = {
     playlistId: playlistId,
@@ -38,7 +38,7 @@ export function updateSession(playlistId: string, activeUsers: string[]) {
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
 
   // Update specified session object
-  const newTimeout = new Date(new Date().getTime() + 60000);
+  const newTimeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
   console.log(newTimeout, new Date());
 
   sessionsObjects[objIndex].activeUsers = activeUsers;
