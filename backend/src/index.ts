@@ -15,7 +15,7 @@ import passport from '@config/passport';
 import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
 import sessionsObjects from '@local-cache/sessions';
-import { deleteSessions } from '@controllers/session.controller';
+import { cleanupSessions } from '@controllers/session.controller';
 
 const app = express();
 //Enable CORS
@@ -53,7 +53,7 @@ const io = new Server(server, {
 });
 checkConnection(io, sessionsObjects);
 
-deleteSessions();
+cleanupSessions();
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);

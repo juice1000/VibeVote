@@ -2,7 +2,19 @@ import { Session } from '@interfaces/session';
 import sessionsObjects from '@local-cache/sessions';
 // import moment from 'moment';
 
-export function deleteSessions() {
+export function addNewSession(playlistId: string, activeUsers: string[]) {
+  const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
+
+  const newSession: Session = {
+    playlistId: playlistId,
+    activeUsers: activeUsers,
+    timeout: timeout,
+  };
+  sessionsObjects.push(newSession);
+  console.log('added new session: ', sessionsObjects);
+}
+
+export function cleanupSessions() {
   setInterval(() => {
     // fetch the cache object and delete entries whose timelimit is in the past
     const currentDateTime = new Date();
@@ -21,16 +33,12 @@ export function deleteSessions() {
   }, 5000); // TODO: give this a proper number
 }
 
-export function addNewSession(playlistId: string, activeUsers: string[]) {
-  const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
+export function deleteSession(playlistId: string) {
+  const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
+  const deletedSession = sessionsObjects.splice(objIndex, 1);
+  console.log(deletedSession, sessionsObjects);
 
-  const newSession: Session = {
-    playlistId: playlistId,
-    activeUsers: activeUsers,
-    timeout: timeout,
-  };
-  sessionsObjects.push(newSession);
-  console.log('added new session: ', sessionsObjects);
+  return deletedSession;
 }
 
 export function updateSession(playlistId: string, activeUsers: string[]) {

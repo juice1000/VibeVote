@@ -1,6 +1,6 @@
 import { io } from './index';
 import { Session, SessionState } from '@interfaces/session';
-import { addNewSession, updateSession, isActiveSession } from '@controllers/session.controller';
+import { addNewSession, updateSession, isActiveSession, deleteSession } from '@controllers/session.controller';
 
 let connection = false;
 
@@ -66,6 +66,10 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
 export const socketHandler = (socketData?: any) => {
   if (connection) {
     if (socketData) {
+      // check if delete operation and update sessionsObject
+      if (socketData.command === 'playlist-deleted') {
+        deleteSession(socketData.obj.spotifyPlaylistId);
+      }
       io.in(socketData.name).emit(socketData.title, socketData.obj);
     }
   }
