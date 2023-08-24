@@ -40,6 +40,9 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       const playlistId = state.playlistId;
       if (isActiveSession(playlistId)) {
         currentState = state;
+        console.log('clientStateChange: ', socket.id);
+
+        updateSession(playlistId, socket.id, false);
         socket.broadcast.emit('stateChange', state);
       } else {
         io.emit('sessionExpired', { playlistId });

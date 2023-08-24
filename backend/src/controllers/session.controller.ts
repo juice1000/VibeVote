@@ -41,15 +41,21 @@ export function deleteSession(playlistId: string) {
   return deletedSession;
 }
 
-export function updateSession(playlistId: string, activeUsers: string[]) {
+export function updateSession(playlistId: string, userId: string, isLeaving: boolean) {
   //Find index of session object by playlistId
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
 
   // Update specified session object
   const newTimeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
-  console.log(newTimeout, new Date());
+  const activeUsers = sessionsObjects[objIndex].activeUsers;
 
-  sessionsObjects[objIndex].activeUsers = activeUsers;
+  // update active users
+  if (!activeUsers.includes(userId)) {
+    activeUsers.push(userId);
+  } else if (activeUsers.includes(userId) && isLeaving) {
+    const arrayIndex = activeUsers.findIndex((user) => user === userId);
+    activeUsers.splice(arrayIndex, 1);
+  }
   sessionsObjects[objIndex].timeout = newTimeout;
 }
 
