@@ -23,6 +23,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
     socket.on('voteUpdated', ({ playlistId, trackId }: { playlistId: string; trackId: string }) => {
       if (isActiveSession(playlistId)) {
         console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
+        updateSession(playlistId, socket.id, false);
         io.emit('voteCountUpdated', { playlistId, trackId });
       } else {
         io.emit('sessionExpired', { playlistId });

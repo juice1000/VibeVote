@@ -54,6 +54,8 @@ export function updateSession(playlistId: string, userId: string, isLeaving: boo
     const arrayIndex = activeUsers.findIndex((user) => user === userId);
     activeUsers.splice(arrayIndex, 1);
   }
+  console.log('new timeout', newTimeout);
+
   sessionsObjects[objIndex].timeout = newTimeout;
 }
 
