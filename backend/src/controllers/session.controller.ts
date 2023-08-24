@@ -2,12 +2,12 @@ import { Session } from '@interfaces/session';
 import sessionsObjects from '@local-cache/sessions';
 // import moment from 'moment';
 
-export function addNewSession(playlistId: string, activeUsers: string[]) {
+export function addNewSession(playlistId: string, userId: string) {
   const timeout = new Date(new Date().getTime() + 60000); // TODO: give this a proper number too
 
   const newSession: Session = {
     playlistId: playlistId,
-    activeUsers: activeUsers,
+    activeUsers: [userId],
     timeout: timeout,
   };
   sessionsObjects.push(newSession);
@@ -36,9 +36,7 @@ export function cleanupSessions() {
 export function deleteSession(playlistId: string) {
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
   const deletedSession = sessionsObjects.splice(objIndex, 1);
-  console.log(deletedSession, sessionsObjects);
-
-  return deletedSession;
+  console.log('deleted sessions: ', deletedSession);
 }
 
 export function updateSession(playlistId: string, userId: string, isLeaving: boolean) {

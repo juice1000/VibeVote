@@ -102,20 +102,12 @@ export class PlaylistComponent implements OnInit {
     try {
       const spotifyPlaylistId =
         this.route.snapshot.paramMap.get('spotifyPlaylistId');
-      if (this.userVotes[index]) {
-        await this.playlistService.deleteVote(
-          spotifyPlaylistId!,
-          trackId,
-          spotifyId
-        );
-      } else {
-        await this.playlistService.voteForTrack(
-          spotifyPlaylistId!,
-          trackId,
-          spotifyId
-        );
-      }
-      // socket.emit('voteUpdated', { playlistId: spotifyPlaylistId, trackId });
+
+      await this.playlistService.voteForTrack(
+        spotifyPlaylistId!,
+        trackId,
+        spotifyId
+      );
     } catch (error) {
       console.error('Failed to vote for track', error);
     }
@@ -141,10 +133,6 @@ export class PlaylistComponent implements OnInit {
           spotifyPlaylistId!,
           searchResult
         );
-        // socket.emit('trackAdded', {
-        //   playlistId: spotifyPlaylistId,
-        //   searchResult,
-        // });
         this.playlist = await this.playlistService.updatePlaylistOrder(
           spotifyPlaylistId!
         );

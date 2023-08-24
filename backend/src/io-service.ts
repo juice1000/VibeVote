@@ -31,6 +31,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
     socket.on('trackAdded', ({ playlistId, trackId }: { playlistId: string; trackId: string }) => {
       if (isActiveSession(playlistId)) {
         console.log(`Track was added and Track list was updated`);
+        updateSession(playlistId, socket.id, false);
         io.emit('TrackListUpdated', { playlistId, trackId });
       } else {
         io.emit('sessionExpired', { playlistId });

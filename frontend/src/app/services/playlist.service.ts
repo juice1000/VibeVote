@@ -175,6 +175,10 @@ export class PlaylistService {
           accessToken,
         })
       );
+      this.socket.emit('trackAdded', {
+        playlistId: spotifyPlaylistId,
+        trackId,
+      });
     } catch (error) {
       console.error('Failed to add track to playlist', error);
       throw error;
@@ -195,29 +199,9 @@ export class PlaylistService {
           spotifyId,
         })
       );
+      this.socket.emit('voteUpdated', { playlistId: playlistId, trackId });
     } catch (error) {
       console.error('Failed to vote for track', error);
-      throw error;
-    }
-  }
-
-  async deleteVote(
-    playlistId: string,
-    trackId: string,
-    spotifyId: string
-  ): Promise<void> {
-    try {
-      const guestId = getGuestId();
-
-      await firstValueFrom(
-        this.http.post(`${URL}/api/playlist/${playlistId}/vote`, {
-          trackId,
-          guestId,
-          spotifyId,
-        })
-      );
-    } catch (error) {
-      console.error('Failed to delete vote', error);
       throw error;
     }
   }
