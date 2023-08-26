@@ -32,6 +32,7 @@ export class PlayerComponent implements OnInit {
     this.deviceId = await this.playerService.initializePlayer(
       this.spotifyPlaylistId
     );
+    console.log(this.deviceId);
 
     this.socket.emit('requestInitialState');
 

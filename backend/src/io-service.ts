@@ -15,30 +15,31 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
     console.log('User connected with socketId:', socket.id);
     connection = true;
 
-    socket.on('createdPlaylist', (playlistId: string) => {
-      console.log('playlist created', playlistId);
+    socket.on('createdPlaylist', (playlistId: string, ownerId: string) => {
+      console.log('playlist created', playlistId, ownerId);
       currentState.playlistId = playlistId;
-      addNewSession(playlistId, socket.id);
+      addNewSession(playlistId, ownerId);
     });
-    socket.on('voteUpdated', ({ playlistId, trackId }: { playlistId: string; trackId: string }) => {
+    socket.on('voteUpdated', (playlistId: string, trackId: string, guestId: string) => {
       if (isActiveSession(playlistId)) {
         console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
-        updateSession(playlistId, socket.id, false);
+        updateSession(playlistId, guestId, false);
         io.emit('voteCountUpdated', { playlistId, trackId });
       } else {
         io.emit('sessionExpired', { playlistId });
       }
     });
-    socket.on('trackAdded', ({ playlistId, trackId }: { playlistId: string; trackId: string }) => {
+    socket.on('trackAdded', (playlistId: string, trackId: string, guestId: string) => {
       if (isActiveSession(playlistId)) {
         console.log(`Track was added and Track list was updated`);
-        updateSession(playlistId, socket.id, false);
+        updateSession(playlistId, guestId, false);
         io.emit('TrackListUpdated', { playlistId, trackId });
       } else {
         io.emit('sessionExpired', { playlistId });
       }
     });
     socket.on('clientStateChange', (state: SessionState) => {
+      // TODO: add guestId to arguments
       const playlistId = state.playlistId;
       if (isActiveSession(playlistId)) {
         currentState = state;
@@ -50,7 +51,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
         io.emit('sessionExpired', { playlistId });
       }
     });
-    socket.on('updateState', ({ state, isPlaying }: { state: any; isPlaying: Boolean }) => {
+    socket.on('updateState', (state: any, isPlaying: Boolean) => {
       console.log('updateState received, track: ', state.track_window.current_track.id, 'is playing: ', isPlaying);
       socket.broadcast.emit('syncState', state, isPlaying);
     });
@@ -73,6 +74,7 @@ export const socketHandler = (socketData?: any) => {
     if (socketData) {
       // check if delete operation and update sessionsObject
       if (socketData.command === 'playlist-deleted') {
+        // TODO: add guestId to arguments
         deleteSession(socketData.obj.spotifyPlaylistId);
       }
       io.in(socketData.name).emit(socketData.title, socketData.obj);

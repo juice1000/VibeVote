@@ -30,6 +30,7 @@ export class PlaylistService {
       }
 
       const userId = await this.getUserId();
+      const ownerId = getGuestId();
       const headers = new HttpHeaders().set(
         'Authorization',
         'Bearer ' + this.accessToken
@@ -58,7 +59,12 @@ export class PlaylistService {
         (this.authService.getExpirationTime()! - Date.now()) / 1000
       );
       console.log('backendPlaylist', backendPlaylist);
-      this.socket.emit('createdPlaylist', backendPlaylist.spotifyPlaylistId);
+
+      this.socket.emit(
+        'createdPlaylist',
+        backendPlaylist.spotifyPlaylistId,
+        ownerId
+      );
       return backendPlaylist;
     } catch (error) {
       console.error('Failed to create playlist', error);
@@ -133,6 +139,19 @@ export class PlaylistService {
     }
   }
 
+  async isOwner(playlistId: string): Promise<boolean> {
+    try {
+      const ownerId = await firstValueFrom(
+        this.http.get<any>(`${URL}/api/playlist/${playlistId}/get-owner`)
+      );
+      const guestId = getGuestId();
+      return guestId === ownerId;
+    } catch (error) {
+      console.error('Failed to get playlist by Spotify ID', error);
+      throw error;
+    }
+  }
+
   async getPlaylistBySpotifyId(
     playlistId: string,
     played?: boolean
@@ -175,10 +194,8 @@ export class PlaylistService {
           accessToken,
         })
       );
-      this.socket.emit('trackAdded', {
-        playlistId: spotifyPlaylistId,
-        trackId,
-      });
+      const guestId = getGuestId();
+      this.socket.emit('trackAdded', spotifyPlaylistId, trackId, guestId);
     } catch (error) {
       console.error('Failed to add track to playlist', error);
       throw error;
@@ -199,7 +216,7 @@ export class PlaylistService {
           spotifyId,
         })
       );
-      this.socket.emit('voteUpdated', { playlistId: playlistId, trackId });
+      this.socket.emit('voteUpdated', playlistId, trackId, guestId);
     } catch (error) {
       console.error('Failed to vote for track', error);
       throw error;

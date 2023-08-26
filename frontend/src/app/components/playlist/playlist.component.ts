@@ -17,6 +17,7 @@ import { Socket } from 'ngx-socket-io';
 })
 export class PlaylistComponent implements OnInit {
   playlist: any;
+  isOwner = false;
   userVotes: boolean[] = [];
   addTrackVisible = false;
 
@@ -32,6 +33,9 @@ export class PlaylistComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const spotifyPlaylistId: any =
       this.route.snapshot.paramMap.get('spotifyPlaylistId');
+
+    this.isOwner = await this.playlistService.isOwner(spotifyPlaylistId);
+    console.log('is the playlist owner: ', this.isOwner);
 
     try {
       this.playlist = await this.playlistService.getPlaylistBySpotifyId(

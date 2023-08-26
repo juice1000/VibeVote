@@ -23,6 +23,8 @@ export class PlayerService {
   async initializePlayer(playlistId: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       if (this.player) {
+        console.log('ok we have the player, ', this.player);
+
         resolve(this.player);
         return;
       }
@@ -49,7 +51,7 @@ export class PlayerService {
           cb(accessToken!);
         },
       });
-
+      console.log('retrieved the player now, ', this.player);
       this.player.addListener('ready', ({ device_id }: any) => {
         resolve(device_id);
       });
@@ -123,6 +125,9 @@ export class PlayerService {
           spotifyPlaylistId
         );
       }
+      console.log('deviceId', deviceId);
+      console.log('accessToken', accessToken);
+
       if (deviceId && this.player) {
         fetch(
           `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,

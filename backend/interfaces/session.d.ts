@@ -1,6 +1,7 @@
 export interface Session {
   playlistId: string;
   activeUsers: string[];
+  playlistOwnerId: string;
   timeout: Date;
 }
 
