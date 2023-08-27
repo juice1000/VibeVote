@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
+import { PlayerService } from 'src/app/services/player.service';
 import { AddTrackComponent } from '../add-track/add-track.component';
 import { Socket } from 'ngx-socket-io';
 
@@ -26,6 +27,7 @@ export class PlaylistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
+    private playerService: PlayerService,
     private changeDetector: ChangeDetectorRef,
     private socket: Socket
   ) {}
@@ -45,14 +47,11 @@ export class PlaylistComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }
-    this.socket.on(
-      'sessionExpired',
-      ({ playlistId }: { playlistId: string }) => {
-        if (spotifyPlaylistId === playlistId) {
-          this.sessionExpired = true;
-        }
+    this.socket.on('sessionExpired', (playlistId: string) => {
+      if (spotifyPlaylistId === playlistId) {
+        this.sessionExpired = true;
       }
-    );
+    });
     this.socket.on(
       'voteCountUpdated',
       async ({ playlistId }: { playlistId: string }) => {
@@ -66,29 +65,23 @@ export class PlaylistComponent implements OnInit {
         this.changeDetector.detectChanges();
       }
     );
-    this.socket.on(
-      'TrackListUpdated',
-      async ({ playlistId }: { playlistId: string }) => {
-        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-          playlistId,
-          false
-        );
+    this.socket.on('TrackListUpdated', async (playlistId: string) => {
+      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+        playlistId,
+        false
+      );
 
-        this.changeDetector.detectChanges();
-      }
-    );
-    this.socket.on(
-      'stateChange',
-      async ({ playlistId }: { playlistId: string }) => {
-        await this.playlistService.markTracksAsPlayed(playlistId);
-        await this.playlistService.updatePlaylistOrder(playlistId);
-        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-          playlistId,
-          false
-        );
-        this.changeDetector.detectChanges();
-      }
-    );
+      this.changeDetector.detectChanges();
+    });
+    this.socket.on('stateChange', async (playlistId: string) => {
+      await this.playlistService.markTracksAsPlayed(playlistId);
+      await this.playlistService.updatePlaylistOrder(playlistId);
+      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+        playlistId,
+        false
+      );
+      this.changeDetector.detectChanges();
+    });
   }
 
   async fetchPlaylistBySpotifyId(spotifyPlaylistId: string): Promise<void> {
@@ -123,6 +116,7 @@ export class PlaylistComponent implements OnInit {
 
   async removePlaylist(playlistId: string): Promise<void> {
     console.log('called removePlaylist');
+    this.playerService.disconnectPlayer();
     this.playlistService.removePlaylist(playlistId);
   }
 

@@ -19,7 +19,7 @@
           {{ isPlaying ? 'pause' : 'play_arrow' }}
         </span>
       </button>
-      <button id="skip-button" type="button" (click)="next()" [hidden]="!currentTrack"
+      <button *ngIf="isOwner" id="skip-button" type="button" (click)="next()" [hidden]="!currentTrack"
         class="mb-6 player-btn px-4 py-2 rounded-md text-white transition duration-300 hover:bg-gray-800">
         <span class="material-icons"> skip_next </span>
       </button>

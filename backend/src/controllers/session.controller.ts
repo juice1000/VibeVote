@@ -1,4 +1,4 @@
-import { Session } from '@interfaces/session';
+import { Session, SessionState } from '@interfaces/session';
 import sessionsObjects from '@local-cache/sessions';
 
 export function addNewSession(playlistId: string, userId: string) {
@@ -9,6 +9,11 @@ export function addNewSession(playlistId: string, userId: string) {
     activeUsers: [userId],
     playlistOwnerId: userId,
     timeout: timeout,
+    state: {
+      currentTrack: '',
+      progress: 0,
+      isPlaying: false,
+    },
   };
   sessionsObjects.push(newSession);
   console.log('added new session: ', sessionsObjects);
@@ -40,7 +45,7 @@ export function deleteSession(playlistId: string) {
   // TODO: we still have the issue of a ghost playlist that has tracks we didn't add but are from previous playlists
 }
 
-export function updateSession(playlistId: string, userId: string, isLeaving: boolean) {
+export function updateSession(playlistId: string, userId: string, isLeaving: boolean, state?: any) {
   //Find index of session object by playlistId
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
 
@@ -61,8 +66,12 @@ export function updateSession(playlistId: string, userId: string, isLeaving: boo
       }
     }
 
-    console.log('new timeout', newTimeout);
+    // update session state
+    if (state) {
+      sessionsObjects[objIndex].state = state;
+    }
 
+    console.log('new timeout', newTimeout);
     sessionsObjects[objIndex].timeout = newTimeout;
   }
 }
@@ -70,6 +79,11 @@ export function updateSession(playlistId: string, userId: string, isLeaving: boo
 export function isActiveSession(playlistId: string): boolean {
   const index = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
   return index !== -1 ? true : false;
+}
+
+export function getCurrentSessionState(playlistId: string): SessionState {
+  const index = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
+  return sessionsObjects[index].state;
 }
 
 export function getSessionOwner(playlistId: string): string {

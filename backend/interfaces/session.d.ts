@@ -3,11 +3,11 @@ export interface Session {
   activeUsers: string[];
   playlistOwnerId: string;
   timeout: Date;
+  state: SessionState;
 }
 
 export interface SessionState {
-  playlistId: string;
-  currentTrack: string;
+  currentTrack: any;
   progress: number;
   isPlaying: boolean;
 }

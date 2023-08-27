@@ -1,23 +1,17 @@
 import { io } from './index';
 import { Session, SessionState } from '@interfaces/session';
-import { addNewSession, updateSession, isActiveSession, deleteSession } from '@controllers/session.controller';
+import { addNewSession, updateSession, isActiveSession, deleteSession, getCurrentSessionState } from '@controllers/session.controller';
 
 let connection = false;
 
 export const checkConnection = function (io: any, sessionsObjects: Session[]) {
-  let currentState: SessionState = {
-    playlistId: '',
-    currentTrack: '',
-    progress: 0,
-    isPlaying: false,
-  };
   io.on('connection', (socket: any) => {
     console.log('User connected with socketId:', socket.id);
     connection = true;
 
     socket.on('createdPlaylist', (playlistId: string, ownerId: string) => {
       console.log('playlist created', playlistId, ownerId);
-      currentState.playlistId = playlistId;
+
       addNewSession(playlistId, ownerId);
     });
     socket.on('voteUpdated', (playlistId: string, trackId: string, guestId: string) => {
@@ -26,39 +20,39 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
         updateSession(playlistId, guestId, false);
         io.emit('voteCountUpdated', { playlistId, trackId });
       } else {
-        io.emit('sessionExpired', { playlistId });
+        io.emit('sessionExpired', playlistId);
       }
     });
-    socket.on('trackAdded', (playlistId: string, trackId: string, guestId: string) => {
+    socket.on('trackAdded', (playlistId: string, guestId: string) => {
       if (isActiveSession(playlistId)) {
         console.log(`Track was added and Track list was updated`);
         updateSession(playlistId, guestId, false);
-        io.emit('TrackListUpdated', { playlistId, trackId });
+        io.emit('TrackListUpdated', playlistId);
       } else {
-        io.emit('sessionExpired', { playlistId });
+        io.emit('sessionExpired', playlistId);
       }
     });
-    socket.on('clientStateChange', (state: SessionState) => {
-      // TODO: add guestId to arguments
-      const playlistId = state.playlistId;
+    socket.on('clientStateChange', (state: SessionState, playlistId: string) => {
       if (isActiveSession(playlistId)) {
-        currentState = state;
-        updateSession(playlistId, '', false);
-        socket.broadcast.emit('stateChange', state);
-        socket.broadcast.emit('syncState', state, state.isPlaying);
+        updateSession(playlistId, '', false, state);
+        console.log('state before emit', state);
+
+        socket.broadcast.emit('stateChange', playlistId); // TODO: bring this into one
+        socket.broadcast.emit('syncState', state);
       } else {
-        io.emit('sessionExpired', { playlistId });
+        io.emit('sessionExpired', playlistId);
       }
     });
 
-    socket.on('requestInitialState', () => {
-      const playlistId = currentState.playlistId;
-      if (playlistId === '' || isActiveSession(playlistId)) {
-        socket.emit('initialState', currentState);
+    socket.on('requestInitialState', (playlistId: string) => {
+      if (playlistId !== '' && isActiveSession(playlistId)) {
+        const activeSession = getCurrentSessionState(playlistId);
+        io.emit('initialState', activeSession, playlistId);
       } else {
-        socket.emit('sessionExpired', { playlistId });
+        io.emit('sessionExpired', playlistId);
       }
     });
+
     socket.on('leaveSession', (playlistId: string, guestId: string) => {
       updateSession(playlistId, guestId, true);
     });
