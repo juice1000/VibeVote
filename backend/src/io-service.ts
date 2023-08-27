@@ -43,18 +43,14 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       const playlistId = state.playlistId;
       if (isActiveSession(playlistId)) {
         currentState = state;
-        console.log('clientStateChange: ', socket.id);
-
-        updateSession(playlistId, socket.id, false);
+        updateSession(playlistId, '', false);
         socket.broadcast.emit('stateChange', state);
+        socket.broadcast.emit('syncState', state, state.isPlaying);
       } else {
         io.emit('sessionExpired', { playlistId });
       }
     });
-    socket.on('updateState', (state: any, isPlaying: Boolean) => {
-      console.log('updateState received, track: ', state.track_window?.current_track.id, 'is playing: ', isPlaying);
-      socket.broadcast.emit('syncState', state, isPlaying);
-    });
+
     socket.on('requestInitialState', () => {
       const playlistId = currentState.playlistId;
       if (playlistId === '' || isActiveSession(playlistId)) {
@@ -63,7 +59,12 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
         socket.emit('sessionExpired', { playlistId });
       }
     });
+    socket.on('leaveSession', (playlistId: string, guestId: string) => {
+      updateSession(playlistId, guestId, true);
+    });
+
     socket.on('disconnect', () => {
+      // TODO: find ou which guest ID it had (we could do this by tying the socket ID to the guestUserID in a cache object)
       console.log('User disconnected:', socket.id);
     });
   });

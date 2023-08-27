@@ -126,6 +126,10 @@ export class PlaylistComponent implements OnInit {
     this.playlistService.removePlaylist(playlistId);
   }
 
+  async leaveSession(playlistId: string) {
+    this.playlistService.leaveSession(playlistId);
+  }
+
   async onAddTrackModalClose(searchResult: string | null): Promise<void> {
     this.addTrackVisible = false;
 

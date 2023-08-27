@@ -54,7 +54,6 @@ export class PlayerComponent implements OnInit {
               progress: this.progress,
               isPlaying: this.isPlaying,
             });
-            this.socket.emit('updateState', { state, isPlaying });
             this.cdr.detectChanges();
           }
         } catch (error) {

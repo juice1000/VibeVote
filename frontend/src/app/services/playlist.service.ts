@@ -118,6 +118,13 @@ export class PlaylistService {
     }
   }
 
+  async leaveSession(playlistId: string) {
+    const guestId = getGuestId();
+    this.socket.emit('leaveSession', playlistId, guestId);
+    // redirect to login page
+    this.router.navigate(['/login']);
+  }
+
   async getUserId(): Promise<string> {
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {

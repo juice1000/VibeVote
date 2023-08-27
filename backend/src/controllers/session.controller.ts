@@ -44,20 +44,27 @@ export function updateSession(playlistId: string, userId: string, isLeaving: boo
   //Find index of session object by playlistId
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
 
-  // Update specified session object
-  const newTimeout = new Date(new Date().getTime() + 1800000); // currently set to 30min
-  const activeUsers = sessionsObjects[objIndex].activeUsers;
+  if (objIndex !== -1) {
+    // Update specified session object
+    const newTimeout = new Date(new Date().getTime() + 1800000); // currently set to 30min
+    const activeUsers = sessionsObjects[objIndex].activeUsers;
 
-  // update active users
-  if (!activeUsers.includes(userId)) {
-    activeUsers.push(userId);
-  } else if (activeUsers.includes(userId) && isLeaving) {
-    const arrayIndex = activeUsers.findIndex((user) => user === userId);
-    activeUsers.splice(arrayIndex, 1);
+    if (userId !== '') {
+      // update active users
+      if (!activeUsers.includes(userId)) {
+        activeUsers.push(userId);
+      } else if (activeUsers.includes(userId) && isLeaving) {
+        // we could delete the whole playlist if no active users found, but then again maybe the user wants to have some dummy playlists they use later
+        const arrayIndex = activeUsers.findIndex((user) => user === userId);
+        activeUsers.splice(arrayIndex, 1);
+        console.log('user left session: ', userId);
+      }
+    }
+
+    console.log('new timeout', newTimeout);
+
+    sessionsObjects[objIndex].timeout = newTimeout;
   }
-  console.log('new timeout', newTimeout);
-
-  sessionsObjects[objIndex].timeout = newTimeout;
 }
 
 export function isActiveSession(playlistId: string): boolean {
