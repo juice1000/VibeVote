@@ -5,8 +5,9 @@ import { Router } from '@angular/router';
 import { getGuestId } from '../utils/guest';
 import { AuthService } from './auth.service';
 import { Socket } from 'ngx-socket-io';
+import { environment } from '../../environments/environment';
 
-const URL = 'http://localhost:3000';
+const URL = environment.serverUrl;
 const spotifyApiUrl = 'https://api.spotify.com/v1';
 
 @Injectable({
