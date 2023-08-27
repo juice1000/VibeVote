@@ -19,7 +19,7 @@ import { cleanupSessions } from '@controllers/session.controller';
 
 const app = express();
 //Enable CORS
-app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 
 //Set up session middleware
@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:4200',
+    origin: process.env.CLIENT_URL,
   },
 });
 checkConnection(io, sessionsObjects);

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -9,10 +10,10 @@ export class AuthService {
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
   private expirationTime: number | null = null;
-  URL = 'http://localhost:3000';
+  URL = environment.serverUrl;
 
   constructor(private http: HttpClient, private route: ActivatedRoute) {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['accessToken']) {
         this.accessToken = params['accessToken'];
         localStorage.setItem('accessToken', this.accessToken!);
@@ -45,7 +46,7 @@ export class AuthService {
     const scope =
       'user-read-email user-read-private playlist-modify-private playlist-modify-public user-read-playback-state streaming';
     const responseType = 'code';
-    const authUrl = `http://localhost:3000/auth/spotify?scope=${scope}&response_type=${responseType}`;
+    const authUrl = `${environment.serverUrl}/auth/spotify?scope=${scope}&response_type=${responseType}`;
     window.location.href = authUrl;
   }
 
@@ -80,7 +81,7 @@ export class AuthService {
     try {
       const token = refreshToken || this.getRefreshToken();
       const response: any = await this.http
-        .post(`http://localhost:3000/auth/refresh`, { refreshToken: token })
+        .post(`${environment.serverUrl}/auth/refresh`, { refreshToken: token })
         .toPromise();
 
       const newAccessToken = response['access_token'];
