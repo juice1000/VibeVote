@@ -52,7 +52,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       }
     });
     socket.on('updateState', (state: any, isPlaying: Boolean) => {
-      console.log('updateState received, track: ', state.track_window.current_track.id, 'is playing: ', isPlaying);
+      console.log('updateState received, track: ', state.track_window?.current_track.id, 'is playing: ', isPlaying);
       socket.broadcast.emit('syncState', state, isPlaying);
     });
     socket.on('requestInitialState', () => {

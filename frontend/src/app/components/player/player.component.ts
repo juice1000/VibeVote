@@ -9,6 +9,7 @@ import { Socket } from 'ngx-socket-io';
 })
 export class PlayerComponent implements OnInit {
   @Input() spotifyPlaylistId: string | null = null;
+  @Input() isOwner: boolean = false;
   currentTrack: any;
   progress: number = 0;
   deviceId: string | null = null;

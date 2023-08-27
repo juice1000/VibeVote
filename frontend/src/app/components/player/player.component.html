@@ -3,15 +3,8 @@
     <h1 *ngIf="currentTrack" class="text-2xl font-bold mb-2 pl-2 pb-5">
       Currently <span class="text-green-500">vibin'</span> to
     </h1>
-    <div
-      *ngIf="currentTrack"
-      class="track-info flex items-center p-2 shadow-md rounded-md bg-gray-800"
-    >
-      <img
-        [src]="currentTrack.album.images[0].url"
-        alt="Album cover"
-        class="w-32 h-32 rounded-md"
-      />
+    <div *ngIf="currentTrack" class="track-info flex items-center p-2 shadow-md rounded-md bg-gray-800">
+      <img [src]="currentTrack.album.images[0].url" alt="Album cover" class="w-32 h-32 rounded-md" />
       <div class="ml-4">
         <p class="font-bold text-lg">{{ currentTrack.name }}</p>
         <p class="text-gray-400">{{ currentTrack.artists[0].name }}</p>
@@ -19,23 +12,15 @@
     </div>
     <div *ngIf="currentTrack" class="mt-4"></div>
     <div class="flex justify-center space-x-2">
-      <button
-        id="play-button"
-        type="button"
-        (click)="isPlaying ? pause() : play()"
-        class="player-btn px-4 py-2 rounded-md text-white transition duration-300 mb-6 hover:bg-gray-800"
-      >
+      <button id="play-button" type="button" [disabled]="!isOwner" (click)="isPlaying ? pause() : play()"
+        class="player-btn px-4 py-2 rounded-md text-white transition duration-300 mb-6"
+        [ngClass]="{'hover:bg-gray-800': isOwner}">
         <span class="material-icons">
           {{ isPlaying ? 'pause' : 'play_arrow' }}
         </span>
       </button>
-      <button
-        id="skip-button"
-        type="button"
-        (click)="next()"
-        [hidden]="!currentTrack"
-        class="mb-6 player-btn px-4 py-2 rounded-md text-white transition duration-300 hover:bg-gray-800"
-      >
+      <button id="skip-button" type="button" (click)="next()" [hidden]="!currentTrack"
+        class="mb-6 player-btn px-4 py-2 rounded-md text-white transition duration-300 hover:bg-gray-800">
         <span class="material-icons"> skip_next </span>
       </button>
     </div>
