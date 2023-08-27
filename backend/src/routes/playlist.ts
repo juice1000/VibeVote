@@ -15,6 +15,7 @@ router.use((req, res, next) => {
 router.post('/create', controllers.createPlaylist);
 
 router.get('/:spotifyPlaylistId', controllers.getPlaylist);
+router.get('/:spotifyPlaylistId/get-owner', controllers.getPlaylistOwner);
 
 router.post('/:playlistId/add-track', controllers.addTrackToPlaylist);
 

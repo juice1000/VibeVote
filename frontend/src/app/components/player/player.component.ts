@@ -9,6 +9,7 @@ import { Socket } from 'ngx-socket-io';
 })
 export class PlayerComponent implements OnInit {
   @Input() spotifyPlaylistId: string | null = null;
+  @Input() isOwner: boolean = false;
   currentTrack: any;
   progress: number = 0;
   deviceId: string | null = null;
@@ -44,15 +45,16 @@ export class PlayerComponent implements OnInit {
             this.progress = state.position;
             this.isPlaying = !state.paused;
             this.isPaused = state.paused;
-            const isPlaying = this.isPlaying;
 
-            this.socket.emit('clientStateChange', {
-              playlistId: this.spotifyPlaylistId,
-              currentTrack: this.currentTrack,
-              progress: this.progress,
-              isPlaying: this.isPlaying,
-            });
-            this.socket.emit('updateState', { state, isPlaying });
+            this.socket.emit(
+              'clientStateChange',
+              {
+                currentTrack: this.currentTrack,
+                progress: this.progress,
+                isPlaying: this.isPlaying,
+              },
+              this.spotifyPlaylistId
+            );
             this.cdr.detectChanges();
           }
         } catch (error) {
@@ -60,18 +62,16 @@ export class PlayerComponent implements OnInit {
         }
       }
     );
+    this.socket.on('syncState', async (state: any) => {
+      await this.updatePlayerState(state);
+      this.isPlaying = state.isPlaying;
+    });
 
-    this.socket.on(
-      'syncState',
-      async ({ state, isPlaying }: { state: any; isPlaying: boolean }) => {
-        await this.updatePlayerState(state);
-        this.isPlaying = isPlaying;
-      }
-    );
+    this.socket.on('initialState', async (state: any, playlistId: string) => {
+      console.log('initialState', state, playlistId);
 
-    this.socket.on('initialState', async (state: any) => {
       try {
-        if (this.spotifyPlaylistId === state.playlistId) {
+        if (this.spotifyPlaylistId === playlistId) {
           this.currentTrack = state.currentTrack;
           this.progress = state.progress;
           console.log('initial state', state.isPlaying);
@@ -159,7 +159,7 @@ export class PlayerComponent implements OnInit {
 
   private async updatePlayerState(state: any): Promise<void> {
     try {
-      this.currentTrack = state.track_window.current_track;
+      this.currentTrack = state.currentTrack;
       this.progress = state.position;
     } catch (error) {
       console.error('Error updating player state', error);

@@ -49,7 +49,6 @@ export class PlayerService {
           cb(accessToken!);
         },
       });
-
       this.player.addListener('ready', ({ device_id }: any) => {
         resolve(device_id);
       });
@@ -96,6 +95,10 @@ export class PlayerService {
     }
   }
 
+  async disconnectPlayer(): Promise<void> {
+    this.player.disconnect();
+  }
+
   async nextTrack(): Promise<void> {
     if (this.player) {
       this.player.nextTrack();
@@ -123,6 +126,7 @@ export class PlayerService {
           spotifyPlaylistId
         );
       }
+
       if (deviceId && this.player) {
         fetch(
           `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,

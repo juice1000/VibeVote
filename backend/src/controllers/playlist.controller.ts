@@ -1,5 +1,6 @@
 import spotifyApi from '@config/spotify';
 import { socketHandler } from '../io-service';
+import { getSessionOwner } from '@controllers/session.controller';
 import prisma from './prismaClient';
 
 const createPlaylist = async (req: any, res: any) => {
@@ -69,6 +70,16 @@ const getPlaylist = async (req: any, res: any) => {
     res.status(200).json(playlist);
   } catch (error) {
     res.status(500).json({ message: 'An error occurred while retrieving the playlist' });
+  }
+};
+
+const getPlaylistOwner = async (req: any, res: any) => {
+  try {
+    const { spotifyPlaylistId } = req.params;
+    const ownerId = getSessionOwner(spotifyPlaylistId);
+    res.status(200).json(ownerId);
+  } catch (err) {
+    console.error('error retrieving playlist owner');
   }
 };
 
@@ -353,6 +364,7 @@ const deleteTracks = async (req: any, res: any) => {
 export default {
   createPlaylist,
   getPlaylist,
+  getPlaylistOwner,
   addTrackToPlaylist,
   updateTrackPlayedStatus,
   vote,
