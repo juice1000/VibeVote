@@ -6,7 +6,8 @@ const getAuthTokens = async (req: any, res: any) => {
   try {
     if (req.user) {
       const { accessToken, refreshToken, expires_in }: any = req.user;
-      res.redirect(`http://localhost:4200/home?accessToken=${accessToken}&refreshToken=${refreshToken}&expiresIn=${expires_in}`);
+      const redirectUrl = `${process.env.CLIENT_URL}/home?accessToken=${accessToken}&refreshToken=${refreshToken}&expiresIn=${expires_in}`;
+      res.redirect(redirectUrl);
       return;
     }
   } catch (err) {
