@@ -20,6 +20,7 @@ import { PlayerComponent } from './components/player/player.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { InformationWindowComponent } from './components/information-window/information-window.component';
 import { environment } from './../environments/environment';
+import { ShareSessionComponent } from './components/share-session/share-session.component';
 
 const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
 
@@ -32,6 +33,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     HomeComponent,
     PlayerComponent,
     InformationWindowComponent,
+    ShareSessionComponent,
   ],
   imports: [
     BrowserModule,
