@@ -12,6 +12,7 @@ import { AddTrackComponent } from './components/add-track/add-track.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 import { HomeComponent } from './components/home/home.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +21,8 @@ import { PlayerComponent } from './components/player/player.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { InformationWindowComponent } from './components/information-window/information-window.component';
 import { environment } from './../environments/environment';
+import { ShareSessionComponent } from './components/share-session/share-session.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
 
@@ -32,6 +35,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     HomeComponent,
     PlayerComponent,
     InformationWindowComponent,
+    ShareSessionComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,7 +50,9 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     ReactiveFormsModule,
     MatInputModule,
     MatTooltipModule,
+    MatIconModule,
     MatSlideToggleModule,
+    QRCodeModule,
     SocketIoModule.forRoot(config),
   ],
   providers: [HttpClient],
