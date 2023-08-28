@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -8,10 +9,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class ShareSessionComponent {
   playlistId = '';
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  isCopiedToClipboard = false;
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private clipboard: Clipboard
+  ) {}
   async ngOnInit(): Promise<void> {
-    console.log(this.route.snapshot.paramMap);
-
     this.playlistId =
       this.route.snapshot.paramMap.get('spotifyPlaylistId') || '';
   }
@@ -19,5 +23,17 @@ export class ShareSessionComponent {
     if (this.playlistId.length > 0) {
       this.router.navigate(['/playlist', this.playlistId]);
     }
+  }
+
+  copyToClipboard(tooltip: any) {
+    this.clipboard.copy(this.playlistId);
+    this.isCopiedToClipboard = true;
+    tooltip.show();
+    setTimeout(() => {
+      this.isCopiedToClipboard = false;
+    }, 3000);
+    setTimeout(() => {
+      tooltip.hide();
+    }, 1000);
   }
 }

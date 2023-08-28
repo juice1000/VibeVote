@@ -12,6 +12,7 @@ import { AddTrackComponent } from './components/add-track/add-track.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 import { HomeComponent } from './components/home/home.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -48,6 +49,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     ReactiveFormsModule,
     MatInputModule,
     MatTooltipModule,
+    MatIconModule,
     MatSlideToggleModule,
     SocketIoModule.forRoot(config),
   ],
