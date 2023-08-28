@@ -22,6 +22,7 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { InformationWindowComponent } from './components/information-window/information-window.component';
 import { environment } from './../environments/environment';
 import { ShareSessionComponent } from './components/share-session/share-session.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
 
@@ -51,6 +52,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     MatTooltipModule,
     MatIconModule,
     MatSlideToggleModule,
+    QRCodeModule,
     SocketIoModule.forRoot(config),
   ],
   providers: [HttpClient],

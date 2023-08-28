@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Router, ActivatedRoute } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-share-session',
@@ -9,6 +10,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class ShareSessionComponent {
   playlistId = '';
+  dummyUrl = 'https://www.google.de/';
+  playlistUrl = environment.clientUrl + '/playlist/' + this.playlistId;
   isCopiedToClipboard = false;
   constructor(
     private router: Router,
