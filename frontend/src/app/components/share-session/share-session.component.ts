@@ -10,7 +10,6 @@ import { environment } from '../../../environments/environment';
 })
 export class ShareSessionComponent {
   playlistId = '';
-  dummyUrl = 'https://www.google.de/';
   playlistUrl = environment.clientUrl + '/playlist/' + this.playlistId;
   isCopiedToClipboard = false;
   constructor(
