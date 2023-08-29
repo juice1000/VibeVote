@@ -1,11 +1,12 @@
 import spotifyApi from '@config/spotify';
 import { socketHandler } from '../io-service';
 import { getSessionOwner } from '@controllers/session.controller';
+import userController from '@controllers/user.controller';
 import prisma from './prismaClient';
 
 const createPlaylist = async (req: any, res: any) => {
   try {
-    const { title, description, spotifyPlaylistId, childFriendly } = req.body;
+    const { title, description, spotifyPlaylistId, childFriendly, userId } = req.body;
 
     if (spotifyPlaylistId.length === 0) {
       res.status(400).json({ error: 'no playlist name provided' });
@@ -20,6 +21,8 @@ const createPlaylist = async (req: any, res: any) => {
         childFriendly,
       },
     });
+
+    userController.addNewPlaylist(userId, spotifyPlaylistId);
 
     const socketData = {
       command: 'playlist-created',

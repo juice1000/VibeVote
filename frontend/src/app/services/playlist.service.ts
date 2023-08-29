@@ -31,6 +31,7 @@ export class PlaylistService {
       }
 
       const user = await this.getSpotifyUser();
+      const userId = user.id;
       const ownerId = getGuestId();
       const headers = new HttpHeaders().set(
         'Authorization',
@@ -39,7 +40,7 @@ export class PlaylistService {
 
       const spotifyPlaylist: any = await firstValueFrom(
         this.http.post(
-          `${spotifyApiUrl}/users/${user.id}/playlists`,
+          `${spotifyApiUrl}/users/${userId}/playlists`,
           { name: title },
           { headers }
         )
@@ -50,6 +51,7 @@ export class PlaylistService {
           title,
           spotifyPlaylistId: spotifyPlaylist?.id,
           childFriendly,
+          userId,
         })
       );
 

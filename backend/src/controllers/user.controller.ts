@@ -18,6 +18,19 @@ const createNewUser = async (req: any, res: any) => {
   }
 };
 
+const addNewPlaylist = async (userId: string, playlistId: string) => {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      playlistIds: {
+        push: playlistId,
+      },
+    },
+  });
+};
+
 const getUserPlaylists = async (req: any, res: any) => {
   try {
     const user = await prisma.user.findUnique({
@@ -37,6 +50,7 @@ const getUserPlaylists = async (req: any, res: any) => {
 };
 
 export default {
-  getUserPlaylists,
   createNewUser,
+  addNewPlaylist,
+  getUserPlaylists,
 };
