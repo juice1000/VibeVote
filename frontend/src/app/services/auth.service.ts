@@ -13,32 +13,44 @@ export class AuthService {
   URL = environment.serverUrl;
 
   constructor(private http: HttpClient, private route: ActivatedRoute) {
-    this.route.queryParams.subscribe((params) => {
-      if (params['accessToken']) {
-        this.accessToken = params['accessToken'];
-        localStorage.setItem('accessToken', this.accessToken!);
-      }
-      if (params['refreshToken']) {
-        this.refreshToken = params['refreshToken'];
-        localStorage.setItem('refreshToken', this.refreshToken!);
-      }
-      if (params['expiresIn']) {
-        const expiresIn = parseInt(params['expiresIn'], 10);
-        this.expirationTime = Date.now() + expiresIn * 1000;
-        localStorage.setItem('expirationTime', this.expirationTime.toString());
-      }
-    });
-    if (!this.accessToken) {
-      this.accessToken = localStorage.getItem('accessToken');
-    }
-    if (!this.refreshToken) {
-      this.refreshToken = localStorage.getItem('refreshToken');
-    }
-    if (!this.expirationTime) {
-      const expirationTimeString = localStorage.getItem('expirationTime');
-      if (expirationTimeString) {
-        this.expirationTime = parseInt(expirationTimeString, 10);
-      }
+    if (!this.accessToken || !this.refreshToken || !this.expirationTime) {
+      this.route.queryParams.subscribe((params) => {
+        // check if url params exist
+        if (Object.keys(params).length > 0) {
+          if (params['accessToken']) {
+            this.accessToken = params['accessToken'];
+            localStorage.setItem('accessToken', this.accessToken!);
+          }
+          if (params['refreshToken']) {
+            this.refreshToken = params['refreshToken'];
+            localStorage.setItem('refreshToken', this.refreshToken!);
+          }
+          if (params['expiresIn']) {
+            const expiresIn = parseInt(params['expiresIn'], 10);
+            this.expirationTime = Date.now() + expiresIn * 1000;
+            localStorage.setItem(
+              'expirationTime',
+              this.expirationTime.toString()
+            );
+          }
+          if (this.accessToken && this.refreshToken && this.expirationTime) {
+            // cleanup the url params
+            window.history.pushState(
+              {},
+              document.title,
+              window.location.pathname
+            );
+          }
+        } else {
+          // retrieve params from localStorage
+          this.accessToken = localStorage.getItem('accessToken');
+          this.refreshToken = localStorage.getItem('refreshToken');
+          const expirationTimeString = localStorage.getItem('expirationTime');
+          if (expirationTimeString) {
+            this.expirationTime = parseInt(expirationTimeString, 10);
+          }
+        }
+      });
     }
   }
 

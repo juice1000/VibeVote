@@ -179,6 +179,18 @@ export class PlaylistService {
     }
   }
 
+  async getUserPlaylists(userId: string): Promise<any> {
+    try {
+      return;
+      // await firstValueFrom(
+      //   this.http.get<any>(`${URL}/api/user/${userId}/playlists`)
+      // );
+    } catch (error) {
+      console.error('Failed to get playlist by Spotify ID', error);
+      throw error;
+    }
+  }
+
   async addTrackToPlaylist(playlistId: string, trackId: any): Promise<void> {
     try {
       const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
