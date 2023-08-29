@@ -318,9 +318,12 @@ const deletePlaylist = async (req: any, res: any) => {
   try {
     const deletedPlaylist = await prisma.playlist.delete({
       where: {
-        spotifyPlaylistId: req.params.spotifyPlaylistId,
+        spotifyPlaylistId: req.body.playlistId,
       },
     });
+
+    userController.deletePlaylist(req.body.userId, req.body.playlistId);
+
     const socketData = {
       command: 'playlist-deleted',
       name: deletedPlaylist.title,
@@ -329,7 +332,7 @@ const deletePlaylist = async (req: any, res: any) => {
     socketHandler(socketData);
 
     // will redirect back to login after job is finished
-    res.status(201).send();
+    res.status(201).json({ message: 'Playlist successfully deleted' });
   } catch (err) {
     if (err.code === 'P2025') {
       // Record to delete does not exist

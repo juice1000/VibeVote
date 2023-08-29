@@ -97,17 +97,15 @@ export class PlaylistService {
         })
       );
 
-      const response = await firstValueFrom(
-        this.http.delete(`${URL}/api/playlist/${playlistId}/delete-playlist`, {
-          observe: 'response',
+      const user = await this.getSpotifyUser();
+      const userId = user.id;
+      await firstValueFrom(
+        this.http.post(`${URL}/api/playlist/delete-playlist`, {
+          playlistId,
+          userId,
         })
       );
-
-      if (response.status === 201) {
-        // redirect to login page
-        console.log('successfully deleted the playlist');
-        this.router.navigate(['/login']);
-      }
+      this.router.navigate(['/login']);
     } catch (err: any) {
       if (
         err.status === 404 &&
