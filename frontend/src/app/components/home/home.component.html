@@ -1,4 +1,14 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-900">
+<div
+  class="flex flex-col items-center pt-2 bg-gray-900 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen">
+
+  <div *ngIf="spotifyUser" class="flex flex-col items-center">
+    <h1 class="text-4xl font-bold mb-20">What's up {{spotifyUser.display_name}}!</h1>
+
+    <h1 class="text-2xl font-bold mb-4">Recently played on VibeVote</h1>
+    <app-playlist-card [spotifyUser]="spotifyUser"></app-playlist-card>
+    <app-playlist-card [spotifyUser]="spotifyUser"></app-playlist-card>
+    <app-playlist-card [spotifyUser]="spotifyUser"></app-playlist-card>
+  </div>
   <div class="p-10 bg-gray-800 text-white text-center">
     <h1 class="text-2xl font-bold mb-4">Create a new party</h1>
 

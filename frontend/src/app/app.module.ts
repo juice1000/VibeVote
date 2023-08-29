@@ -23,6 +23,7 @@ import { InformationWindowComponent } from './components/information-window/info
 import { environment } from './../environments/environment';
 import { ShareSessionComponent } from './components/share-session/share-session.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { PlaylistCardComponent } from './components/playlist-card/playlist-card.component';
 
 const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
 
@@ -36,6 +37,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     PlayerComponent,
     InformationWindowComponent,
     ShareSessionComponent,
+    PlaylistCardComponent,
   ],
   imports: [
     BrowserModule,

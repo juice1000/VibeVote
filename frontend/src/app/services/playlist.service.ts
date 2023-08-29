@@ -30,7 +30,7 @@ export class PlaylistService {
         this.accessToken = this.authService.getAccessToken();
       }
 
-      const userId = await this.getUserId();
+      const user = await this.getSpotifyUser();
       const ownerId = getGuestId();
       const headers = new HttpHeaders().set(
         'Authorization',
@@ -39,7 +39,7 @@ export class PlaylistService {
 
       const spotifyPlaylist: any = await firstValueFrom(
         this.http.post(
-          `${spotifyApiUrl}/users/${userId}/playlists`,
+          `${spotifyApiUrl}/users/${user.id}/playlists`,
           { name: title },
           { headers }
         )
@@ -126,7 +126,7 @@ export class PlaylistService {
     this.router.navigate(['/login']);
   }
 
-  async getUserId(): Promise<string> {
+  async getSpotifyUser(): Promise<any> {
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
@@ -140,7 +140,7 @@ export class PlaylistService {
       const response: any = await firstValueFrom(
         this.http.get(`${spotifyApiUrl}/me`, { headers })
       );
-      return response.id;
+      return response;
     } catch (error) {
       console.error('Failed to get user ID', error);
       throw error;
