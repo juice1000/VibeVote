@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlaylistService } from 'src/app/services/playlist.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -15,16 +16,24 @@ export class HomeComponent {
 
   constructor(
     private router: Router,
-    private playlistService: PlaylistService
+    private playlistService: PlaylistService,
+    private userService: UserService
   ) {}
   async ngOnInit(): Promise<void> {
     this.spotifyUser = await this.playlistService.getSpotifyUser();
-    console.log(this.spotifyUser);
-
+    let response;
     if (this.spotifyUser) {
-      this.userPlaylists = await this.playlistService.getUserPlaylists(
+      response = await this.playlistService.getUserPlaylists(
         this.spotifyUser.id
       );
+      if (response.status === 404) {
+        response = await this.userService.createUser(
+          this.spotifyUser.id,
+          this.spotifyUser.display_name
+        );
+      } else {
+        this.userPlaylists = response;
+      }
     }
   }
   async createPlaylist() {

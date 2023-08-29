@@ -4,10 +4,14 @@
   <div *ngIf="spotifyUser" class="flex flex-col items-center">
     <h1 class="text-4xl font-bold mb-20">What's up {{spotifyUser.display_name}}!</h1>
 
-    <h1 class="text-2xl font-bold mb-4">Recently played on VibeVote</h1>
-    <app-playlist-card [spotifyUser]="spotifyUser"></app-playlist-card>
-    <app-playlist-card [spotifyUser]="spotifyUser"></app-playlist-card>
-    <app-playlist-card [spotifyUser]="spotifyUser"></app-playlist-card>
+    <h1 class="text-2xl font-bold mb-4">
+      {{userPlaylists.length > 0 ? "Recently played on VibeVote" : "New here? Get started by creating a Playlist!"}}
+    </h1>
+    <div *ngFor="let playlistId of userPlaylists"
+      class="w-96 py-4 bg-gray-800 text-white text-center my-4 grid grid-cols-4">
+      <app-playlist-card [playlistId]="playlistId"></app-playlist-card>
+    </div>
+
   </div>
   <div class="p-10 bg-gray-800 text-white text-center">
     <h1 class="text-2xl font-bold mb-4">Create a new party</h1>

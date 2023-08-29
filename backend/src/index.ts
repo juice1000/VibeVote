@@ -12,8 +12,10 @@ import { Server } from 'socket.io';
 import { checkConnection } from './io-service';
 
 import passport from '@config/passport';
+import userRoutes from './routes/user';
 import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
+
 import sessionsObjects from '@local-cache/sessions';
 import { cleanupSessions } from '@controllers/session.controller';
 
@@ -36,6 +38,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use('/api/user', userRoutes);
 app.use('/api/playlist', playlistRoutes);
 app.use('/auth', authRoutes);
 

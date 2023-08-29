@@ -6,5 +6,5 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./playlist-card.component.css'],
 })
 export class PlaylistCardComponent {
-  @Input() spotifyUser: any;
+  @Input() playlistId = '';
 }
