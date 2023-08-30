@@ -32,7 +32,13 @@ export class HomeComponent {
           this.spotifyUser.display_name
         );
       } else {
-        this.userPlaylists = response;
+        const playlistIds: string[] = response;
+        playlistIds.forEach(async (id: string) => {
+          this.userPlaylists.push(
+            await this.playlistService.getPlaylistFromSpotifyApi(id)
+          );
+        });
+        console.log(this.userPlaylists);
       }
     }
   }

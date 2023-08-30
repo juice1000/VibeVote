@@ -7,8 +7,8 @@
     <h1 class="text-2xl font-bold mb-4">
       {{userPlaylists.length > 0 ? "Recently played on VibeVote" : "New here? Get started by creating a Playlist!"}}
     </h1>
-    <div *ngFor="let playlistId of userPlaylists">
-      <app-playlist-card [playlistId]="playlistId"></app-playlist-card>
+    <div *ngFor="let playlist of userPlaylists">
+      <app-playlist-card [playlist]="playlist"></app-playlist-card>
     </div>
 
   </div>

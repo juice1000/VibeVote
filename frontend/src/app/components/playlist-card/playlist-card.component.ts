@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-playlist-card',
@@ -6,5 +7,11 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./playlist-card.component.css'],
 })
 export class PlaylistCardComponent {
-  @Input() playlistId = '';
+  @Input() playlist: any;
+
+  constructor(private router: Router) {}
+
+  redirectToPlaylistComponent() {
+    this.router.navigate(['/playlist', this.playlist.id]);
+  }
 }

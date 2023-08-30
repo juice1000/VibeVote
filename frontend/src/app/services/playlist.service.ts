@@ -179,6 +179,18 @@ export class PlaylistService {
     }
   }
 
+  async getPlaylistFromSpotifyApi(playlistId: string): Promise<any> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.accessToken
+    );
+    return await firstValueFrom(
+      this.http.get<any>(`${spotifyApiUrl}/playlists/${playlistId}`, {
+        headers,
+      })
+    );
+  }
+
   async getUserPlaylists(userId: string): Promise<any> {
     try {
       return await firstValueFrom(
