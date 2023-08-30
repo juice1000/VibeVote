@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { PlaylistService } from 'src/app/services/playlist.service';
 
 @Component({
   selector: 'app-playlist-card',
@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
 export class PlaylistCardComponent {
   @Input() playlist: any;
 
-  constructor(private router: Router) {}
+  constructor(private playlistService: PlaylistService) {}
 
-  redirectToPlaylistComponent() {
-    this.router.navigate(['/playlist', this.playlist.id]);
+  loadPlaylist() {
+    this.playlistService.loadPlaylist(this.playlist.id);
   }
 }

@@ -75,6 +75,12 @@ export class PlaylistService {
     }
   }
 
+  async loadPlaylist(playlistId: string): Promise<any> {
+    const ownerId = getGuestId();
+    this.socket.emit('loadPlaylist', playlistId, ownerId);
+    this.router.navigate(['/playlist', playlistId]);
+  }
+
   async removePlaylist(playlistId: string | null): Promise<any> {
     if (!playlistId) {
       console.error('no playlist id provided, redirecting to login');
