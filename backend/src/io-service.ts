@@ -11,9 +11,13 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
 
     socket.on('createdPlaylist', (playlistId: string, ownerId: string) => {
       console.log('playlist created', playlistId, ownerId);
-
       addNewSession(playlistId, ownerId);
     });
+    socket.on('loadPlaylist', (playlistId: string, ownerId: string) => {
+      console.log('loading playlsit', playlistId, ownerId);
+      addNewSession(playlistId, ownerId);
+    });
+
     socket.on('voteUpdated', (playlistId: string, trackId: string, guestId: string) => {
       if (isActiveSession(playlistId)) {
         console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);

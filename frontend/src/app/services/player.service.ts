@@ -28,11 +28,11 @@ export class PlayerService {
       }
 
       let accessToken: any;
-      accessToken = await this.authService.getAccessToken();
+      accessToken = this.authService.getAccessToken();
       if (!accessToken) {
-        const { accessToken } = await this.playlistService.fetchTokens(
-          playlistId
-        );
+        const tokenObject = await this.playlistService.fetchTokens(playlistId);
+        console.log('tokenObject: ', tokenObject);
+        accessToken = tokenObject.accessToken;
       }
 
       if (!window.Spotify) {
@@ -66,8 +66,11 @@ export class PlayerService {
     let accessToken;
     accessToken = await this.authService.getAccessToken();
     if (!accessToken) {
-      const { accessToken, refreshToken, expiresIn } =
+      const tokenObject =
+        // const { accessToken, refreshToken, expiresIn } =
         await this.playlistService.fetchTokens(playlistId!);
+      console.log('tokenObject: ', tokenObject);
+      accessToken = tokenObject.accessToken;
     }
 
     if (this.player) {

@@ -30,7 +30,8 @@ export class PlaylistService {
         this.accessToken = this.authService.getAccessToken();
       }
 
-      const userId = await this.getUserId();
+      const user = await this.getSpotifyUser();
+      const userId = user.id;
       const ownerId = getGuestId();
       const headers = new HttpHeaders().set(
         'Authorization',
@@ -50,6 +51,7 @@ export class PlaylistService {
           title,
           spotifyPlaylistId: spotifyPlaylist?.id,
           childFriendly,
+          userId,
         })
       );
 
@@ -71,6 +73,12 @@ export class PlaylistService {
       console.error('Failed to create playlist', error);
       throw error;
     }
+  }
+
+  async loadPlaylist(playlistId: string): Promise<any> {
+    const ownerId = getGuestId();
+    this.socket.emit('loadPlaylist', playlistId, ownerId);
+    this.router.navigate(['/playlist', playlistId]);
   }
 
   async removePlaylist(playlistId: string | null): Promise<any> {
@@ -95,17 +103,15 @@ export class PlaylistService {
         })
       );
 
-      const response = await firstValueFrom(
-        this.http.delete(`${URL}/api/playlist/${playlistId}/delete-playlist`, {
-          observe: 'response',
+      const user = await this.getSpotifyUser();
+      const userId = user.id;
+      await firstValueFrom(
+        this.http.post(`${URL}/api/playlist/delete-playlist`, {
+          playlistId,
+          userId,
         })
       );
-
-      if (response.status === 201) {
-        // redirect to login page
-        console.log('successfully deleted the playlist');
-        this.router.navigate(['/login']);
-      }
+      this.router.navigate(['/login']);
     } catch (err: any) {
       if (
         err.status === 404 &&
@@ -126,7 +132,7 @@ export class PlaylistService {
     this.router.navigate(['/login']);
   }
 
-  async getUserId(): Promise<string> {
+  async getSpotifyUser(): Promise<any> {
     try {
       if (this.authService.isTokenExpired() || !this.accessToken) {
         await this.authService.refreshAccessToken();
@@ -140,7 +146,7 @@ export class PlaylistService {
       const response: any = await firstValueFrom(
         this.http.get(`${spotifyApiUrl}/me`, { headers })
       );
-      return response.id;
+      return response;
     } catch (error) {
       console.error('Failed to get user ID', error);
       throw error;
@@ -176,6 +182,28 @@ export class PlaylistService {
     } catch (error) {
       console.error('Failed to get playlist by Spotify ID', error);
       throw error;
+    }
+  }
+
+  async getPlaylistFromSpotifyApi(playlistId: string): Promise<any> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.accessToken
+    );
+    return await firstValueFrom(
+      this.http.get<any>(`${spotifyApiUrl}/playlists/${playlistId}`, {
+        headers,
+      })
+    );
+  }
+
+  async getUserPlaylists(userId: string): Promise<any> {
+    try {
+      return await firstValueFrom(
+        this.http.get<any>(`${URL}/api/user/${userId}/playlists`)
+      );
+    } catch (error) {
+      return error;
     }
   }
 

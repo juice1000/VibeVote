@@ -27,7 +27,7 @@ router.get('/:playlistId/tokens', controllers.getTokens);
 
 router.put('/:playlistId/tokens', controllers.updateTokens);
 
-router.delete('/:spotifyPlaylistId/delete-playlist', controllers.deletePlaylist);
+router.post('/delete-playlist', controllers.deletePlaylist);
 router.delete('/:playlistId/delete-tracks/:trackId', controllers.deleteTracks);
 
 export default router;

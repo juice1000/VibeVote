@@ -1,6 +1,6 @@
 <app-information-window *ngIf="sessionExpired" [playlistId]="playlist.spotifyPlaylistId"></app-information-window>
 
-<div [style.filter]="sessionExpired ? 'blur(2px)': 'blur(0px)'"
+<div [ngClass]="{'blurred': sessionExpired}"
   class="flex flex-col items-center pt-2 bg-gray-850 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen">
   <div class="max-w-lg w-full px-8">
     <div *ngIf="!playlist">

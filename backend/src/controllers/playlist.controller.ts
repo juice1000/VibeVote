@@ -1,11 +1,12 @@
 import spotifyApi from '@config/spotify';
 import { socketHandler } from '../io-service';
 import { getSessionOwner } from '@controllers/session.controller';
+import userController from '@controllers/user.controller';
 import prisma from './prismaClient';
 
 const createPlaylist = async (req: any, res: any) => {
   try {
-    const { title, description, spotifyPlaylistId, childFriendly } = req.body;
+    const { title, description, spotifyPlaylistId, childFriendly, userId } = req.body;
 
     if (spotifyPlaylistId.length === 0) {
       res.status(400).json({ error: 'no playlist name provided' });
@@ -20,6 +21,8 @@ const createPlaylist = async (req: any, res: any) => {
         childFriendly,
       },
     });
+
+    userController.addNewPlaylist(userId, spotifyPlaylistId);
 
     const socketData = {
       command: 'playlist-created',
@@ -315,9 +318,12 @@ const deletePlaylist = async (req: any, res: any) => {
   try {
     const deletedPlaylist = await prisma.playlist.delete({
       where: {
-        spotifyPlaylistId: req.params.spotifyPlaylistId,
+        spotifyPlaylistId: req.body.playlistId,
       },
     });
+
+    userController.deletePlaylist(req.body.userId, req.body.playlistId);
+
     const socketData = {
       command: 'playlist-deleted',
       name: deletedPlaylist.title,
@@ -326,7 +332,7 @@ const deletePlaylist = async (req: any, res: any) => {
     socketHandler(socketData);
 
     // will redirect back to login after job is finished
-    res.status(201).send();
+    res.status(201).json({ message: 'Playlist successfully deleted' });
   } catch (err) {
     if (err.code === 'P2025') {
       // Record to delete does not exist
