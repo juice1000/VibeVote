@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
+import { Subject, Observable } from 'rxjs';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { Router } from '@angular/router';
+import {
+  ScannerQRCodeConfig,
+  ScannerQRCodeResult,
+  NgxScannerQrcodeComponent,
+  ScannerQRCodeSelectedFiles,
+} from 'ngx-scanner-qrcode';
 
 @Component({
   selector: 'app-join-session',
@@ -9,11 +16,29 @@ import { Router } from '@angular/router';
 })
 export class JoinSessionComponent {
   playlistId!: string;
-
+  scannerOpen = false;
+  public myObservable = new Observable();
   constructor(
     private playlistService: PlaylistService,
     private router: Router
-  ) {}
+  ) {
+    this.myObservable.subscribe((value) => {
+      console.log('action: ', value);
+    });
+  }
+
+  startScanner() {
+    this.scannerOpen = true;
+  }
+  closeScanner() {
+    this.scannerOpen = false;
+  }
+
+  async onScan($event: ScannerQRCodeResult[], action?: any) {
+    console.log($event[0].value);
+    $event && action && action.stop();
+    this.closeScanner();
+  }
 
   async redirectToPlaylist() {
     // sanitize input

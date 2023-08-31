@@ -6049,6 +6049,13 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+ngx-scanner-qrcode@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/ngx-scanner-qrcode/-/ngx-scanner-qrcode-1.6.2.tgz#a07500b4b6aaa197cf1a15ca312c6d3b613afe82"
+  integrity sha512-M/C6fxzKf1pxb5GeniPI7OZHfKnVe1d7/nxks92zUddgjs//9KuomlCsSrI3nXalZySXV8M3pYyk6q214GeLBA==
+  dependencies:
+    tslib "^2.3.0"
+
 ngx-socket-io@^4.5.1:
   version "4.5.1"
   resolved "https://registry.npmjs.org/ngx-socket-io/-/ngx-socket-io-4.5.1.tgz"
