@@ -1,0 +1,22 @@
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+    <div class="w-1/4 flex flex-col items-center justify-center gap-5">
+        <button data-cy="loginWithSpotify"
+            class="flex items-center justify-center w-full px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-md transition">
+            Scan QR Code
+        </button>
+
+        <span>or</span>
+
+        <div class="w-full relative">
+            <input type="text" name="sessionId" id="sessionId" data-cy="partyInput" [(ngModel)]="sessionId"
+                placeholder="Insert playlist Id"
+                class="block w-full rounded-md bg-gray-700 text-white focus:bg-gray-600 border-transparent outline-none  px-3 py-2 text-center" />
+            <span class="absolute inset-y-0 right-0 flex items-center pl-2">
+                <button type="submit"
+                    class="pl-2 py-1.5 flex items-center rounded-md active:bg-gray-500 hover:bg-gray-600">
+                    <i class="material-icons mr-2">send</i>
+                </button>
+            </span>
+        </div>
+    </div>
+</div>
