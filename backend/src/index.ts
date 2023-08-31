@@ -16,6 +16,7 @@ import userRoutes from './routes/user';
 import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
 
+import { connectToRedis } from './redis/session-db';
 import sessionsObjects from '@local-cache/sessions';
 import { cleanupSessions } from '@controllers/session.controller';
 
@@ -55,7 +56,7 @@ const io = new Server(server, {
   },
 });
 checkConnection(io, sessionsObjects);
-
+connectToRedis();
 cleanupSessions();
 
 server.listen(port, () => {

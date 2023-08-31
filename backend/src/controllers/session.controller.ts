@@ -1,23 +1,27 @@
 import { Session, SessionState } from '@interfaces/session';
+import { sessionClient } from '../redis/session-db';
 import sessionsObjects from '@local-cache/sessions';
 
-export function addNewSession(playlistId: string, userId: string) {
+export async function addNewSession(playlistId: string, userId: string) {
   if (!isActiveSession(playlistId)) {
-    const timeout = new Date(new Date().getTime() + 1800000); // currently set to 30min
+    const timeout = new Date().getTime() + 1800000; // currently set to 30min
 
-    const newSession: Session = {
+    const newSession: any = {
       playlistId: playlistId,
-      activeUsers: [userId],
       playlistOwnerId: userId,
       timeout: timeout,
-      state: {
-        currentTrack: '',
-        progress: 0,
-        isPlaying: false,
-      },
+      currentTrack: '',
+      progress: 0,
+      isPlaying: 0,
     };
+    newSession[userId] = userId;
+
     sessionsObjects.push(newSession);
-    console.log('added new session: ', sessionsObjects);
+    await sessionClient.del(playlistId);
+    await sessionClient.hSet(playlistId, newSession);
+    // const h = await sessionClient.hGetAll(playlistId);
+
+    console.log('added new session: ', newSession);
   }
 }
 
@@ -42,8 +46,10 @@ export function cleanupSessions() {
 
 export function deleteSession(playlistId: string) {
   const objIndex = sessionsObjects.findIndex((session) => session.playlistId === playlistId);
-  const deletedSession = sessionsObjects.splice(objIndex, 1);
-  console.log('deleted sessions: ', deletedSession, sessionsObjects);
+  //const deletedSession = sessionsObjects.splice(objIndex, 1);
+
+  // const deletedSession =   sessionClient.hSet(playlistId as any);
+  // console.log('deleted sessions: ', deletedSession, sessionsObjects);
   // TODO: we still have the issue of a ghost playlist that has tracks we didn't add but are from previous playlists
 }
 
