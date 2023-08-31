@@ -81,6 +81,13 @@ export class PlaylistService {
     this.router.navigate(['/playlist', playlistId]);
   }
 
+  async isActivePlaylist(playlistId: string): Promise<any> {
+    const isActive: any = await firstValueFrom(
+      this.http.get(`${URL}/api/playlist/${playlistId}/get-active-playlist`)
+    );
+    return isActive;
+  }
+
   async removePlaylist(playlistId: string | null): Promise<any> {
     if (!playlistId) {
       console.error('no playlist id provided, redirecting to login');

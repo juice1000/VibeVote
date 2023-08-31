@@ -14,7 +14,7 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       addNewSession(playlistId, ownerId);
     });
     socket.on('loadPlaylist', (playlistId: string, ownerId: string) => {
-      console.log('loading playlsit', playlistId, ownerId);
+      console.log('loading playlist', playlistId, ownerId);
       addNewSession(playlistId, ownerId);
     });
 

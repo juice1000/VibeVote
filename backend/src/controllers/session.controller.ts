@@ -2,21 +2,23 @@ import { Session, SessionState } from '@interfaces/session';
 import sessionsObjects from '@local-cache/sessions';
 
 export function addNewSession(playlistId: string, userId: string) {
-  const timeout = new Date(new Date().getTime() + 1800000); // currently set to 30min
+  if (!isActiveSession(playlistId)) {
+    const timeout = new Date(new Date().getTime() + 1800000); // currently set to 30min
 
-  const newSession: Session = {
-    playlistId: playlistId,
-    activeUsers: [userId],
-    playlistOwnerId: userId,
-    timeout: timeout,
-    state: {
-      currentTrack: '',
-      progress: 0,
-      isPlaying: false,
-    },
-  };
-  sessionsObjects.push(newSession);
-  console.log('added new session: ', sessionsObjects);
+    const newSession: Session = {
+      playlistId: playlistId,
+      activeUsers: [userId],
+      playlistOwnerId: userId,
+      timeout: timeout,
+      state: {
+        currentTrack: '',
+        progress: 0,
+        isPlaying: false,
+      },
+    };
+    sessionsObjects.push(newSession);
+    console.log('added new session: ', sessionsObjects);
+  }
 }
 
 export function cleanupSessions() {

@@ -1,6 +1,6 @@
 import spotifyApi from '@config/spotify';
 import { socketHandler } from '../io-service';
-import { getSessionOwner } from '@controllers/session.controller';
+import { getSessionOwner, isActiveSession } from '@controllers/session.controller';
 import userController from '@controllers/user.controller';
 import prisma from './prismaClient';
 
@@ -84,6 +84,13 @@ const getPlaylistOwner = async (req: any, res: any) => {
   } catch (err) {
     console.error('error retrieving playlist owner');
   }
+};
+
+const getPlaylistActive = async (req: any, res: any) => {
+  const { playlistId } = req.params;
+  console.log(playlistId, isActiveSession(playlistId));
+
+  res.json(isActiveSession(playlistId));
 };
 
 const addTrackToPlaylist = async (req: any, res: any) => {
@@ -371,6 +378,7 @@ export default {
   createPlaylist,
   getPlaylist,
   getPlaylistOwner,
+  getPlaylistActive,
   addTrackToPlaylist,
   updateTrackPlayedStatus,
   vote,

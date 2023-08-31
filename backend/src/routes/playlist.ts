@@ -16,6 +16,7 @@ router.post('/create', controllers.createPlaylist);
 
 router.get('/:spotifyPlaylistId', controllers.getPlaylist);
 router.get('/:spotifyPlaylistId/get-owner', controllers.getPlaylistOwner);
+router.get('/:playlistId/get-active-playlist', controllers.getPlaylistActive);
 
 router.post('/:playlistId/add-track', controllers.addTrackToPlaylist);
 
