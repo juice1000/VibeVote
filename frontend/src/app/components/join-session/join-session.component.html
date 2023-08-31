@@ -1,0 +1,37 @@
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white relative">
+
+    <div class="scanner flex flex-col items-center">
+        <ngx-scanner-qrcode #action="scanner" [config]="{isBeep: false, vibrate: 0}" (event)="onScan($event, action)"
+            [ngClass]="{'hidden': !scannerOpen}">
+        </ngx-scanner-qrcode>
+        <button data-cy="closeqrreader" (click)="action.isStart ? action.stop() : action.start(); closeScanner()" class="mt-4 flex justify-center w-1/2 px-6 py-3 text-white bg-gray-700 hover:bg-gray-600
+            rounded-md transition" [ngClass]="{'hidden': !scannerOpen}">
+            Close QR Code Reader
+        </button>
+    </div>
+
+
+    <div class="w-1/4 flex flex-col items-center justify-center gap-5 p-12 bg-gray-800 rounded-md">
+        <h1 class="text-3xl font-bold mb-4">Join a Party</h1>
+        <button data-cy="scanqrcode" (click)="action.isStart ? action.stop() : action.start(); startScanner()" class="flex items-center justify-center w-full px-6 py-3 text-white bg-green-600 hover:bg-green-700
+            rounded-md transition">
+            Scan QR Code
+        </button>
+
+        <span>or</span>
+
+        <div class="w-full relative">
+            <input type="text" name="playlistId" data-cy="partyInput" [(ngModel)]="playlistId"
+                placeholder="Paste playlist Id"
+                class="block w-full rounded-md bg-gray-700 text-white focus:bg-gray-600 border-transparent outline-none  px-3 py-2 text-center" />
+            <span class="absolute inset-y-0 right-0 flex items-center pl-2">
+                <button type="submit" class="pl-2 py-1.5 flex items-center rounded-md hover:bg-gray-500"
+                    (click)="redirectToPlaylist()">
+                    <i class="material-icons mr-2">send</i>
+                </button>
+            </span>
+        </div>
+
+    </div>
+
+</div>

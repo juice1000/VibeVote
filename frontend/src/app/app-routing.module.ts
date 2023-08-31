@@ -4,6 +4,7 @@ import { LoginComponent } from './components/login/login.component';
 import { PlaylistComponent } from './components/playlist/playlist.component';
 import { HomeComponent } from './components/home/home.component';
 import { ShareSessionComponent } from './components/share-session/share-session.component';
+import { JoinSessionComponent } from './components/join-session/join-session.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -12,6 +13,10 @@ export const routes: Routes = [
   {
     path: 'share-session/:spotifyPlaylistId',
     component: ShareSessionComponent,
+  },
+  {
+    path: 'join-session',
+    component: JoinSessionComponent,
   },
   { path: 'playlist/:spotifyPlaylistId', component: PlaylistComponent },
 ];

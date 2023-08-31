@@ -24,8 +24,11 @@ import { environment } from './../environments/environment';
 import { ShareSessionComponent } from './components/share-session/share-session.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { PlaylistCardComponent } from './components/playlist-card/playlist-card.component';
+import { JoinSessionComponent } from './components/join-session/join-session.component';
+import { NgxScannerQrcodeModule, LOAD_WASM } from 'ngx-scanner-qrcode';
 
 const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
+LOAD_WASM().subscribe((res: any) => console.log('LOAD_WASM', res));
 
 @NgModule({
   declarations: [
@@ -38,6 +41,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     InformationWindowComponent,
     ShareSessionComponent,
     PlaylistCardComponent,
+    JoinSessionComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +59,7 @@ const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
     MatIconModule,
     MatSlideToggleModule,
     QRCodeModule,
+    NgxScannerQrcodeModule,
     SocketIoModule.forRoot(config),
   ],
   providers: [HttpClient],

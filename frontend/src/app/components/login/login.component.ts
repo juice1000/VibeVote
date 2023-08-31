@@ -8,12 +8,11 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  sessionId!: string;
-
   constructor(private router: Router, private authService: AuthService) {}
 
   joinSession(): void {
-    this.router.navigate(['/playlist', this.sessionId]);
+    this.router.navigate(['/join-session']);
+    //this.router.navigate(['/playlist', this.sessionId]);
   }
 
   loginWithSpotify(): void {

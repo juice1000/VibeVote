@@ -78,7 +78,18 @@ export class PlaylistService {
   async loadPlaylist(playlistId: string): Promise<any> {
     const ownerId = getGuestId();
     this.socket.emit('loadPlaylist', playlistId, ownerId);
-    this.router.navigate(['/playlist', playlistId]);
+    this.router.navigate(['/share-session', playlistId]);
+  }
+
+  async isActivePlaylist(playlistId: string): Promise<any> {
+    const isActive: any = await firstValueFrom(
+      this.http.get(`${URL}/api/playlist/${playlistId}/get-active-playlist`)
+    );
+    return isActive;
+  }
+  async userJoins(playlistId: string): Promise<any> {
+    const userId = getGuestId();
+    this.socket.emit('joinSession', playlistId, userId);
   }
 
   async removePlaylist(playlistId: string | null): Promise<any> {

@@ -1,0 +1,7 @@
+.hidden {
+  display: none;
+}
+.scanner {
+  position: absolute;
+  z-index: 100;
+}
