@@ -38,6 +38,9 @@ export class JoinSessionComponent {
     console.log($event[0].value);
     $event && action && action.stop();
     this.closeScanner();
+
+    this.playlistId = $event[0].value;
+    this.redirectToPlaylist();
   }
 
   async redirectToPlaylist() {

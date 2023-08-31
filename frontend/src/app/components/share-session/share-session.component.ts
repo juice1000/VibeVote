@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class ShareSessionComponent {
   playlistId = '';
-  playlistUrl = environment.clientUrl + '/playlist/' + this.playlistId;
+  playlistUrl = '';
   isCopiedToClipboard = false;
   constructor(
     private router: Router,
@@ -20,6 +20,7 @@ export class ShareSessionComponent {
   async ngOnInit(): Promise<void> {
     this.playlistId =
       this.route.snapshot.paramMap.get('spotifyPlaylistId') || '';
+    this.playlistUrl = environment.clientUrl + '/playlist/' + this.playlistId;
   }
   redirectToPlaylistComponent() {
     if (this.playlistId.length > 0) {

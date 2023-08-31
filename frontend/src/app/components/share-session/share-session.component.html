@@ -1,11 +1,13 @@
 <div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
     <h1 class="text-2xl font-bold mb-4">Invite Your Friends</h1>
 
-    <qrcode colorLight="#ffffff00" colorDark="#ffffff" [qrdata]="playlistUrl" [width]="256"
+    <!-- <qrcode colorLight="#ffffff00" colorDark="#ffffff" [qrdata]="playlistUrl" [width]="256"
         [errorCorrectionLevel]="'M'">
+    </qrcode> -->
+    <qrcode [qrdata]="playlistId" [width]="256" [errorCorrectionLevel]="'M'">
     </qrcode>
 
-    <h1 class="text-xl font-bold">or</h1>
+    <h1 class="text-xl font-bold mt-4">or</h1>
     <div class=" w-1/2 px-4 py-2 m-4 bg-gray-700 flex justify-center items-center hover:bg-gray-800 rounded-md  transition duration-300 cursor-pointer"
         (click)="copyToClipboard(tooltip)" [ngClass]="{'bg-gray-800': isCopiedToClipboard}"
         matTooltip="Copied to Clipboard" matTooltipPosition="after" #tooltip="matTooltip"
