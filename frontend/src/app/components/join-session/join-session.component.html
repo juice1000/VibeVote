@@ -4,7 +4,7 @@
         <ngx-scanner-qrcode #action="scanner" [config]="{isBeep: false, vibrate: 0}" (event)="onScan($event, action)"
             [ngClass]="{'hidden': !scannerOpen}">
         </ngx-scanner-qrcode>
-        <button data-cy="closeqrreader" (click)="action.isStart ? action.stop() : action.start(); closeScanner()" class="mt-4 flex justify-center w-1/2 px-6 py-3 text-white bg-gray-700 hover:bg-gray-600
+        <button data-cy="closeqrreader" (click)="action.isStart ? action.stop() : action.start(); closeScanner()" class="mt-4 flex justify-center w-full px-6 py-3 text-white bg-gray-700 hover:bg-gray-600
             rounded-md transition" [ngClass]="{'hidden': !scannerOpen}">
             Close QR Code Reader
         </button>
