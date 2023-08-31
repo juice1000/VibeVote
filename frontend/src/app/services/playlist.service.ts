@@ -78,7 +78,7 @@ export class PlaylistService {
   async loadPlaylist(playlistId: string): Promise<any> {
     const ownerId = getGuestId();
     this.socket.emit('loadPlaylist', playlistId, ownerId);
-    this.router.navigate(['/playlist', playlistId]);
+    this.router.navigate(['/share-session', playlistId]);
   }
 
   async isActivePlaylist(playlistId: string): Promise<any> {
