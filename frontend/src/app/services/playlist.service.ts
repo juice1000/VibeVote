@@ -87,6 +87,10 @@ export class PlaylistService {
     );
     return isActive;
   }
+  async userJoins(playlistId: string): Promise<any> {
+    const userId = getGuestId();
+    this.socket.emit('joinSession', playlistId, userId);
+  }
 
   async removePlaylist(playlistId: string | null): Promise<any> {
     if (!playlistId) {

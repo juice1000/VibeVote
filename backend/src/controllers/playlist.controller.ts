@@ -88,8 +88,6 @@ const getPlaylistOwner = async (req: any, res: any) => {
 
 const getPlaylistActive = async (req: any, res: any) => {
   const { playlistId } = req.params;
-  console.log(playlistId, isActiveSession(playlistId));
-
   res.json(isActiveSession(playlistId));
 };
 

@@ -21,15 +21,13 @@ export class JoinSessionComponent {
 
     const re = new RegExp('[a-zA-Z0-9]{22}');
     const res = this.playlistId.match(re);
-    console.log(res);
     if (res && res[0] === this.playlistId) {
       // check if playlist exists + check if playlist active
       const isActive = await this.playlistService.isActivePlaylist(
         this.playlistId
       );
-
-      console.log(isActive);
       if (isActive) {
+        this.playlistService.userJoins(this.playlistId);
         // redirect
         this.router.navigate(['/playlist', this.playlistId]);
       } else {

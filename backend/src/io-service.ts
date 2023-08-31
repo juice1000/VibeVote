@@ -57,8 +57,15 @@ export const checkConnection = function (io: any, sessionsObjects: Session[]) {
       }
     });
 
+    socket.on('joinSession', (playlistId: string, guestId: string) => {
+      updateSession(playlistId, guestId, false);
+      console.log(sessionsObjects);
+
+      io.emit('sessionJoined', guestId); // TODO: make a counter for joined users
+    });
     socket.on('leaveSession', (playlistId: string, guestId: string) => {
       updateSession(playlistId, guestId, true);
+      io.emit('sessionLeft', guestId);
     });
 
     socket.on('disconnect', () => {
