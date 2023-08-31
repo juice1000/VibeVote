@@ -1,7 +1,8 @@
 <div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white relative">
 
     <div class="scanner flex flex-col items-center">
-        <ngx-scanner-qrcode #action="scanner" (event)="onScan($event, action)" [ngClass]="{'hidden': !scannerOpen}">
+        <ngx-scanner-qrcode #action="scanner" [config]="{isBeep: false, vibrate: 0}" (event)="onScan($event, action)"
+            [ngClass]="{'hidden': !scannerOpen}">
         </ngx-scanner-qrcode>
         <button data-cy="closeqrreader" (click)="action.isStart ? action.stop() : action.start(); closeScanner()" class="mt-4 flex justify-center w-1/2 px-6 py-3 text-white bg-gray-700 hover:bg-gray-600
             rounded-md transition" [ngClass]="{'hidden': !scannerOpen}">
