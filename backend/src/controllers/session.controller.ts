@@ -45,6 +45,8 @@ export async function updateSession(playlistId: string, userId: string, isLeavin
 
   // update session state
   if (stateValue) {
+    console.log(stateValue);
+
     await sessionClient.hSet(playlistId, stateValue);
   }
   // set new timeout
@@ -55,12 +57,12 @@ export async function isActiveSession(playlistId: string): Promise<number> {
   return await sessionClient.exists(playlistId);
 }
 
-export async function getCurrentSessionState(playlistId: string): Promise<any> {
-  const state = await sessionClient.hmGet(playlistId, ['process', 'currentTrackId', 'isPlaying']);
+export async function getCurrentSessionState(playlistId: string): Promise<SessionState> {
+  const state = await sessionClient.hmGet(playlistId, ['progress', 'currentTrackId', 'isPlaying']);
   console.log(state);
 
   return {
-    process: parseInt(state[0]),
+    progress: parseInt(state[0]),
     currentTrackId: state[1],
     isPlaying: parseInt(state[2]),
   };

@@ -10,7 +10,9 @@ import { Socket } from 'ngx-socket-io';
 export class PlayerComponent implements OnInit {
   @Input() spotifyPlaylistId: string | null = null;
   @Input() isOwner: boolean = false;
+  @Input() initialState: any;
   currentTrack: any;
+  currentTrackId = '';
   progress: number = 0;
   deviceId: string | null = null;
   isPlaying = false;
@@ -34,14 +36,13 @@ export class PlayerComponent implements OnInit {
       this.spotifyPlaylistId
     );
 
-    this.socket.emit('requestInitialState', this.spotifyPlaylistId);
-
     this.playerService.player.addListener(
       'player_state_changed',
       async (state: any) => {
         try {
           if (state.paused !== this.isPaused || this.isPaused === null) {
             this.currentTrack = state.track_window.current_track;
+            this.currentTrackId = state.track_window.current_track.id;
             this.progress = state.position;
             this.isPlaying = !state.paused;
             this.isPaused = state.paused;
@@ -49,7 +50,7 @@ export class PlayerComponent implements OnInit {
             this.socket.emit(
               'clientStateChange',
               {
-                currentTrack: this.currentTrack.id,
+                currentTrackId: this.currentTrackId,
                 progress: this.progress,
                 isPlaying: this.isPlaying ? 1 : 0,
               },
@@ -67,27 +68,24 @@ export class PlayerComponent implements OnInit {
       this.isPlaying = state.isPlaying;
     });
 
-    this.socket.on('initialState', async (state: any, playlistId: string) => {
-      console.log('initialState', state, playlistId);
+    if (this.initialState) {
+      this.currentTrackId = this.initialState.currentTrackId;
+      this.progress = this.initialState.progress;
+      console.log(
+        'initial state',
+        this.initialState.isPlaying,
+        this.initialState
+      );
+      this.isPlaying = this.initialState.isPlaying;
 
-      try {
-        if (this.spotifyPlaylistId === playlistId) {
-          this.currentTrack = state.currentTrack;
-          this.progress = state.progress;
-          console.log('initial state', state.isPlaying);
-          this.isPlaying = state.isPlaying;
-
-          if (state.isPlaying) {
-            await this.playerService.play(
-              `spotify:track:${this.currentTrack}`,
-              this.spotifyPlaylistId!
-            );
-          }
-        }
-      } catch (error) {
-        console.error('Error setting initial player state', error);
+      if (this.initialState.isPlaying) {
+        await this.playerService.play(
+          `spotify:track:${this.currentTrackId}`,
+          this.spotifyPlaylistId!
+        );
       }
-    });
+    }
+
     const playerState = await this.playerService.player.getCurrentState();
     if (playerState && playerState.track_window) {
       this.currentTrack = playerState.track_window.current_track;
@@ -159,6 +157,8 @@ export class PlayerComponent implements OnInit {
 
   private async updatePlayerState(state: any): Promise<void> {
     try {
+      console.log('state', state);
+
       this.currentTrack = state.currentTrack;
       this.progress = state.position;
     } catch (error) {

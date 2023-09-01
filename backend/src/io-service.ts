@@ -57,16 +57,6 @@ export const checkConnection = function (io: any) {
       }
     });
 
-    socket.on('requestInitialState', async (playlistId: string) => {
-      console.log('requestInitialState', playlistId);
-      if (playlistId !== '' && (await isActiveSession(playlistId))) {
-        const activeSession = await getCurrentSessionState(playlistId);
-        io.emit('initialState', activeSession, playlistId);
-      } else {
-        io.emit('sessionExpired', playlistId);
-      }
-    });
-
     socket.on('joinSession', async (playlistId: string, guestId: string) => {
       const isActive = await isActiveSession(playlistId);
       if (isActive) {
