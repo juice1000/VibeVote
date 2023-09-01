@@ -83,7 +83,6 @@ export class PlaylistComponent implements OnInit {
 
       this.changeDetector.detectChanges();
     });
-    console.log(this.playlist);
   }
 
   async fetchPlaylistBySpotifyId(spotifyPlaylistId: string): Promise<void> {
@@ -97,18 +96,29 @@ export class PlaylistComponent implements OnInit {
     }
   }
 
-  async vote(trackId: string, spotifyId: string, index: number): Promise<void> {
-    try {
-      const spotifyPlaylistId =
-        this.route.snapshot.paramMap.get('spotifyPlaylistId');
+  async vote(
+    trackId: string,
+    spotifyId: string,
+    index: number,
+    playlistId: string
+  ): Promise<void> {
+    const isActive = await this.playlistService.isActivePlaylist(playlistId);
 
-      await this.playlistService.voteForTrack(
-        spotifyPlaylistId!,
-        trackId,
-        spotifyId
-      );
-    } catch (error) {
-      console.error('Failed to vote for track', error);
+    if (!isActive) {
+      this.sessionExpired = true;
+    } else {
+      try {
+        const spotifyPlaylistId =
+          this.route.snapshot.paramMap.get('spotifyPlaylistId');
+
+        await this.playlistService.voteForTrack(
+          spotifyPlaylistId!,
+          trackId,
+          spotifyId
+        );
+      } catch (error) {
+        console.error('Failed to vote for track', error);
+      }
     }
   }
 
