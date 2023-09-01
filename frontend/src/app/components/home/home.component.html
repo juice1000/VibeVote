@@ -1,9 +1,13 @@
 <div
-  class="flex flex-col items-center pt-2 bg-gray-900 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen">
+  class="flex flex-col items-center pt-2 bg-gray-900 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen min-h-screen">
 
   <div *ngIf="spotifyUser" class="flex flex-col items-center">
-    <h1 class="text-4xl font-bold mb-20">What's up {{spotifyUser.display_name}}!</h1>
-
+    <div class="flex items-center mb-20 mt-4 gap-5">
+      <h1 class="text-4xl font-bold">What's up {{spotifyUser.display_name}}!</h1>
+      <img src="{{spotifyUser.images[spotifyUser.images.length -1].url}}" alt="profile-picture"
+        class="rounded-full object-cover h-20 w-20">
+      <!-- TODO: it appears that the best quality photo is at the end of the array, however in the future we need to do this programatically -->
+    </div>
     <h1 class="text-2xl font-bold mb-4">
       {{userPlaylists.length > 0 ? "Recently played on VibeVote" : "New here? Get started by creating a Playlist!"}}
     </h1>
@@ -12,26 +16,38 @@
     </div>
 
   </div>
-  <div class="p-10 bg-gray-800 text-white text-center rounded-md">
-    <h1 class="text-2xl font-bold mb-4">Create a new party</h1>
+  <div>
+    <div class="py-6 px-10 bg-gray-800 text-white text-center rounded-md">
+      <h1 class="text-2xl font-bold mb-4">Create a new party</h1>
 
-    <form (submit)="createPlaylist()" class="space-y-4" data-testid="submit-form-btn">
-      <input data-cy="playListInput" [(ngModel)]="newPlaylistName" name="newPlayListName" placeholder="Party name"
-        class="text-center mt-1 block w-full rounded-md bg-gray-700 text-white border-transparent focus:border-green-600 focus:bg-gray-600 focus:ring-0 px-3 py-2" />
-      <button data-cy="playListSubmit" type="submit" [disabled]="newPlaylistName === ''"
-        [ngClass]="{'hover:bg-green-700 bg-green-600': newPlaylistName !== '', 'bg-gray-600':  newPlaylistName === ''}"
-        class="px-4 py-2 block w-full rounded-md text-white transition duration-300">
-        Create Party
+      <form (submit)="createPlaylist()" class="space-y-4" data-testid="submit-form-btn">
+        <input data-cy="playListInput" [(ngModel)]="newPlaylistName" name="newPlayListName" placeholder="Party name"
+          class="text-center mt-1 block w-full rounded-md bg-gray-700 text-white border-transparent focus:border-green-600 focus:bg-gray-600 focus:ring-0 px-3 py-2" />
+        <button data-cy="playListSubmit" type="submit" [disabled]="newPlaylistName === ''"
+          [ngClass]="{'hover:bg-green-700 bg-green-600': newPlaylistName !== '', 'bg-gray-600':  newPlaylistName === ''}"
+          class="px-4 py-2 block w-full rounded-md text-white transition duration-300">
+          Create Party
+        </button>
+
+        <div class="mt-2">
+          <label for="childFriendly" class="inline-flex items-center">
+            <mat-slide-toggle [(ngModel)]="childFriendly" name="childFriendly" id="childFriendly"
+              class="mr-2"></mat-slide-toggle>
+            <span class="mr-1 text-sm text-gray-200">Child Friendly</span>
+            <i class="fas fa-info-circle text-gray-200" matTooltip="Child Friendly mode filters out explicit songs"></i>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <div class="mt-6 py-6 px-10 bg-gray-800 text-white text-center rounded-md">
+      <h1 class="text-2xl font-bold mb-4">Or</h1>
+      <button (click)="joinSession()"
+        class="w-full px-6 py-3 text-white bg-gray-600 hover:bg-gray-700 rounded-md transition">
+        Join Another Party
       </button>
+    </div>
 
-      <div class="mt-2">
-        <label for="childFriendly" class="inline-flex items-center">
-          <mat-slide-toggle [(ngModel)]="childFriendly" name="childFriendly" id="childFriendly"
-            class="mr-2"></mat-slide-toggle>
-          <span class="mr-1 text-sm text-gray-200">Child Friendly</span>
-          <i class="fas fa-info-circle text-gray-200" matTooltip="Child Friendly mode filters out explicit songs"></i>
-        </label>
-      </div>
-    </form>
   </div>
+
 </div>

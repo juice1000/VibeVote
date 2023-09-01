@@ -49,4 +49,7 @@ export class HomeComponent {
     );
     this.router.navigate(['/share-session', playlist.spotifyPlaylistId]);
   }
+  joinSession(): void {
+    this.router.navigate(['/join-session']);
+  }
 }
