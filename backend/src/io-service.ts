@@ -6,11 +6,11 @@ let connection = false;
 
 export const checkConnection = function (io: any) {
   io.on('connection', (socket: any) => {
-    console.log('User connected with socketId:', socket.id);
+    // console.log('User connected with socketId:', socket.id);
     connection = true;
 
     socket.on('createdPlaylist', async (playlistId: string, ownerId: string) => {
-      console.log('playlist created', playlistId, ownerId);
+      console.log('playlist created', playlistId);
       const isActive = await isActiveSession(playlistId);
       if (!isActive) {
         await addNewSession(playlistId, ownerId);
@@ -25,8 +25,6 @@ export const checkConnection = function (io: any) {
     });
 
     socket.on('voteUpdated', async (playlistId: string, trackId: string, guestId: string) => {
-      console.log('vote updated', playlistId, trackId, guestId);
-
       const isActive = await isActiveSession(playlistId);
       if (isActive) {
         console.log(`Vote count for track ${trackId} in playlist ${playlistId} was updated`);
@@ -37,9 +35,9 @@ export const checkConnection = function (io: any) {
       }
     });
     socket.on('trackAdded', async (playlistId: string, guestId: string) => {
-      console.log('track added', playlistId, guestId);
       const isActive = await isActiveSession(playlistId);
       if (isActive) {
+        console.log('track added: ', playlistId);
         await updateSession(playlistId, guestId, false);
         io.emit('TrackListUpdated', playlistId);
       } else {
@@ -50,7 +48,7 @@ export const checkConnection = function (io: any) {
       const isActive = await isActiveSession(playlistId);
       if (isActive) {
         await updateSession(playlistId, '', false, state);
-        socket.broadcast.emit('stateChange', playlistId); // TODO: bring this into one
+        socket.broadcast.emit('stateChange', playlistId);
         socket.broadcast.emit('syncState', state);
       } else {
         io.emit('sessionExpired', playlistId);
