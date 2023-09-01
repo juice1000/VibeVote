@@ -40,7 +40,6 @@ export const checkConnection = function (io: any) {
       console.log('track added', playlistId, guestId);
       const isActive = await isActiveSession(playlistId);
       if (isActive) {
-        console.log(`Track was added and Track list was updated`);
         await updateSession(playlistId, guestId, false);
         io.emit('TrackListUpdated', playlistId);
       } else {
@@ -48,12 +47,9 @@ export const checkConnection = function (io: any) {
       }
     });
     socket.on('clientStateChange', async (state: SessionState, playlistId: string) => {
-      console.log('clientStateChange', playlistId);
       const isActive = await isActiveSession(playlistId);
       if (isActive) {
         await updateSession(playlistId, '', false, state);
-        console.log('state before emit', state);
-
         socket.broadcast.emit('stateChange', playlistId); // TODO: bring this into one
         socket.broadcast.emit('syncState', state);
       } else {

@@ -121,6 +121,8 @@ export class PlaylistComponent implements OnInit {
   }
 
   async leaveSession(playlistId: string) {
+    console.log('called leaveSession');
+    this.playerService.disconnectPlayer();
     this.playlistService.leaveSession(playlistId);
   }
 

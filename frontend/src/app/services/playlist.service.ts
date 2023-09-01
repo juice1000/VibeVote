@@ -78,6 +78,12 @@ export class PlaylistService {
   async loadPlaylist(playlistId: string): Promise<any> {
     const ownerId = getGuestId();
     this.socket.emit('loadPlaylist', playlistId, ownerId);
+
+    if (this.authService.isTokenExpired() || !this.accessToken) {
+      await this.authService.refreshAccessToken();
+      this.accessToken = this.authService.getAccessToken();
+    }
+
     this.router.navigate(['/share-session', playlistId]);
   }
 

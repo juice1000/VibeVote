@@ -34,6 +34,7 @@ export async function updateSession(playlistId: string, userId: string, isLeavin
   if (userId !== '') {
     // update active users
     const userExists = await sessionClient.hExists(playlistId, userId);
+
     if (!userExists) {
       await sessionClient.hSet(playlistId, userId, userId);
     } else if (userExists && isLeaving) {

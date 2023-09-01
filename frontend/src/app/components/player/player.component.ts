@@ -51,7 +51,7 @@ export class PlayerComponent implements OnInit {
               {
                 currentTrack: this.currentTrack.id,
                 progress: this.progress,
-                isPlaying: this.isPlaying,
+                isPlaying: this.isPlaying ? 1 : 0,
               },
               this.spotifyPlaylistId
             );

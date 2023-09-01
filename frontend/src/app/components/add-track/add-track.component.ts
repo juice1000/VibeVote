@@ -48,7 +48,7 @@ export class AddTrackComponent implements AfterViewChecked {
       const { accessToken, refreshToken, expiresIn } =
         await this.playlistService.fetchTokens(this.spotifyPlaylistId);
 
-      if (!accessToken) {
+      if (!accessToken || expiresIn < 0) {
         await this.authService.refreshAccessToken(refreshToken);
       }
       this.authService.setAccessToken(accessToken, expiresIn);
