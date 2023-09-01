@@ -8,9 +8,10 @@ import { PlaylistService } from 'src/app/services/playlist.service';
 })
 export class InformationWindowComponent {
   @Input() playlistId: string | null = null;
+  @Input() isOwner: boolean = false;
 
   constructor(private playlistService: PlaylistService) {}
   backToLogin() {
-    this.playlistService.removePlaylist(this.playlistId);
+    this.playlistService.removePlaylist(this.playlistId, this.isOwner);
   }
 }

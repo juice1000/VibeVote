@@ -119,13 +119,13 @@ export class PlaylistComponent implements OnInit {
   async removePlaylist(playlistId: string): Promise<void> {
     console.log('called removePlaylist');
     this.playerService.disconnectPlayer();
-    this.playlistService.removePlaylist(playlistId);
+    this.playlistService.removePlaylist(playlistId, this.isOwner);
   }
 
   async leaveSession(playlistId: string) {
     console.log('called leaveSession');
     this.playerService.disconnectPlayer();
-    this.playlistService.leaveSession(playlistId);
+    this.playlistService.leaveSession(playlistId, this.isOwner);
   }
 
   async onAddTrackModalClose(searchResult: string | null): Promise<void> {

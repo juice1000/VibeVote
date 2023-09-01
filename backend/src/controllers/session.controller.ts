@@ -59,7 +59,6 @@ export async function isActiveSession(playlistId: string): Promise<number> {
 
 export async function getCurrentSessionState(playlistId: string): Promise<SessionState> {
   const state = await sessionClient.hmGet(playlistId, ['progress', 'currentTrackId', 'isPlaying']);
-  console.log(state);
 
   return {
     progress: parseInt(state[0]),

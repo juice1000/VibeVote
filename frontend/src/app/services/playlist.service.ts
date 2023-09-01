@@ -105,7 +105,10 @@ export class PlaylistService {
     this.socket.emit('joinSession', playlistId, userId);
   }
 
-  async removePlaylist(playlistId: string | null): Promise<any> {
+  async removePlaylist(
+    playlistId: string | null,
+    isOwner: boolean
+  ): Promise<any> {
     if (!playlistId) {
       console.error('no playlist id provided, redirecting to login');
       this.router.navigate(['/login']);
@@ -135,7 +138,11 @@ export class PlaylistService {
           userId,
         })
       );
-      this.router.navigate(['/login']);
+      if (isOwner) {
+        this.router.navigate(['/home']);
+      } else {
+        this.router.navigate(['/login']);
+      }
     } catch (err: any) {
       if (
         err.status === 404 &&
@@ -149,11 +156,16 @@ export class PlaylistService {
     }
   }
 
-  async leaveSession(playlistId: string) {
+  async leaveSession(playlistId: string, isOwner: boolean): Promise<void> {
     const guestId = getGuestId();
     this.socket.emit('leaveSession', playlistId, guestId);
     // redirect to login page
-    this.router.navigate(['/login']);
+
+    if (isOwner) {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   async getSpotifyUser(): Promise<any> {
