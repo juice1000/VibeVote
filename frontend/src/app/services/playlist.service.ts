@@ -84,6 +84,13 @@ export class PlaylistService {
       this.accessToken = this.authService.getAccessToken();
     }
 
+    await this.updateTokens(
+      playlistId,
+      this.accessToken!,
+      this.authService.getRefreshToken()!,
+      (this.authService.getExpirationTime()! - Date.now()) / 1000
+    );
+
     this.router.navigate(['/share-session', playlistId]);
   }
 
