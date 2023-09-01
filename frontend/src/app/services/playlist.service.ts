@@ -105,10 +105,7 @@ export class PlaylistService {
     this.socket.emit('joinSession', playlistId, userId);
   }
 
-  async removePlaylist(
-    playlistId: string | null,
-    isOwner: boolean
-  ): Promise<any> {
+  async removePlaylist(playlistId: string, isOwner: boolean): Promise<any> {
     if (!playlistId) {
       console.error('no playlist id provided, redirecting to login');
       this.router.navigate(['/login']);
@@ -138,29 +135,34 @@ export class PlaylistService {
           userId,
         })
       );
-      if (isOwner) {
-        this.router.navigate(['/home']);
-      } else {
-        this.router.navigate(['/login']);
-      }
+      this.leaveSession(playlistId, true, true);
     } catch (err: any) {
       if (
         err.status === 404 &&
         err.error.message === 'Playlist already deleted'
       ) {
         // redirect to login page
-        this.router.navigate(['/login']);
+        this.leaveSession(playlistId, true, true);
       } else {
         console.error('Error deleting the playlist: ', err);
       }
     }
   }
 
-  async leaveSession(playlistId: string, isOwner: boolean): Promise<void> {
+  async leaveSession(
+    playlistId: string,
+    isOwner: boolean,
+    deleting?: boolean
+  ): Promise<void> {
     const guestId = getGuestId();
-    this.socket.emit('leaveSession', playlistId, guestId);
-    // redirect to login page
 
+    if (deleting) {
+      this.socket.emit('deleteSession', playlistId);
+    } else {
+      this.socket.emit('leaveSession', playlistId, guestId);
+    }
+
+    // redirect to login page
     if (isOwner) {
       this.router.navigate(['/home']);
     } else {
@@ -198,6 +200,7 @@ export class PlaylistService {
       return guestId === ownerId;
     } catch (error) {
       console.error('Failed to get playlist by Spotify ID', error);
+      this.leaveSession(playlistId, false);
       throw error;
     }
   }
@@ -217,6 +220,7 @@ export class PlaylistService {
       );
     } catch (error) {
       console.error('Failed to get playlist by Spotify ID', error);
+      this.leaveSession(playlistId, false);
       throw error;
     }
   }

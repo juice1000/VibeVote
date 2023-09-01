@@ -112,8 +112,16 @@ export class PlaylistComponent implements OnInit {
     }
   }
 
-  async addTrack(): Promise<void> {
-    this.addTrackVisible = true;
+  async addTrack(playlistId: string): Promise<void> {
+    const isActive = await this.playlistService.isActivePlaylist(playlistId);
+    console.log('isActive', isActive);
+
+    if (!isActive) {
+      this.sessionExpired = true;
+    } else {
+      this.addTrackVisible = true;
+    }
+    console.log('sessionExpired', this.sessionExpired);
   }
 
   async removePlaylist(playlistId: string): Promise<void> {
