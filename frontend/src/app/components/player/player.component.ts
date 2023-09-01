@@ -157,7 +157,7 @@ export class PlayerComponent implements OnInit {
 
   private async updatePlayerState(state: any): Promise<void> {
     try {
-      console.log('state', state);
+      // console.log('state', state);
 
       this.currentTrack = state.currentTrack;
       this.progress = state.position;

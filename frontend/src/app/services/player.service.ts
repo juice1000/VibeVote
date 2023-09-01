@@ -31,7 +31,6 @@ export class PlayerService {
       accessToken = this.authService.getAccessToken();
       if (!accessToken) {
         const tokenObject = await this.playlistService.fetchTokens(playlistId);
-        console.log('tokenObject: ', tokenObject);
         accessToken = tokenObject.accessToken;
       }
 
@@ -66,10 +65,7 @@ export class PlayerService {
     let accessToken;
     accessToken = await this.authService.getAccessToken();
     if (!accessToken) {
-      const tokenObject =
-        // const { accessToken, refreshToken, expiresIn } =
-        await this.playlistService.fetchTokens(playlistId!);
-      console.log('tokenObject: ', tokenObject);
+      const tokenObject = await this.playlistService.fetchTokens(playlistId!);
       accessToken = tokenObject.accessToken;
     }
 

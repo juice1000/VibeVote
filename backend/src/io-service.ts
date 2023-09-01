@@ -73,6 +73,11 @@ export const checkConnection = function (io: any) {
       io.emit('sessionLeft', guestId);
     });
 
+    socket.on('deleteSession', async (playlistId: string) => {
+      // TODO: add guestId to arguments
+      deleteSession(playlistId);
+    });
+
     socket.on('disconnect', async () => {
       // TODO: find ou which guest ID it had (we could do this by tying the socket ID to the guestUserID in a cache object)
       console.log('User disconnected:', socket.id);
@@ -83,11 +88,6 @@ export const checkConnection = function (io: any) {
 export const socketHandler = (socketData?: any) => {
   if (connection) {
     if (socketData) {
-      // check if delete operation and update sessionsObject
-      if (socketData.command === 'playlist-deleted') {
-        // TODO: add guestId to arguments
-        deleteSession(socketData.obj.spotifyPlaylistId);
-      }
       io.in(socketData.name).emit(socketData.title, socketData.obj);
     }
   }

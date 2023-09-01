@@ -1,6 +1,6 @@
 <app-information-window *ngIf="sessionExpired" [playlistId]="playlist.spotifyPlaylistId"
   [isOwner]="isOwner"></app-information-window>
-
+{{sessionExpired}}
 <div [ngClass]="{'blurred': sessionExpired}"
   class="flex flex-col items-center pt-2 bg-gray-850 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen">
   <div class="max-w-lg w-full px-8">
@@ -10,7 +10,7 @@
     <div *ngIf="playlist">
       <app-spotify-player [spotifyPlaylistId]="playlist.spotifyPlaylistId" [isOwner]="isOwner"
         [initialState]="playlist.state"></app-spotify-player>
-      <button (click)="addTrack()"
+      <button (click)="addTrack(playlist.spotifyPlaylistId)"
         class="add-track-btn w-full px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white transition duration-300">
         Add track
       </button>
@@ -49,7 +49,7 @@
                 </p>
               </div>
             </div>
-            <button (click)="vote(track.id, track.spotifyId, i)" [ngClass]="{
+            <button (click)="vote(track.id, track.spotifyId, i, playlist.spotifyPlaylistId)" [ngClass]="{
               'bg-green-600 hover:bg-green-700': !userVotes[i],
               'bg-red-600 hover:bg-red-700': userVotes[i]
             }" class="px-4 py-2 rounded-md text-white transition duration-300">

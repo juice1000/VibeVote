@@ -7,11 +7,11 @@ import { PlaylistService } from 'src/app/services/playlist.service';
   styleUrls: ['./information-window.component.css'],
 })
 export class InformationWindowComponent {
-  @Input() playlistId: string | null = null;
+  @Input() playlistId: string = '';
   @Input() isOwner: boolean = false;
 
   constructor(private playlistService: PlaylistService) {}
   backToLogin() {
-    this.playlistService.removePlaylist(this.playlistId, this.isOwner);
+    this.playlistService.leaveSession(this.playlistId, this.isOwner);
   }
 }

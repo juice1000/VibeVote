@@ -336,13 +336,6 @@ const deletePlaylist = async (req: any, res: any) => {
 
     userController.deletePlaylist(req.body.userId, req.body.playlistId);
 
-    const socketData = {
-      command: 'playlist-deleted',
-      name: deletedPlaylist.title,
-      obj: deletedPlaylist,
-    };
-    socketHandler(socketData);
-
     // will redirect back to login after job is finished
     res.status(201).json({ message: 'Playlist successfully deleted' });
   } catch (err) {

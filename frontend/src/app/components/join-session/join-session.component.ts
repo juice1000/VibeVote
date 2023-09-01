@@ -35,23 +35,27 @@ export class JoinSessionComponent {
   async redirectToPlaylist() {
     // example playlist Id: 1pQhXVaS08YJ0WDApUWYjk
 
-    // sanitize input
-    const re = new RegExp('[a-zA-Z0-9]{22}');
-    const res = this.playlistId.match(re);
-    if (res && res[0] === this.playlistId) {
-      // check if playlist exists + check if playlist active
-      const isActive = await this.playlistService.isActivePlaylist(
-        this.playlistId
-      );
-      if (isActive) {
-        this.playlistService.userJoins(this.playlistId);
-        // redirect
-        this.router.navigate(['/playlist', this.playlistId]);
+    if (this.playlistId) {
+      // sanitize input
+      const re = new RegExp('[a-zA-Z0-9]{22}');
+      const res = this.playlistId.match(re);
+      console.log(res);
+
+      if (res && res[0] === this.playlistId) {
+        // check if playlist exists + check if playlist active
+        const isActive = await this.playlistService.isActivePlaylist(
+          this.playlistId
+        );
+        if (isActive) {
+          this.playlistService.userJoins(this.playlistId);
+          // redirect
+          this.router.navigate(['/playlist', this.playlistId]);
+        } else {
+          alert(`Seems like this Party is not active right now`);
+        }
       } else {
-        alert(`Seems like this Party is not active right now`);
+        alert(`Seems like you didn't enter a valid playlist Id`);
       }
-    } else {
-      alert(`Seems like you didn't enter a valid playlist Id`);
     }
   }
 }
