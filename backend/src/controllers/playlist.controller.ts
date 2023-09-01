@@ -1,6 +1,7 @@
 import spotifyApi from '@config/spotify';
 import { socketHandler } from '../io-service';
-import { getSessionOwner, isActiveSession } from '@controllers/session.controller';
+import { getSessionOwner, isActiveSession, getCurrentSessionState } from '@controllers/session.controller';
+import { SessionState } from '@interfaces/session';
 import userController from '@controllers/user.controller';
 import prisma from './prismaClient';
 
@@ -48,9 +49,11 @@ const getPlaylist = async (req: any, res: any) => {
       trackWhereClause = { played: playedFilter === 'true' };
     }
 
+    const playlistId = req.params.spotifyPlaylistId;
+
     const playlist = await prisma.playlist.findFirst({
       where: {
-        spotifyPlaylistId: req.params.spotifyPlaylistId,
+        spotifyPlaylistId: playlistId,
       },
       include: {
         tracks: {
@@ -70,7 +73,10 @@ const getPlaylist = async (req: any, res: any) => {
       return res.status(404).json({ message: 'Playlist not found' });
     }
 
-    res.status(200).json(playlist);
+    const state: SessionState = await getCurrentSessionState(playlistId);
+    const returnValue = { ...playlist, state };
+
+    res.status(200).json(returnValue);
   } catch (error) {
     res.status(500).json({ message: 'An error occurred while retrieving the playlist' });
   }

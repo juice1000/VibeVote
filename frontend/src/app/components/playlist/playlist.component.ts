@@ -80,8 +80,10 @@ export class PlaylistComponent implements OnInit {
         playlistId,
         false
       );
+
       this.changeDetector.detectChanges();
     });
+    console.log(this.playlist);
   }
 
   async fetchPlaylistBySpotifyId(spotifyPlaylistId: string): Promise<void> {
