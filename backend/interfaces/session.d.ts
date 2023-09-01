@@ -7,7 +7,7 @@ export interface Session {
 }
 
 export interface SessionState {
-  currentTrack: any;
+  currentTrackId: string;
   progress: number;
-  isPlaying: boolean;
+  isPlaying: number;
 }
