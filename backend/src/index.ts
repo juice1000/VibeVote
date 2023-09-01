@@ -17,7 +17,6 @@ import playlistRoutes from './routes/playlist';
 import authRoutes from './routes/auth';
 
 import { connectToRedis } from './redis/session-db';
-import sessionsObjects from '@local-cache/sessions';
 
 const app = express();
 //Enable CORS
@@ -54,7 +53,7 @@ const io = new Server(server, {
     origin: process.env.CLIENT_URL,
   },
 });
-checkConnection(io, sessionsObjects);
+checkConnection(io);
 connectToRedis();
 
 server.listen(port, () => {

@@ -3,10 +3,11 @@ import { sessionClient } from '../redis/session-db';
 import sessionsObjects from '@local-cache/sessions';
 
 export async function addNewSession(playlistId: string, userId: string) {
-  if (!isActiveSession(playlistId)) {
+  const exists = await isActiveSession(playlistId);
+  if (!exists) {
     const newSession: any = {
       playlistOwnerId: userId,
-      currentTrack: '',
+      currentTrackId: '',
       progress: 0,
       isPlaying: 0,
     };
@@ -29,28 +30,24 @@ export async function deleteSession(playlistId: string) {
 }
 
 export async function updateSession(playlistId: string, userId: string, isLeaving: boolean, stateValue?: any) {
-  const exists = await isActiveSession(playlistId);
-
-  if (exists) {
-    // Update specified session object
-    if (userId !== '') {
-      // update active users
-      const userExists = await sessionClient.hExists(playlistId, userId);
-      if (!userExists) {
-        await sessionClient.hSet(playlistId, userId, userId);
-      } else if (userExists && isLeaving) {
-        await sessionClient.hDel(playlistId, userId);
-        console.log('user left session: ', userId);
-      }
+  // Update specified session object
+  if (userId !== '') {
+    // update active users
+    const userExists = await sessionClient.hExists(playlistId, userId);
+    if (!userExists) {
+      await sessionClient.hSet(playlistId, userId, userId);
+    } else if (userExists && isLeaving) {
+      await sessionClient.hDel(playlistId, userId);
+      console.log('user left session: ', userId);
     }
-
-    // update session state
-    if (stateValue) {
-      await sessionClient.hSet(playlistId, stateValue);
-    }
-    // set new timeout
-    await sessionClient.expire(playlistId, 30 * 60);
   }
+
+  // update session state
+  if (stateValue) {
+    await sessionClient.hSet(playlistId, stateValue);
+  }
+  // set new timeout
+  await sessionClient.expire(playlistId, 30 * 60);
 }
 
 export async function isActiveSession(playlistId: string): Promise<number> {
@@ -58,15 +55,16 @@ export async function isActiveSession(playlistId: string): Promise<number> {
 }
 
 export async function getCurrentSessionState(playlistId: string): Promise<any> {
-  const state = await sessionClient.hmGet(playlistId, ['process', 'currentTrack', 'isPlaying']);
+  const state = await sessionClient.hmGet(playlistId, ['process', 'currentTrackId', 'isPlaying']);
   console.log(state);
 
-  return state;
+  return {
+    process: parseInt(state[0]),
+    currentTrackId: state[1],
+    isPlaying: parseInt(state[2]),
+  };
 }
 
 export async function getSessionOwner(playlistId: string): Promise<string | undefined> {
-  const ownerId = await sessionClient.hGet(playlistId, 'playlistOwnerId');
-  console.log(ownerId);
-
-  return ownerId;
+  return await sessionClient.hGet(playlistId, 'playlistOwnerId');
 }

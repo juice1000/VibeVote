@@ -79,7 +79,7 @@ const getPlaylist = async (req: any, res: any) => {
 const getPlaylistOwner = async (req: any, res: any) => {
   try {
     const { spotifyPlaylistId } = req.params;
-    const ownerId = getSessionOwner(spotifyPlaylistId);
+    const ownerId = await getSessionOwner(spotifyPlaylistId);
     res.status(200).json(ownerId);
   } catch (err) {
     console.error('error retrieving playlist owner');
@@ -88,7 +88,8 @@ const getPlaylistOwner = async (req: any, res: any) => {
 
 const getPlaylistActive = async (req: any, res: any) => {
   const { playlistId } = req.params;
-  res.json(isActiveSession(playlistId));
+  const isActive = await isActiveSession(playlistId);
+  res.json(isActive);
 };
 
 const addTrackToPlaylist = async (req: any, res: any) => {

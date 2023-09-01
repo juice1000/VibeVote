@@ -34,7 +34,7 @@ export class PlayerComponent implements OnInit {
       this.spotifyPlaylistId
     );
 
-    this.socket.emit('requestInitialState');
+    this.socket.emit('requestInitialState', this.spotifyPlaylistId);
 
     this.playerService.player.addListener(
       'player_state_changed',
@@ -49,7 +49,7 @@ export class PlayerComponent implements OnInit {
             this.socket.emit(
               'clientStateChange',
               {
-                currentTrack: this.currentTrack,
+                currentTrack: this.currentTrack.id,
                 progress: this.progress,
                 isPlaying: this.isPlaying,
               },
@@ -79,7 +79,7 @@ export class PlayerComponent implements OnInit {
 
           if (state.isPlaying) {
             await this.playerService.play(
-              `spotify:track:${this.currentTrack.id}`,
+              `spotify:track:${this.currentTrack}`,
               this.spotifyPlaylistId!
             );
           }
