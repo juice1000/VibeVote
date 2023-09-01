@@ -18,7 +18,6 @@ import authRoutes from './routes/auth';
 
 import { connectToRedis } from './redis/session-db';
 import sessionsObjects from '@local-cache/sessions';
-import { cleanupSessions } from '@controllers/session.controller';
 
 const app = express();
 //Enable CORS
@@ -57,7 +56,6 @@ const io = new Server(server, {
 });
 checkConnection(io, sessionsObjects);
 connectToRedis();
-cleanupSessions();
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
