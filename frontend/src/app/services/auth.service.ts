@@ -35,11 +35,7 @@ export class AuthService {
           }
           if (this.accessToken && this.refreshToken && this.expirationTime) {
             // cleanup the url params
-            window.history.pushState(
-              {},
-              document.title,
-              window.location.pathname
-            );
+            window.history.replaceState({}, '', window.location.pathname);
           }
         } else {
           // retrieve params from localStorage
