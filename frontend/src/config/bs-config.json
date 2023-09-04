@@ -1,0 +1,8 @@
+{
+  "port": 4200,
+  "files": ["./dist/**/*.{html,htm,css,js}"],
+  "server": { "baseDir": "./dist/frontend" },
+  "ui": {
+    "port": 4201
+  }
+}
