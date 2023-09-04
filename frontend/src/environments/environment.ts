@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  serverUrl: '',
-  clientUrl: '',
+  serverUrl: 'https://vibevote.fly.dev',
+  clientUrl: 'https://vibevote-spotify.netlify.app',
 };

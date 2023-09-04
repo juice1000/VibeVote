@@ -4,6 +4,8 @@ import spotifyApi from '@config/spotify';
 const getAuthTokens = async (req: any, res: any) => {
   // we will have to test if the function gets called or not
   try {
+    console.log('at authentication callback');
+
     if (req.user) {
       const { accessToken, refreshToken, expires_in }: any = req.user;
       const redirectUrl = `${process.env.CLIENT_URL}/home?accessToken=${accessToken}&refreshToken=${refreshToken}&expiresIn=${expires_in}`;

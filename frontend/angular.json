@@ -136,6 +136,14 @@
               "devServerTarget": "frontend:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@netlify-builder/deploy:deploy",
+          "options": {
+            "outputPath": "dist/frontend",
+            "netlifyToken": "oIFYUwIgg2adbdK76lIOVpcvGtUwZLW86N-euV7pmfo",
+            "siteId": "53a1d0a3-9757-44fa-af56-14bcd85f59c3"
+          }
         }
       }
     }
