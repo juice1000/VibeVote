@@ -1,6 +1,6 @@
 <div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white relative">
 
-    <div class="scanner flex flex-col items-center">
+    <div class="scanner flex flex-col items-center w-full lg:w-1/2">
         <ngx-scanner-qrcode #action="scanner" [config]="{isBeep: false, vibrate: 0}" (event)="onScan($event, action)"
             [ngClass]="{'hidden': !scannerOpen}">
         </ngx-scanner-qrcode>
@@ -11,7 +11,7 @@
     </div>
 
 
-    <div class="w-1/4 flex flex-col items-center justify-center gap-5 p-12 bg-gray-800 rounded-md">
+    <div class="lg:w-1/4 w-full flex flex-col items-center justify-center gap-5 p-12 bg-gray-800 rounded-md">
         <h1 class="text-3xl font-bold mb-4">Join a Party</h1>
         <button data-cy="scanqrcode" (click)="action.isStart ? action.stop() : action.start(); startScanner()" class="flex items-center justify-center w-full px-6 py-3 text-white bg-green-600 hover:bg-green-700
             rounded-md transition">
