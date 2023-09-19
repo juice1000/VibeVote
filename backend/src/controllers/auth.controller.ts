@@ -7,6 +7,8 @@ const getAuthTokens = async (req: any, res: any) => {
     console.log('at authentication callback');
 
     if (req.user) {
+      console.log(process.env.CLIENT_URL);
+
       const { accessToken, refreshToken, expires_in }: any = req.user;
       const redirectUrl = `${process.env.CLIENT_URL}/home?accessToken=${accessToken}&refreshToken=${refreshToken}&expiresIn=${expires_in}`;
       res.redirect(redirectUrl);

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { PlayerService } from 'src/app/services/player.service';
+import { PlaylistService } from 'src/app/services/playlist.service';
 import { Socket } from 'ngx-socket-io';
 
 @Component({
@@ -20,6 +21,7 @@ export class PlayerComponent implements OnInit {
 
   constructor(
     private playerService: PlayerService,
+    private playlistService: PlaylistService,
     private cdr: ChangeDetectorRef,
     private socket: Socket
   ) {}
@@ -39,6 +41,48 @@ export class PlayerComponent implements OnInit {
     this.playerService.player.addListener(
       'player_state_changed',
       async (state: any) => {
+        console.log('player_state_changed', state);
+
+        // fetch current playlist and compare song order
+        // if (this.spotifyPlaylistId) {
+        //   const currentPlaylistTracks =
+        //     await this.playlistService.getPlaylistTracksFromSpotifyApi(
+        //       this.spotifyPlaylistId
+        //     );
+
+        //   console.log(currentPlaylistTracks, currentTrackId);
+
+        //   const currentPlaylistTracksIndex =
+        //     currentPlaylistTracks.indexOf(currentTrackId);
+
+        //   if (currentPlaylistTracksIndex < currentPlaylistTracks.length) {
+        //     console.log(
+        //       state.track_window.next_tracks[0].id,
+        //       currentPlaylistTracks[currentPlaylistTracksIndex + 1]
+        //     );
+
+        //     if (
+        //       state.track_window.next_tracks[0].id !==
+        //       currentPlaylistTracks[currentPlaylistTracksIndex + 1]
+        //     ) {
+        //       console.log('yup');
+        //       this.deviceId = await this.playerService.reconnectPlayer(
+        //         this.spotifyPlaylistId
+        //       );
+        //       console.log(this.deviceId);
+
+        //       // perhaps we need this one instead
+        //       await this.playerService.playPlaylist(
+        //         this.spotifyPlaylistId,
+        //         this.deviceId
+        //       );
+        //       // await this.playerService.play(
+        //       //   `spotify:track:${currentTrackId}`,
+        //       //   this.spotifyPlaylistId!
+        //       // );
+        //     }
+        //   }
+        // }
         try {
           if (state.paused !== this.isPaused || this.isPaused === null) {
             this.currentTrack = state.track_window.current_track;
@@ -148,6 +192,7 @@ export class PlayerComponent implements OnInit {
   async next(): Promise<void> {
     try {
       if (this.playerService.player) {
+        console.log('triggered next song ourselves');
         await this.playerService.player.nextTrack();
       }
     } catch (error) {

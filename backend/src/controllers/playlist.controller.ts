@@ -120,6 +120,14 @@ const addTrackToPlaylist = async (req: any, res: any) => {
 
     await spotifyApi.addTracksToPlaylist(playlistId, [`${trackId}`]);
 
+    // const devices = await spotifyApi.getMyDevices();
+    // const activeDevice = devices.body.devices.filter((device) => device.is_active);
+    // if (activeDevice.length > 0) {
+    //   // adding to queue only works with an active device, hence we try to first check if we have an actively running device
+    //   const resp = await spotifyApi.addToQueue(trackId);
+    //   console.log('track added to queue: ', resp.statusCode);
+    // }
+
     const trackDetails = await spotifyApi.getTrack(trackId.split(':').pop());
 
     const existingTrackInPlaylist = await prisma.track.findFirst({

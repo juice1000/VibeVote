@@ -70,6 +70,8 @@ export class PlayerService {
     }
 
     if (this.player) {
+      console.log(this.player);
+
       const deviceId = this.player._options.id;
       const uri = encodeURIComponent(spotifyUri);
 
@@ -97,9 +99,15 @@ export class PlayerService {
   async disconnectPlayer(): Promise<void> {
     this.player.disconnect();
   }
+  async reconnectPlayer(playlistId: string): Promise<any> {
+    await this.player.disconnect();
+    this.player = null;
+    return await this.initializePlayer(playlistId);
+  }
 
   async nextTrack(): Promise<void> {
     if (this.player) {
+      // we need a list of the current rating and play the next song on it
       this.player.nextTrack();
     } else {
       console.error('Player not initialized');

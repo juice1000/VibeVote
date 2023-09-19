@@ -237,6 +237,24 @@ export class PlaylistService {
     );
   }
 
+  async getPlaylistTracksFromSpotifyApi(playlistId: string): Promise<any> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.accessToken
+    );
+    const fields = 'fields=items(track(id))';
+    const trackIds = await firstValueFrom(
+      this.http.get<any>(
+        `${spotifyApiUrl}/playlists/${playlistId}/tracks?${fields}`,
+        {
+          headers,
+        }
+      )
+    );
+
+    return trackIds.items.map((idObject: any) => idObject.track.id);
+  }
+
   async getUserPlaylists(userId: string): Promise<any> {
     try {
       return await firstValueFrom(
@@ -262,7 +280,18 @@ export class PlaylistService {
         playlistId,
         false
       );
+
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + accessToken
+      );
       const spotifyPlaylistId = spotifyPlaylist.spotifyPlaylistId;
+      let queue = await firstValueFrom(
+        this.http.get(`${spotifyApiUrl}/me/player/queue`, {
+          headers,
+        })
+      );
+      console.log(queue);
 
       await firstValueFrom(
         this.http.post(`${URL}/api/playlist/${spotifyPlaylistId}/add-track`, {
@@ -270,6 +299,13 @@ export class PlaylistService {
           accessToken,
         })
       );
+
+      queue = await firstValueFrom(
+        this.http.get(`${spotifyApiUrl}/me/player/queue`, {
+          headers,
+        })
+      );
+      console.log(queue);
       const guestId = getGuestId();
       this.socket.emit('trackAdded', spotifyPlaylistId, trackId, guestId);
     } catch (error) {
