@@ -2,23 +2,24 @@
   class="flex flex-col items-center pt-2 bg-gray-900 text-white lg:grid lg:grid-cols-2 lg:place-items-center lg:h-screen min-h-screen">
 
   <div *ngIf="spotifyUser" class="flex flex-col items-center">
-    <div class="flex items-center mb-20 mt-4 gap-5">
-      <h1 class="text-4xl font-bold">What's up {{spotifyUser.display_name}}!</h1>
+    <div class="flex items-center lg:mb-20 mb-6 mt-4 gap-5">
+      <h1 class="lg:text-4xl text-2xl font-bold">What's up {{spotifyUser.display_name}}!</h1>
       <img src="{{spotifyUser.images[spotifyUser.images.length -1].url}}" alt="profile-picture"
-        class="rounded-full object-cover h-20 w-20">
+        class="rounded-full object-cover lg:h-20 lg:w-20 w-16 h-16">
       <!-- TODO: it appears that the best quality photo is at the end of the array, however in the future we need to do this programatically -->
     </div>
-    <h1 class="text-2xl font-bold mb-4">
+    <h1 class="lg:text-2xl text-xl font-bold mb-4">
       {{userPlaylists.length > 0 ? "Recently played on VibeVote" : "New here? Get started by creating a Playlist!"}}
     </h1>
-    <div *ngFor="let playlist of userPlaylists">
-      <app-playlist-card [playlist]="playlist"></app-playlist-card>
+    <div class="flex flex-col items-center justify-center mb-6">
+      <div *ngFor="let playlist of userPlaylists">
+        <app-playlist-card [playlist]="playlist"></app-playlist-card>
+      </div>
     </div>
-
   </div>
   <div>
     <div class="py-6 px-10 bg-gray-800 text-white text-center rounded-md">
-      <h1 class="text-2xl font-bold mb-4">Create a new party</h1>
+      <h1 class="lg:text-2xl text-xl  font-bold mb-4">Create a new party</h1>
 
       <form (submit)="createPlaylist()" class="space-y-4" data-testid="submit-form-btn">
         <input data-cy="playListInput" [(ngModel)]="newPlaylistName" name="newPlayListName" placeholder="Party name"
@@ -40,8 +41,8 @@
       </form>
     </div>
 
-    <div class="mt-6 py-6 px-10 bg-gray-800 text-white text-center rounded-md">
-      <h1 class="text-2xl font-bold mb-4">Or</h1>
+    <div class="mt-6 mb-6 py-6 px-10 bg-gray-800 text-white text-center rounded-md">
+      <h1 class="lg:text-2xl text-xl font-bold mb-4">Or</h1>
       <button (click)="joinSession()"
         class="w-full px-6 py-3 text-white bg-gray-600 hover:bg-gray-700 rounded-md transition">
         Join Another Party
