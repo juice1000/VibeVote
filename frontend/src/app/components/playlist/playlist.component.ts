@@ -44,6 +44,7 @@ export class PlaylistComponent implements OnInit {
         spotifyPlaylistId,
         false
       );
+      console.log(this.playlist);
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }

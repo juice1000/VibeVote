@@ -35,7 +35,7 @@
     <div class="lg:h-[calc(100vh-8rem)] lg:overflow-y-auto custom-scrollbar">
       <div *ngIf="playlist">
         <div class="mt-4 w-full" *ngFor="let track of playlist.tracks; let i = index">
-          <div
+          <div *ngIf="!track.played"
             class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300">
             <div class="flex items-center w-3/4" data-cy="card">
               <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16 rounded-md" />
@@ -55,6 +55,34 @@
               Vote ({{ track.votes.length }})
             </button>
           </div>
+
+
+        </div>
+        <span>________________________________</span>
+        <h1>Played Songs</h1>
+        <div class="mt-4 w-full" *ngFor="let track of playlist.tracks; let i = index">
+          <div *ngIf="track.played"
+            class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300">
+            <div class="flex items-center w-3/4" data-cy="card">
+              <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16 rounded-md" />
+              <div class="ml-4">
+                <p class="font-bold text-lg" data-cy="trackTitle">
+                  {{ track.title }}
+                </p>
+                <p class="text-gray-400" data-cy="trackTitle">
+                  {{ track.artist }}
+                </p>
+              </div>
+            </div>
+            <button (click)="vote(track.id, track.spotifyId, i, playlist.spotifyPlaylistId)" [ngClass]="{
+                              'bg-green-600 hover:bg-green-700': !userVotes[i],
+                              'bg-red-600 hover:bg-red-700': userVotes[i]
+                            }" class="px-4 py-2 rounded-md text-white transition duration-300">
+              Vote ({{ track.votes.length }})
+            </button>
+          </div>
+
+
         </div>
       </div>
     </div>

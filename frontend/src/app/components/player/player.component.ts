@@ -193,6 +193,7 @@ export class PlayerComponent implements OnInit {
     try {
       if (this.playerService.player) {
         console.log('triggered next song ourselves');
+        await this.playlistService.updatePlaylistOrder(this.spotifyPlaylistId!);
         await this.playerService.player.nextTrack();
       }
     } catch (error) {

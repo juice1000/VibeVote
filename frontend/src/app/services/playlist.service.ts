@@ -380,7 +380,7 @@ export class PlaylistService {
     }
   }
 
-  async updatePlaylistOrder(playlistId: string): Promise<void> {
+  async updatePlaylistOrder(playlistId: string): Promise<any> {
     try {
       const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
         playlistId
@@ -411,17 +411,15 @@ export class PlaylistService {
 
       if (currentlyPlayingTrack) {
         const currentlyPlayingTrackId = currentlyPlayingTrack?.id;
-
-        const playingTrackIndex = playedTracks.findIndex(
+        const playingTrackIndex = unplayedTracks.findIndex(
           (track: any) => track.spotifyId === currentlyPlayingTrackId
         );
-
         if (playingTrackIndex !== -1) {
-          const [playingTrack] = playedTracks.splice(playingTrackIndex, 1);
+          const [playingTrack] = unplayedTracks.splice(playingTrackIndex, 1);
           playedTracks.push(playingTrack);
         }
       }
-      const sortedPlaylistTracks = [...playedTracks, ...sortedUnplayedTracks];
+      const sortedPlaylistTracks = [...sortedUnplayedTracks, ...playedTracks];
 
       const trackUris = sortedPlaylistTracks.map(
         (track: any) => `spotify:track:${track.spotifyId}`
@@ -432,6 +430,8 @@ export class PlaylistService {
         'Bearer ' + accessToken
       );
 
+      console.log(sortedPlaylistTracks);
+
       await firstValueFrom(
         this.http.put(
           `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
@@ -440,7 +440,7 @@ export class PlaylistService {
         )
       );
 
-      return sortedUnplayedTracks;
+      return sortedPlaylistTracks;
     } catch (error) {
       console.error('Failed to update playlist order', error);
     }
