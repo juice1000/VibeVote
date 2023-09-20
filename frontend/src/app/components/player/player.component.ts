@@ -99,6 +99,8 @@ export class PlayerComponent implements OnInit {
             this.isPlaying = !state.paused;
             this.isPaused = state.paused;
 
+            this.currentTrackIdChange.emit(this.currentTrackId);
+
             this.socket.emit(
               'clientStateChange',
               {
@@ -135,7 +137,6 @@ export class PlayerComponent implements OnInit {
           `spotify:track:${this.currentTrackId}`,
           this.spotifyPlaylistId!
         );
-        this.currentTrackIdChange.emit(this.currentTrackId);
       }
     }
 
@@ -182,7 +183,6 @@ export class PlayerComponent implements OnInit {
           this.isPlaying = true;
         }
       }
-      this.currentTrackIdChange.emit(this.currentTrackId);
     } catch (error) {
       console.error('Failed to play track/playlist', error);
     }
