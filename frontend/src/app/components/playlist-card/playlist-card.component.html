@@ -1,10 +1,10 @@
-<div class="w-96 bg-gray-800 text-white text-center my-4 grid grid-cols-4 cursor-pointer hover:bg-gray-700 active:bg-gray-600 rounded-sm"
+<div class="lg:w-96 w-72 bg-gray-800 text-white text-center lg:my-4 my-1 grid grid-cols-4 cursor-pointer hover:bg-gray-700 active:bg-gray-600 rounded-sm"
     (click)="loadPlaylist()" matTooltip="Open this Session" matTooltipPosition="after">
     <div>
         <img [src]="playlist.images[0] ? playlist.images[0].url : '../../../assets/music.svg'"
             class="object-contain w-40 h-auto max-h-40 rounded-sm" alt="playlist-image">
     </div>
     <div class="col-span-3 flex items-center justify-center">
-        <h2 class="text-2xl">{{playlist.name}}</h2>
+        <h2 class="lg:text-2xl text-xl">{{playlist.name}}</h2>
     </div>
 </div>
