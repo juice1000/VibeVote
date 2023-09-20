@@ -392,7 +392,6 @@ export class PlaylistService {
       this.authService.setAccessToken(accessToken, expiresIn);
 
       const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
-
       const playedTracks = playlist.tracks.filter((track: any) => track.played);
       const unplayedTracks = playlist.tracks.filter(
         (track: any) => !track.played

@@ -21,6 +21,7 @@ export class PlaylistComponent implements OnInit {
   isOwner = false;
   userVotes: boolean[] = [];
   addTrackVisible = false;
+  currentTrackId = '';
 
   @ViewChild(AddTrackComponent) addTrackComponent!: AddTrackComponent;
   @Output() sessionExpired = false;
@@ -44,7 +45,6 @@ export class PlaylistComponent implements OnInit {
         spotifyPlaylistId,
         false
       );
-      console.log(this.playlist);
     } catch (error) {
       console.error('Error fetching playlist:', error);
     }
@@ -60,7 +60,8 @@ export class PlaylistComponent implements OnInit {
           playlistId,
           false
         );
-        await this.playlistService.markTracksAsPlayed(playlistId);
+        //await this.playlistService.markTracksAsPlayed(playlistId);
+
         await this.playlistService.updatePlaylistOrder(playlistId);
 
         this.changeDetector.detectChanges();

@@ -42,10 +42,7 @@ const createPlaylist = async (req: any, res: any) => {
 
 const getPlaylist = async (req: any, res: any) => {
   try {
-    const playedFilter = req.query.played;
-
     const playlistId = req.params.spotifyPlaylistId;
-
     const playlist = await prisma.playlist.findFirst({
       where: {
         spotifyPlaylistId: playlistId,

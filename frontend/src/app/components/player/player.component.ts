@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  ChangeDetectorRef,
+  EventEmitter,
+} from '@angular/core';
 import { PlayerService } from 'src/app/services/player.service';
 import { PlaylistService } from 'src/app/services/playlist.service';
 import { Socket } from 'ngx-socket-io';
@@ -12,6 +19,7 @@ export class PlayerComponent implements OnInit {
   @Input() spotifyPlaylistId: string | null = null;
   @Input() isOwner: boolean = false;
   @Input() initialState: any;
+  @Output() currentTrackIdChange = new EventEmitter<string>();
   currentTrack: any;
   currentTrackId = '';
   progress: number = 0;
@@ -127,6 +135,7 @@ export class PlayerComponent implements OnInit {
           `spotify:track:${this.currentTrackId}`,
           this.spotifyPlaylistId!
         );
+        this.currentTrackIdChange.emit(this.currentTrackId);
       }
     }
 
@@ -173,6 +182,7 @@ export class PlayerComponent implements OnInit {
           this.isPlaying = true;
         }
       }
+      this.currentTrackIdChange.emit(this.currentTrackId);
     } catch (error) {
       console.error('Failed to play track/playlist', error);
     }

@@ -8,7 +8,7 @@
     </div>
     <div *ngIf="playlist">
       <app-spotify-player [spotifyPlaylistId]="playlist.spotifyPlaylistId" [isOwner]="isOwner"
-        [initialState]="playlist.state"></app-spotify-player>
+        [initialState]="playlist.state" (currentTrackIdChange)="currentTrackId=$event"></app-spotify-player>
       <button (click)="addTrack(playlist.spotifyPlaylistId)"
         class="add-track-btn w-full px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white transition duration-300">
         Add track
@@ -35,7 +35,7 @@
     <div class="lg:h-[calc(100vh-8rem)] lg:overflow-y-auto custom-scrollbar">
       <div *ngIf="playlist">
         <div class="mt-4 w-full" *ngFor="let track of playlist.tracks; let i = index">
-          <div *ngIf="!track.played"
+          <div *ngIf="!track.played && track.spotifyId !== currentTrackId"
             class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300">
             <div class="flex items-center w-3/4" data-cy="card">
               <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16 rounded-md" />
@@ -61,7 +61,7 @@
         <span>________________________________</span>
         <h1>Played Songs</h1>
         <div class="mt-4 w-full" *ngFor="let track of playlist.tracks; let i = index">
-          <div *ngIf="track.played"
+          <div *ngIf="track.played && track.spotifyId !== currentTrackId"
             class="flex items-center justify-between p-2 hover:bg-gray-700 shadow-md rounded-md transition duration-300">
             <div class="flex items-center w-3/4" data-cy="card">
               <img [src]="track.imageUrl" alt="Album cover" class="w-16 h-16 rounded-md" />
