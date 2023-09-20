@@ -415,7 +415,9 @@ export class PlaylistService {
         );
         if (playingTrackIndex !== -1) {
           const [playingTrack] = unplayedTracks.splice(playingTrackIndex, 1);
+          playingTrack.played = true;
           playedTracks.push(playingTrack);
+          // TODO: update played tracks in database too
         }
       }
       const sortedPlaylistTracks = [...sortedUnplayedTracks, ...playedTracks];
@@ -429,8 +431,6 @@ export class PlaylistService {
         'Bearer ' + accessToken
       );
 
-      console.log(sortedPlaylistTracks);
-
       await firstValueFrom(
         this.http.put(
           `${spotifyApiUrl}/playlists/${playlistId}/tracks`,
@@ -439,7 +439,8 @@ export class PlaylistService {
         )
       );
 
-      return sortedPlaylistTracks;
+      playlist.tracks = sortedPlaylistTracks;
+      return playlist;
     } catch (error) {
       console.error('Failed to update playlist order', error);
     }
@@ -472,24 +473,36 @@ export class PlaylistService {
     }
   }
 
-  async markTracksAsPlayed(playlistId: string): Promise<void> {
+  async markTracksAsPlayed(
+    playlist: any,
+    currentlyPlayingTrackId: string
+  ): Promise<void> {
     try {
-      const playlist: any = await this.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
-      const currentlyPlayingTrack = await this.getCurrentlyPlayingTrack(
-        playlistId
-      );
-      const currentlyPlayingTrackId = currentlyPlayingTrack?.id;
-
       for (const track of playlist.tracks) {
         if (track.spotifyId === currentlyPlayingTrackId) {
           if (!track.played) {
             track.played = true;
-            await this.updateTrackPlayedStatus(playlistId, track.id, true);
+            await this.updateTrackPlayedStatus(
+              playlist.spotifyPlaylistId,
+              track.id,
+              true
+            );
           }
         }
+      }
+    } catch (error) {
+      console.error('Failed to mark tracks as played', error);
+    }
+  }
+
+  async resetTracksAsUnplayed(playlist: any): Promise<void> {
+    try {
+      for (const track of playlist.tracks) {
+        await this.updateTrackPlayedStatus(
+          playlist.spotifyPlaylistId,
+          track.id,
+          false
+        );
       }
     } catch (error) {
       console.error('Failed to mark tracks as played', error);

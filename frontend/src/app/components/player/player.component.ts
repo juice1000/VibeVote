@@ -19,7 +19,9 @@ export class PlayerComponent implements OnInit {
   @Input() spotifyPlaylistId: string | null = null;
   @Input() isOwner: boolean = false;
   @Input() initialState: any;
+  @Input() playlist: any;
   @Output() currentTrackIdChange = new EventEmitter<string>();
+  @Output() playlistChange = new EventEmitter<any>();
   currentTrack: any;
   currentTrackId = '';
   progress: number = 0;
@@ -100,6 +102,17 @@ export class PlayerComponent implements OnInit {
             this.isPaused = state.paused;
 
             this.currentTrackIdChange.emit(this.currentTrackId);
+
+            //TODO: mark tracks as unplayed if new track is not part of playlist anymore
+            const playlistTracks = this.playlist.tracks.map(
+              (track: any) => track.spotifyId
+            );
+
+            if (!playlistTracks.includes(this.currentTrackId)) {
+              console.log('yass');
+
+              this.playlistService.resetTracksAsUnplayed(this.playlist);
+            }
 
             this.socket.emit(
               'clientStateChange',
@@ -203,8 +216,16 @@ export class PlayerComponent implements OnInit {
     try {
       if (this.playerService.player) {
         console.log('triggered next song ourselves');
-        await this.playlistService.updatePlaylistOrder(this.spotifyPlaylistId!);
+
+        await this.playlistService.markTracksAsPlayed(
+          this.playlist,
+          this.currentTrackId
+        );
+        const playlist = await this.playlistService.updatePlaylistOrder(
+          this.spotifyPlaylistId!
+        );
         await this.playerService.player.nextTrack();
+        this.playlistChange.emit(playlist);
       }
     } catch (error) {
       console.error('failed to play next track', error);

@@ -56,13 +56,17 @@ export class PlaylistComponent implements OnInit {
     this.socket.on(
       'voteCountUpdated',
       async ({ playlistId }: { playlistId: string }) => {
-        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-          playlistId,
-          false
-        );
-        //await this.playlistService.markTracksAsPlayed(playlistId);
-
-        await this.playlistService.updatePlaylistOrder(playlistId);
+        if (playlistId === this.playlist.spotifyPlaylistId) {
+          this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+            playlistId,
+            false
+          );
+          await this.playlistService.markTracksAsPlayed(
+            this.playlist,
+            this.currentTrackId
+          );
+          await this.playlistService.updatePlaylistOrder(playlistId);
+        }
 
         this.changeDetector.detectChanges();
       }
@@ -76,12 +80,17 @@ export class PlaylistComponent implements OnInit {
       this.changeDetector.detectChanges();
     });
     this.socket.on('stateChange', async (playlistId: string) => {
-      await this.playlistService.markTracksAsPlayed(playlistId);
-      await this.playlistService.updatePlaylistOrder(playlistId);
-      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
+      if (this.playlist.spotifyPlaylistId === playlistId) {
+        await this.playlistService.markTracksAsPlayed(
+          this.playlist,
+          this.currentTrackId
+        );
+        await this.playlistService.updatePlaylistOrder(playlistId);
+        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+          playlistId,
+          false
+        );
+      }
 
       this.changeDetector.detectChanges();
     });
