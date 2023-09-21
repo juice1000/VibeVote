@@ -59,6 +59,7 @@ export class PlayerComponent implements OnInit {
         const playlistTrackIds = this.playlist.tracks.map(
           (track: any) => track.spotifyId
         );
+        // TODO: track next playlist item and compare to next track in queue
         if (!playlistTrackIds.includes(newTrackId)) {
           console.log('reinitialize player due to changed queue');
           this.deviceId = await this.playerService.reconnectPlayer(
