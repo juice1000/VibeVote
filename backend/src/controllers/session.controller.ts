@@ -1,6 +1,5 @@
-import { Session, SessionState } from '@interfaces/session';
+import { SessionState } from '@interfaces/session';
 import { sessionClient } from '../redis/session-db';
-import sessionsObjects from '@local-cache/sessions';
 
 export async function addNewSession(playlistId: string, userId: string) {
   const exists = await isActiveSession(playlistId);
@@ -13,8 +12,7 @@ export async function addNewSession(playlistId: string, userId: string) {
     };
     newSession[userId] = userId;
 
-    sessionsObjects.push(newSession); // TODO: remove
-    await sessionClient.del(playlistId); // TODO: remove
+    // await sessionClient.del(playlistId); // TODO: remove
     await sessionClient.hSet(playlistId, newSession);
     await sessionClient.expire(playlistId, 30 * 60); // expire in 30 minutes (redis sets timeouts in seconds if not further specified)
     const expiry = await sessionClient.TTL(playlistId); // TODO: remove
