@@ -145,12 +145,20 @@ export class PlaylistComponent implements OnInit {
 
   async removePlaylist(playlistId: string): Promise<void> {
     console.log('called removePlaylist');
+    // if (this.isOwner) {
+    //   console.log(this.playlist.state);
+    //   this.playlist.state = null;
+    // }
     this.playerService.disconnectPlayer();
     this.playlistService.removePlaylist(playlistId, this.isOwner);
   }
 
   async leaveSession(playlistId: string) {
     console.log('called leaveSession');
+    // if (this.isOwner) {
+    //   console.log(this.playlist.state);
+    //   this.playlist.state = null;
+    // }
     this.playerService.disconnectPlayer();
     this.playlistService.leaveSession(playlistId, this.isOwner);
   }

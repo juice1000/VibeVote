@@ -70,7 +70,7 @@ export class PlayerService {
     }
 
     if (this.player) {
-      console.log(this.player);
+      // console.log(this.player);
 
       const deviceId = this.player._options.id;
       const uri = encodeURIComponent(spotifyUri);
@@ -124,7 +124,7 @@ export class PlayerService {
   async playPlaylist(
     spotifyPlaylistId: string,
     deviceId: string | null
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
       let accessToken;
       accessToken = await this.authService.getAccessToken();
@@ -135,7 +135,7 @@ export class PlayerService {
       }
 
       if (deviceId && this.player) {
-        fetch(
+        const response = await fetch(
           `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
           {
             method: 'PUT',
@@ -147,16 +147,19 @@ export class PlayerService {
               Authorization: `Bearer ${accessToken}`,
             },
           }
-        ).then((response) => {
-          if (!response.ok) {
-            response.json().then((data) => console.error(data));
-          }
-        });
+        );
+
+        if (!response.ok) {
+          console.error('Player not initialized or deviceId is null');
+          return false;
+        }
+        return true;
       } else {
         console.error('Player not initialized or deviceId is null');
       }
     } catch (error) {
       console.error('Error in playPlaylist:', error);
     }
+    return false;
   }
 }

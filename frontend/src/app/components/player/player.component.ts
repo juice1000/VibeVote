@@ -51,88 +51,55 @@ export class PlayerComponent implements OnInit {
     this.playerService.player.addListener(
       'player_state_changed',
       async (state: any) => {
-        console.log('player_state_changed', state);
+        //console.log('player_state_changed', state);
 
         // fetch current playlist and compare song order
-        // if (this.spotifyPlaylistId) {
-        //   const currentPlaylistTracks =
-        //     await this.playlistService.getPlaylistTracksFromSpotifyApi(
-        //       this.spotifyPlaylistId
-        //     );
+        let newTrack = state.track_window.current_track;
+        let newTrackId = newTrack.id;
+        const playlistTrackIds = this.playlist.tracks.map(
+          (track: any) => track.spotifyId
+        );
+        if (!playlistTrackIds.includes(newTrackId)) {
+          console.log('reinitialize player due to changed queue');
+          this.deviceId = await this.playerService.reconnectPlayer(
+            this.spotifyPlaylistId!
+          );
+          console.log('new deviceId: ', this.deviceId);
+          await this.playlistService.resetTracksAsUnplayed(this.playlist);
+          await this.playerService.playPlaylist(
+            this.spotifyPlaylistId!,
+            this.deviceId
+          );
 
-        //   console.log(currentPlaylistTracks, currentTrackId);
-
-        //   const currentPlaylistTracksIndex =
-        //     currentPlaylistTracks.indexOf(currentTrackId);
-
-        //   if (currentPlaylistTracksIndex < currentPlaylistTracks.length) {
-        //     console.log(
-        //       state.track_window.next_tracks[0].id,
-        //       currentPlaylistTracks[currentPlaylistTracksIndex + 1]
-        //     );
-
-        //     if (
-        //       state.track_window.next_tracks[0].id !==
-        //       currentPlaylistTracks[currentPlaylistTracksIndex + 1]
-        //     ) {
-        //       console.log('yup');
-        //       this.deviceId = await this.playerService.reconnectPlayer(
-        //         this.spotifyPlaylistId
-        //       );
-        //       console.log(this.deviceId);
-
-        //       // perhaps we need this one instead
-        //       await this.playerService.playPlaylist(
-        //         this.spotifyPlaylistId,
-        //         this.deviceId
-        //       );
-        //       // await this.playerService.play(
-        //       //   `spotify:track:${currentTrackId}`,
-        //       //   this.spotifyPlaylistId!
-        //       // );
-        //     }
-        //   }
-        // }
-        try {
-          if (state.paused !== this.isPaused || this.isPaused === null) {
-            this.currentTrack = state.track_window.current_track;
-            this.currentTrackId = state.track_window.current_track.id;
-            this.progress = state.position;
-            this.isPlaying = !state.paused;
-            this.isPaused = state.paused;
-
-            this.currentTrackIdChange.emit(this.currentTrackId);
-
-            //TODO: mark tracks as unplayed if new track is not part of playlist anymore
-            const playlistTracks = this.playlist.tracks.map(
-              (track: any) => track.spotifyId
-            );
-
-            if (!playlistTracks.includes(this.currentTrackId)) {
-              console.log('yass');
-
-              this.playlistService.resetTracksAsUnplayed(this.playlist);
+          let playerState;
+          // TODO: increment after many failed attempts to get playerstate
+          const stateQuery = setInterval(async () => {
+            playerState = await this.playerService.player.getCurrentState();
+            if (playerState) {
+              clearInterval(stateQuery);
+              newTrack = playerState.track_window.current_track;
+              newTrackId = newTrack.id;
+              this.triggerStateChange(playerState, newTrack, newTrackId);
             }
-
-            this.socket.emit(
-              'clientStateChange',
-              {
-                currentTrackId: this.currentTrackId,
-                progress: this.progress,
-                isPlaying: this.isPlaying ? 1 : 0,
-              },
-              this.spotifyPlaylistId
-            );
-            this.cdr.detectChanges();
+          }, 1000);
+        } else {
+          try {
+            this.triggerStateChange(state, newTrack, newTrackId);
+          } catch (error) {
+            console.error('Error updating current track', error);
           }
-        } catch (error) {
-          console.error('Error updating current track', error);
         }
       }
     );
+
+    this.cdr.detectChanges();
+
     this.socket.on('syncState', async (state: any) => {
-      await this.updatePlayerState(state);
-      this.isPlaying = state.isPlaying;
+      await this.updatePlayerState(
+        state,
+        state.currentTrack,
+        state.currentTrackId
+      );
     });
 
     if (this.initialState) {
@@ -151,12 +118,6 @@ export class PlayerComponent implements OnInit {
           this.spotifyPlaylistId!
         );
       }
-    }
-
-    const playerState = await this.playerService.player.getCurrentState();
-    if (playerState && playerState.track_window) {
-      this.currentTrack = playerState.track_window.current_track;
-      this.progress = playerState.position;
     }
   }
 
@@ -232,14 +193,45 @@ export class PlayerComponent implements OnInit {
     }
   }
 
-  private async updatePlayerState(state: any): Promise<void> {
-    try {
-      // console.log('state', state);
-
-      this.currentTrack = state.currentTrack;
+  private updatePlayerState(
+    state: any,
+    newTrack: any,
+    newTrackId: string
+  ): any {
+    if (
+      state.paused !== this.isPaused ||
+      this.isPaused === null ||
+      newTrackId !== this.currentTrackId
+    ) {
+      this.currentTrack = newTrack;
+      this.currentTrackId = newTrackId;
       this.progress = state.position;
-    } catch (error) {
-      console.error('Error updating player state', error);
+      this.isPlaying = !state.paused;
+      this.isPaused = state.paused;
+
+      const data = {
+        currentTrackId: this.currentTrackId,
+        progress: this.progress,
+        isPlaying: this.isPlaying ? 1 : 0,
+      };
+      return data;
+    }
+  }
+
+  private triggerStateChange(state: any, newTrack: any, newTrackId: string) {
+    const stateData = this.updatePlayerState(state, newTrack, newTrackId);
+    if (stateData) {
+      this.currentTrackIdChange.emit(this.currentTrackId);
+      this.socket.emit(
+        'clientStateChange',
+        {
+          currentTrackId: stateData.currentTrackId,
+          currentTrack: stateData.currentTrack,
+          progress: stateData.progress,
+          isPlaying: stateData.isPlaying ? 1 : 0,
+        },
+        this.spotifyPlaylistId
+      );
     }
   }
 }
