@@ -15,8 +15,7 @@
       "@root": ["src"],
       "@interfaces/*": ["interfaces/*"],
       "@config/*": ["src/config/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@local-cache/*": ["__tests__/__localCache__/*"]
+      "@controllers/*": ["src/controllers/*"]
     },
     "strictNullChecks": true
   },

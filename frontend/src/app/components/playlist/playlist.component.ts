@@ -21,6 +21,7 @@ export class PlaylistComponent implements OnInit {
   isOwner = false;
   userVotes: boolean[] = [];
   addTrackVisible = false;
+  currentTrackId = '';
 
   @ViewChild(AddTrackComponent) addTrackComponent!: AddTrackComponent;
   @Output() sessionExpired = false;
@@ -55,12 +56,17 @@ export class PlaylistComponent implements OnInit {
     this.socket.on(
       'voteCountUpdated',
       async ({ playlistId }: { playlistId: string }) => {
-        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-          playlistId,
-          false
-        );
-        await this.playlistService.markTracksAsPlayed(playlistId);
-        await this.playlistService.updatePlaylistOrder(playlistId);
+        if (playlistId === this.playlist.spotifyPlaylistId) {
+          this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+            playlistId,
+            false
+          );
+          await this.playlistService.markTracksAsPlayed(
+            this.playlist,
+            this.currentTrackId
+          );
+          await this.playlistService.updatePlaylistOrder(playlistId);
+        }
 
         this.changeDetector.detectChanges();
       }
@@ -74,12 +80,17 @@ export class PlaylistComponent implements OnInit {
       this.changeDetector.detectChanges();
     });
     this.socket.on('stateChange', async (playlistId: string) => {
-      await this.playlistService.markTracksAsPlayed(playlistId);
-      await this.playlistService.updatePlaylistOrder(playlistId);
-      this.playlist = await this.playlistService.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
+      if (this.playlist.spotifyPlaylistId === playlistId) {
+        await this.playlistService.markTracksAsPlayed(
+          this.playlist,
+          this.currentTrackId
+        );
+        await this.playlistService.updatePlaylistOrder(playlistId);
+        this.playlist = await this.playlistService.getPlaylistBySpotifyId(
+          playlistId,
+          false
+        );
+      }
 
       this.changeDetector.detectChanges();
     });
@@ -134,12 +145,20 @@ export class PlaylistComponent implements OnInit {
 
   async removePlaylist(playlistId: string): Promise<void> {
     console.log('called removePlaylist');
+    // if (this.isOwner) {
+    //   console.log(this.playlist.state);
+    //   this.playlist.state = null;
+    // }
     this.playerService.disconnectPlayer();
     this.playlistService.removePlaylist(playlistId, this.isOwner);
   }
 
   async leaveSession(playlistId: string) {
     console.log('called leaveSession');
+    // if (this.isOwner) {
+    //   console.log(this.playlist.state);
+    //   this.playlist.state = null;
+    // }
     this.playerService.disconnectPlayer();
     this.playlistService.leaveSession(playlistId, this.isOwner);
   }

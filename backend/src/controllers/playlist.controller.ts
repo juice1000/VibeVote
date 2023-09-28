@@ -42,22 +42,13 @@ const createPlaylist = async (req: any, res: any) => {
 
 const getPlaylist = async (req: any, res: any) => {
   try {
-    const playedFilter = req.query.played;
-
-    let trackWhereClause = {};
-    if (playedFilter !== undefined) {
-      trackWhereClause = { played: playedFilter === 'true' };
-    }
-
     const playlistId = req.params.spotifyPlaylistId;
-
     const playlist = await prisma.playlist.findFirst({
       where: {
         spotifyPlaylistId: playlistId,
       },
       include: {
         tracks: {
-          where: trackWhereClause,
           include: {
             votes: true,
           },
@@ -119,6 +110,14 @@ const addTrackToPlaylist = async (req: any, res: any) => {
     const spotifyPlaylistId = playlist.spotifyPlaylistId;
 
     await spotifyApi.addTracksToPlaylist(playlistId, [`${trackId}`]);
+
+    // const devices = await spotifyApi.getMyDevices();
+    // const activeDevice = devices.body.devices.filter((device) => device.is_active);
+    // if (activeDevice.length > 0) {
+    //   // adding to queue only works with an active device, hence we try to first check if we have an actively running device
+    //   const resp = await spotifyApi.addToQueue(trackId);
+    //   console.log('track added to queue: ', resp.statusCode);
+    // }
 
     const trackDetails = await spotifyApi.getTrack(trackId.split(':').pop());
 

@@ -17,7 +17,6 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.2.0",
-    "@types/nodemon": "^1.19.2",
     "@types/supertest": "^2.0.12",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -41,6 +40,7 @@
     "@types/express-session": "^1.17.7",
     "@types/jest": "^29.5.1",
     "@types/node": "^18.15.11",
+    "@types/nodemon": "^1.19.2",
     "@types/passport": "^1.0.12",
     "@types/passport-spotify": "^2.0.1",
     "@types/spotify-web-api-node": "^5.0.7",

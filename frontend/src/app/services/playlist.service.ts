@@ -237,6 +237,24 @@ export class PlaylistService {
     );
   }
 
+  async getPlaylistTracksFromSpotifyApi(playlistId: string): Promise<any> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.accessToken
+    );
+    const fields = 'fields=items(track(id))';
+    const trackIds = await firstValueFrom(
+      this.http.get<any>(
+        `${spotifyApiUrl}/playlists/${playlistId}/tracks?${fields}`,
+        {
+          headers,
+        }
+      )
+    );
+
+    return trackIds.items.map((idObject: any) => idObject.track.id);
+  }
+
   async getUserPlaylists(userId: string): Promise<any> {
     try {
       return await firstValueFrom(
@@ -262,7 +280,18 @@ export class PlaylistService {
         playlistId,
         false
       );
+
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + accessToken
+      );
       const spotifyPlaylistId = spotifyPlaylist.spotifyPlaylistId;
+      let queue = await firstValueFrom(
+        this.http.get(`${spotifyApiUrl}/me/player/queue`, {
+          headers,
+        })
+      );
+      console.log(queue);
 
       await firstValueFrom(
         this.http.post(`${URL}/api/playlist/${spotifyPlaylistId}/add-track`, {
@@ -270,6 +299,13 @@ export class PlaylistService {
           accessToken,
         })
       );
+
+      queue = await firstValueFrom(
+        this.http.get(`${spotifyApiUrl}/me/player/queue`, {
+          headers,
+        })
+      );
+      console.log(queue);
       const guestId = getGuestId();
       this.socket.emit('trackAdded', spotifyPlaylistId, trackId, guestId);
     } catch (error) {
@@ -344,7 +380,7 @@ export class PlaylistService {
     }
   }
 
-  async updatePlaylistOrder(playlistId: string): Promise<void> {
+  async updatePlaylistOrder(playlistId: string): Promise<any> {
     try {
       const { accessToken, refreshToken, expiresIn } = await this.fetchTokens(
         playlistId
@@ -356,7 +392,6 @@ export class PlaylistService {
       this.authService.setAccessToken(accessToken, expiresIn);
 
       const playlist: any = await this.getPlaylistBySpotifyId(playlistId);
-
       const playedTracks = playlist.tracks.filter((track: any) => track.played);
       const unplayedTracks = playlist.tracks.filter(
         (track: any) => !track.played
@@ -375,17 +410,17 @@ export class PlaylistService {
 
       if (currentlyPlayingTrack) {
         const currentlyPlayingTrackId = currentlyPlayingTrack?.id;
-
-        const playingTrackIndex = playedTracks.findIndex(
+        const playingTrackIndex = unplayedTracks.findIndex(
           (track: any) => track.spotifyId === currentlyPlayingTrackId
         );
-
         if (playingTrackIndex !== -1) {
-          const [playingTrack] = playedTracks.splice(playingTrackIndex, 1);
+          const [playingTrack] = unplayedTracks.splice(playingTrackIndex, 1);
+          playingTrack.played = true;
           playedTracks.push(playingTrack);
+          // TODO: update played tracks in database too
         }
       }
-      const sortedPlaylistTracks = [...playedTracks, ...sortedUnplayedTracks];
+      const sortedPlaylistTracks = [...sortedUnplayedTracks, ...playedTracks];
 
       const trackUris = sortedPlaylistTracks.map(
         (track: any) => `spotify:track:${track.spotifyId}`
@@ -404,7 +439,8 @@ export class PlaylistService {
         )
       );
 
-      return sortedUnplayedTracks;
+      playlist.tracks = sortedPlaylistTracks;
+      return playlist;
     } catch (error) {
       console.error('Failed to update playlist order', error);
     }
@@ -437,24 +473,36 @@ export class PlaylistService {
     }
   }
 
-  async markTracksAsPlayed(playlistId: string): Promise<void> {
+  async markTracksAsPlayed(
+    playlist: any,
+    currentlyPlayingTrackId: string
+  ): Promise<void> {
     try {
-      const playlist: any = await this.getPlaylistBySpotifyId(
-        playlistId,
-        false
-      );
-      const currentlyPlayingTrack = await this.getCurrentlyPlayingTrack(
-        playlistId
-      );
-      const currentlyPlayingTrackId = currentlyPlayingTrack?.id;
-
       for (const track of playlist.tracks) {
         if (track.spotifyId === currentlyPlayingTrackId) {
           if (!track.played) {
             track.played = true;
-            await this.updateTrackPlayedStatus(playlistId, track.id, true);
+            await this.updateTrackPlayedStatus(
+              playlist.spotifyPlaylistId,
+              track.id,
+              true
+            );
           }
         }
+      }
+    } catch (error) {
+      console.error('Failed to mark tracks as played', error);
+    }
+  }
+
+  async resetTracksAsUnplayed(playlist: any): Promise<void> {
+    try {
+      for (const track of playlist.tracks) {
+        await this.updateTrackPlayedStatus(
+          playlist.spotifyPlaylistId,
+          track.id,
+          false
+        );
       }
     } catch (error) {
       console.error('Failed to mark tracks as played', error);
