@@ -28,6 +28,7 @@ export class PlayerComponent implements OnInit {
   deviceId: string | null = null;
   isPlaying = false;
   isPaused: boolean | null = null;
+  currentSongRank: number | null = null;
 
   constructor(
     private playerService: PlayerService,
@@ -48,50 +49,7 @@ export class PlayerComponent implements OnInit {
       this.spotifyPlaylistId
     );
 
-    this.playerService.player.addListener(
-      'player_state_changed',
-      async (state: any) => {
-        //console.log('player_state_changed', state);
-
-        // fetch current playlist and compare song order
-        let newTrack = state.track_window.current_track;
-        let newTrackId = newTrack.id;
-        const playlistTrackIds = this.playlist.tracks.map(
-          (track: any) => track.spotifyId
-        );
-        // TODO: track next playlist item and compare to next track in queue
-        if (!playlistTrackIds.includes(newTrackId)) {
-          console.log('reinitialize player due to changed queue');
-          this.deviceId = await this.playerService.reconnectPlayer(
-            this.spotifyPlaylistId!
-          );
-          console.log('new deviceId: ', this.deviceId);
-          await this.playlistService.resetTracksAsUnplayed(this.playlist);
-          await this.playerService.playPlaylist(
-            this.spotifyPlaylistId!,
-            this.deviceId
-          );
-
-          let playerState;
-          // TODO: increment after many failed attempts to get playerstate
-          const stateQuery = setInterval(async () => {
-            playerState = await this.playerService.player.getCurrentState();
-            if (playerState) {
-              clearInterval(stateQuery);
-              newTrack = playerState.track_window.current_track;
-              newTrackId = newTrack.id;
-              this.triggerStateChange(playerState, newTrack, newTrackId);
-            }
-          }, 1000);
-        } else {
-          try {
-            this.triggerStateChange(state, newTrack, newTrackId);
-          } catch (error) {
-            console.error('Error updating current track', error);
-          }
-        }
-      }
-    );
+    this.createPlayerStateListener();
 
     this.cdr.detectChanges();
 
@@ -234,5 +192,83 @@ export class PlayerComponent implements OnInit {
         this.spotifyPlaylistId
       );
     }
+  }
+
+  private async registerPlayerStateChange(state: any) {
+    console.log('player_state_changed');
+
+    // fetch current playlist and compare song order
+    let newTrack = state.track_window.current_track;
+    let newTrackId = newTrack.id;
+    if (this.currentSongRank !== null) {
+      if (this.playlist.tracks[this.currentSongRank].spotifyId === newTrackId) {
+      } else if (
+        this.playlist.tracks.length > this.currentSongRank + 1 &&
+        this.playlist.tracks[this.currentSongRank + 1].spotifyId === newTrackId
+      ) {
+        this.currentSongRank += 1;
+        try {
+          this.triggerStateChange(state, newTrack, newTrackId);
+        } catch (error) {
+          console.error('Error updating current track', error);
+        }
+      } else {
+        console.log('need to reinitialize');
+        console.log('reinitialize player due to changed queue');
+        const unplayedTracks = this.playlist.tracks.filter(
+          (track: any) => track.played === false
+        );
+        if (unplayedTracks.length === 0) {
+          console.log('all tracks played, hence we will set all as unplayed');
+          await this.playlistService.resetTracksAsUnplayed(this.playlist);
+          window.location.reload();
+        } else {
+          this.deviceId = await this.playerService.reconnectPlayer(
+            this.spotifyPlaylistId!
+          );
+          console.log('new deviceId: ', this.deviceId);
+          this.currentSongRank = 0;
+
+          // reset player state listener as the old one doesn't respond anymore
+          this.createPlayerStateListener();
+
+          if (this.playlist.tracks)
+            await this.playerService.playPlaylist(
+              this.spotifyPlaylistId!,
+              this.deviceId
+            );
+
+          let playerState;
+          // TODO: increment after many failed attempts to get playerstate
+          const stateQuery = setInterval(async () => {
+            playerState = await this.playerService.player.getCurrentState();
+            if (playerState) {
+              clearInterval(stateQuery);
+              newTrack = playerState.track_window.current_track;
+              newTrackId = newTrack.id;
+              console.log(newTrack);
+
+              this.triggerStateChange(playerState, newTrack, newTrackId);
+            }
+          }, 1000);
+        }
+      }
+    } else {
+      this.currentSongRank = 0;
+      try {
+        this.triggerStateChange(state, newTrack, newTrackId);
+      } catch (error) {
+        console.error('Error updating current track', error);
+      }
+    }
+  }
+
+  private createPlayerStateListener() {
+    this.playerService.player.addListener(
+      'player_state_changed',
+      async (state: any) => {
+        this.registerPlayerStateChange(state);
+      }
+    );
   }
 }

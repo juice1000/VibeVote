@@ -100,6 +100,7 @@ export class PlayerService {
     this.player.disconnect();
   }
   async reconnectPlayer(playlistId: string): Promise<any> {
+    this.player.removeListener('player_state_changed');
     await this.player.disconnect();
     this.player = null;
     return await this.initializePlayer(playlistId);
